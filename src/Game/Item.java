@@ -77,85 +77,85 @@ public class Item
 				item_name[i] = item_name[934] + " (unidentified)";
 			else if(i == 935)
 				item_name[i] = "Torstol potion";
-			else if(i == 221) // Strength Potion
+			else if(i == 221 && !item_name[i].contains(" (")) // Strength Potion
 				item_name[i] = item_name[i] + " (4)";
-			else if(i == 222)
+			else if(i == 222 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 223)
+			else if(i == 223 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 224)
+			else if(i == 224 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 474) // attack Potion
+			else if(i == 474 && !item_name[i].contains(" (")) // attack Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 475)
+			else if(i == 475 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 476)
+			else if(i == 476 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 477) // stat restoration Potion
+			else if(i == 477 && !item_name[i].contains(" (")) // stat restoration Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 478)
+			else if(i == 478 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 479)
+			else if(i == 479 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 480) // defense Potion
+			else if(i == 480 && !item_name[i].contains(" (")) // defense Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 481)
+			else if(i == 481 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 482)
+			else if(i == 482 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 483) // restore prayer Potion
+			else if(i == 483 && !item_name[i].contains(" (")) // restore prayer Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 484)
+			else if(i == 484 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 485)
+			else if(i == 485 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 486) // Super attack Potion
+			else if(i == 486 && !item_name[i].contains(" (")) // Super attack Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 487)
+			else if(i == 487 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 488)
+			else if(i == 488 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 489) // fishing Potion
+			else if(i == 489 && !item_name[i].contains(" (")) // fishing Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 490)
+			else if(i == 490 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 491)
+			else if(i == 491 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 492) // Super strength Potion
+			else if(i == 492 && !item_name[i].contains(" (")) // Super strength Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 493)
+			else if(i == 493 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 494)
+			else if(i == 494 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 495) // Super defense Potion
+			else if(i == 495 && !item_name[i].contains(" (")) // Super defense Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 496)
+			else if(i == 496 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 497)
+			else if(i == 497 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 498) // ranging Potion
+			else if(i == 498 && !item_name[i].contains(" (")) // ranging Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 499)
+			else if(i == 499 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 500)
+			else if(i == 500 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 566) // Cure poison Potion
+			else if(i == 566 && !item_name[i].contains(" (")) // Cure poison Potion
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 567)
+			else if(i == 567 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 568)
+			else if(i == 568 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 569) // Poison antidote
+			else if(i == 569 && !item_name[i].contains(" (")) // Poison antidote
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 570)
+			else if(i == 570 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 571)
+			else if(i == 571 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
-			else if(i == 963) // Potion of Zamorak
+			else if(i == 963 && !item_name[i].contains(" (")) // Potion of Zamorak
 				item_name[i] = item_name[i] + " (3)";
-			else if(i == 964)
+			else if(i == 964 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (2)";
-			else if(i == 965)
+			else if(i == 965 && !item_name[i].contains(" ("))
 				item_name[i] = item_name[i] + " (1)";
 		}
 	}
