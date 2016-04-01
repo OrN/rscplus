@@ -111,7 +111,7 @@ public class JConfig
 			parameters.put("servertype", "" + 1);
 		m_data.put("codebase", "http://classic" + world + ".runescape.com/");
 
-		// Update settings
+		// Update settins
 		Settings.WORLD = world;
 		Settings.Save();
 	}
