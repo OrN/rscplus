@@ -48,6 +48,8 @@
 - *[Command Key]* + n - Toggle NPC info
 - *[Command Key]* + p - Toggle Player info
 - *[Command Key]* + h - Toggle hitboxes for NPC info
+- *[Command Key]* + [ - Toggle XP drops
+- *[Command Key]* + ] - Toggle fatigue drops
 - *[Command Key]* + 1-5 - World switch on login screen
 
 ## Chat Commands
@@ -81,6 +83,10 @@
 *::toggleplayerinfo* - Toggle Player info
 
 *::togglehitbox* - Toggle hitboxes for NPC info
+
+*::togglexpdrops* - Toggle XP drops
+
+*::togglefatiguedrops* - Toggle fatigue drops
 
 *::fov* - Change FoV from 8-9
 
@@ -119,6 +125,10 @@
   <dt>view_distance</dt>
   <dd>Range: <i>2,300 to 10,000</i><br>
   Sets max render distance of structures and landscape</dd>
+  
+  <dt>fatigue_figures</dt>
+  <dd>Range: <i>1 to 7</i><br>
+  Sets max number of digits to display after the decimal point on fatigue drops</dd>
 </dl>
   
 ### Automatically configured via user input in game
@@ -168,6 +178,14 @@
   <dt>show_logindetails</dt>
   <dd>Range: <i>true or false</i><br>
   Sets whether login details such as IP or DNS will appear at the login screen</dd>
+
+  <dt>show_xpdrops</dt>
+  <dd>Range: <i>true or false</i><br>
+  Sets whether XP drops appear on screen</dd>
+  
+  <dt>show_fatiguedrops</dt>
+  <dd>Range: <i>true or false</i><br>
+  Sets whether fatigue drops appear on screen</dd>
   
   <dt>twitch_hide</dt>
   <dd>Range: <i>true or false</i><br>
