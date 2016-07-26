@@ -146,7 +146,7 @@ public class Renderer {
 					if (npc.type == NPC.TYPE_PLAYER) {
 						color = color_fatigue;
 
-						if (Client.isFriend(npc.name)) {
+						if (Client.isFriend(npc.name) && (Settings.SHOW_FRIENDINFO || Settings.SHOW_PLAYERINFO)) {
 							color = color_hp;
 							show = true;
 						} else if (Settings.SHOW_PLAYERINFO) {
@@ -288,7 +288,7 @@ public class Renderer {
 			int x = 24;
 			int y = 138;
 			if (width < 800) {
-				if (!Client.isInterfaceOpen()) {
+				if (!Client.isInterfaceOpen() && Settings.COMBAT_MENU) { //TODO: fix this to move around instead of just hiding it with COMBAT_MENU
 					setAlpha(g2, alphaHP);
 					drawShadowText(g2, "Hits: " + Client.current_level[Client.SKILL_HP] + "/"
 							+ Client.base_level[Client.SKILL_HP], x, y, colorHP, false);
@@ -409,7 +409,34 @@ public class Renderer {
 					drawShadowText(g2, Client.player_name, x, y, color_text, false);
 				y += 16;
 				drawShadowText(g2, "Region: (" + Client.regionX + "," + Client.regionY + ")", x, y, color_text, false);
+				/*
+				y += 32;
+				drawShadowText(g2, "SHOW_COMBATMENU: (" + Settings.COMBAT_MENU + ")", x, y, color_text, false);
 				y += 16;
+				/*
+				drawShadowText(g2, "combat_menu: (" + Client.show_combat + ")", x, y, color_text, false);
+				y += 16;
+				drawShadowText(g2, "show_bank: ("   + Client.show_bank + ")",   x, y, color_text, false);
+				y += 16;
+				drawShadowText(g2, "show_duel: ("   + Client.show_duel + ")",   x, y, color_text, false);
+				y += 16;
+				drawShadowText(g2, "show_duelconfirm: (" + Client.show_duelconfirm + ")", x, y, color_text, false);
+				y += 16;
+				drawShadowText(g2, "show_questionmenu: (" + Client.show_questionmenu + ")", x, y, color_text, false);
+				y += 16;				
+				drawShadowText(g2, "show_shop: (" + Client.show_shop + ")", x, y, color_text, false);
+				y += 16;
+				drawShadowText(g2, "show_sleeping: (" + Client.show_sleeping + ")", x, y, color_text, false);
+				y += 16;
+				drawShadowText(g2, "show_trade: (" + Client.show_trade + ")", x, y, color_text, false);
+				y += 16;
+				drawShadowText(g2, "show_tradeconfirm: (" + Client.show_tradeconfirm + ")", x, y, color_text, false);
+				y +=  16;
+				drawShadowText(g2, "show_welcome: (" + Client.show_welcome + ")", x, y, color_text, false);
+				y += 16;
+				/* */
+				y += 16;
+				
 			}
 
 			// drawShadowText(g2, "Test: " + Client.test, 100, 100, color_text,

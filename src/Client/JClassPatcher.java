@@ -144,6 +144,7 @@ public class JClassPatcher {
 			hookClassVariable(methodNode, "client", "qd", "I", "Game/Camera", "fov", "I", false, true);
 
 			hookClassVariable(methodNode, "client", "Fe", "Z", "Game/Client", "show_bank", "Z", true, false);
+			hookClassVariable(methodNode, "client", "Fe", "Z", "Game/Client", "show_combat", "Z", true, false); //this won't work
 			hookClassVariable(methodNode, "client", "dd", "Z", "Game/Client", "show_duel", "Z", true, false);
 			hookClassVariable(methodNode, "client", "Pj", "Z", "Game/Client", "show_duelconfirm", "Z", true, false);
 			hookClassVariable(methodNode, "client", "Bj", "I", "Game/Client", "show_friends", "I", true, true);
@@ -289,7 +290,7 @@ public class JClassPatcher {
 				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
 				while (insnNodeList.hasNext()) {
 					AbstractInsnNode insnNode = insnNodeList.next();
-
+					
 					if (insnNode.getOpcode() == Opcodes.BIPUSH) {
 						IntInsnNode bipush = (IntInsnNode) insnNode;
 
