@@ -413,6 +413,7 @@ public class Renderer {
 				y += 32;
 				drawShadowText(g2, "SHOW_COMBATMENU: (" + Settings.COMBAT_MENU + ")", x, y, color_text, false);
 				y += 16;
+<<<<<<< HEAD
 				/*
 				drawShadowText(g2, "combat_menu: (" + Client.show_combat + ")", x, y, color_text, false);
 				y += 16;
@@ -437,6 +438,10 @@ public class Renderer {
 				/* */
 				y += 16;
 				
+=======
+				drawShadowText(g2, "In combat: " + Client.isInCombat(), x, y, color_text, false);
+				y += 16;
+>>>>>>> 5fbb4b404e508c45924d99b5c17e3a77295fe6fa
 			}
 
 			// drawShadowText(g2, "Test: " + Client.test, 100, 100, color_text,
