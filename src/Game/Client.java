@@ -309,7 +309,7 @@ public class Client {
 				magic_timer = Renderer.time + 21000L;
 		}
 
-		if (type == Client.CHAT_PRIVATE) {
+		if (type == Client.CHAT_PRIVATE || type == Client.CHAT_PRIVATE_OUTGOING) {
 			if (username != null)
 				lastpm_username = username;
 		}
@@ -398,7 +398,7 @@ public class Client {
 
 	public static boolean isInCombat()
 	{
-		return (combat_timer > 450);
+		return (combat_timer == 499);
 	}
 
 	public static boolean isInterfaceOpen() {
@@ -468,6 +468,7 @@ public class Client {
 
 	public static final int CHAT_NONE = 0;
 	public static final int CHAT_PRIVATE = 1;
+	public static final int CHAT_PRIVATE_OUTGOING = 2;
 	public static final int CHAT_QUEST = 3;
 	public static final int CHAT_CHAT = 4;
 
@@ -484,7 +485,6 @@ public class Client {
 
 	public static int combat_timer;
 	public static boolean show_bank;
-	public static boolean show_combat;
 	public static boolean show_duel;
 	public static boolean show_duelconfirm;
 	public static int show_friends;

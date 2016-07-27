@@ -286,9 +286,15 @@ public class Renderer {
 
 			// Draw HP, Prayer, Fatigue overlay
 			int x = 24;
-			int y = 138;
+			int y = 32;
+			
+			if (Client.isInCombat() || Settings.COMBAT_MENU) //combat menu is showing, so move everything down
+			{
+				y = 138;
+			}
+			
 			if (width < 800) {
-				if (!Client.isInterfaceOpen() && Settings.COMBAT_MENU) { //TODO: fix this to move around instead of just hiding it with COMBAT_MENU
+				if (!Client.isInterfaceOpen()) {
 					setAlpha(g2, alphaHP);
 					drawShadowText(g2, "Hits: " + Client.current_level[Client.SKILL_HP] + "/"
 							+ Client.base_level[Client.SKILL_HP], x, y, colorHP, false);
@@ -409,39 +415,9 @@ public class Renderer {
 					drawShadowText(g2, Client.player_name, x, y, color_text, false);
 				y += 16;
 				drawShadowText(g2, "Region: (" + Client.regionX + "," + Client.regionY + ")", x, y, color_text, false);
-				/*
-				y += 32;
-				drawShadowText(g2, "SHOW_COMBATMENU: (" + Settings.COMBAT_MENU + ")", x, y, color_text, false);
 				y += 16;
-<<<<<<< HEAD
-				/*
-				drawShadowText(g2, "combat_menu: (" + Client.show_combat + ")", x, y, color_text, false);
+				drawShadowText(g2, "Combat_timer: " + Client.combat_timer, x, y, color_text, false);
 				y += 16;
-				drawShadowText(g2, "show_bank: ("   + Client.show_bank + ")",   x, y, color_text, false);
-				y += 16;
-				drawShadowText(g2, "show_duel: ("   + Client.show_duel + ")",   x, y, color_text, false);
-				y += 16;
-				drawShadowText(g2, "show_duelconfirm: (" + Client.show_duelconfirm + ")", x, y, color_text, false);
-				y += 16;
-				drawShadowText(g2, "show_questionmenu: (" + Client.show_questionmenu + ")", x, y, color_text, false);
-				y += 16;				
-				drawShadowText(g2, "show_shop: (" + Client.show_shop + ")", x, y, color_text, false);
-				y += 16;
-				drawShadowText(g2, "show_sleeping: (" + Client.show_sleeping + ")", x, y, color_text, false);
-				y += 16;
-				drawShadowText(g2, "show_trade: (" + Client.show_trade + ")", x, y, color_text, false);
-				y += 16;
-				drawShadowText(g2, "show_tradeconfirm: (" + Client.show_tradeconfirm + ")", x, y, color_text, false);
-				y +=  16;
-				drawShadowText(g2, "show_welcome: (" + Client.show_welcome + ")", x, y, color_text, false);
-				y += 16;
-				/* */
-				y += 16;
-				
-=======
-				drawShadowText(g2, "In combat: " + Client.isInCombat(), x, y, color_text, false);
-				y += 16;
->>>>>>> 5fbb4b404e508c45924d99b5c17e3a77295fe6fa
 			}
 
 			// drawShadowText(g2, "Test: " + Client.test, 100, 100, color_text,
@@ -455,7 +431,7 @@ public class Renderer {
 			}
 		} else if (Client.state == Client.STATE_LOGIN) {
 			if (Settings.DEBUG)
-				drawShadowText(g2, "DEBUG MODE", width / 2, 8, color_text, true);
+				drawShadowText(g2, "DEBUG MODE", 38, 8, color_text, true);
 
 			// Draw world list
 			drawShadowText(g2, "World (Click to change): ", 80, height - 8, color_text, true);
