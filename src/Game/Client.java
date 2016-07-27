@@ -213,6 +213,8 @@ public class Client {
 				Settings.toggleTwitchHide();
 			else if (command.equals("toggleplayerinfo"))
 				Settings.toggleShowPlayerInfo();
+			else if (command.equals("togglefriendinfo"))
+				Settings.toggleShowFriendInfo();
 			else if (command.equals("togglenpcinfo"))
 				Settings.toggleShowNPCInfo();
 			else if (command.equals("toggleiteminfo"))
@@ -482,6 +484,7 @@ public class Client {
 
 	public static int combat_timer;
 	public static boolean show_bank;
+	public static boolean show_combat;
 	public static boolean show_duel;
 	public static boolean show_duelconfirm;
 	public static int show_friends;
