@@ -290,7 +290,7 @@ public class JClassPatcher {
 				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
 				while (insnNodeList.hasNext()) {
 					AbstractInsnNode insnNode = insnNodeList.next();
-
+					
 					if (insnNode.getOpcode() == Opcodes.BIPUSH) {
 						IntInsnNode bipush = (IntInsnNode) insnNode;
 
