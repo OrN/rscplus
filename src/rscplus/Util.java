@@ -19,7 +19,7 @@
  *	Authors: see <https://github.com/OrN/rscplus>
  */
 
-package Client;
+package rscplus;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -43,6 +43,12 @@ public class Util
 			dir.delete();
 		if(!dir.exists())
 			dir.mkdir();
+	}
+
+	public static boolean FileExists(String name)
+	{
+		File file = new File(name);
+		return (file.isFile() && file.exists());
 	}
 
 	public static String byteHexString(byte[] data)

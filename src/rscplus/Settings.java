@@ -19,7 +19,7 @@
  *	Authors: see <https://github.com/OrN/rscplus>
  */
 
-package Client;
+package rscplus;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,7 +28,6 @@ import java.net.URL;
 import java.util.Properties;
 
 import Game.Client;
-import Game.Game;
 
 public class Settings
 {
@@ -45,21 +44,40 @@ public class Settings
 			if(index != -1)
 				Dir.JAR = Dir.JAR.substring(0, index);
 		}
-		catch(Exception e) {}
+		catch(Exception e)
+		{
+			Logger.Info("Unable to determine rscplus JAR location, using '.'");
+		}
 
-		Logger.Info("Jar Location: " + Dir.JAR);
+		// Find Config directory
+		if(Util.FileExists(Dir.JAR + "/config.ini"))
+		{
+			Dir.CONFIG = Dir.JAR;
+			Logger.Info("config.ini found in JAR directory, running in portable mode");
+		}
+		else
+		{
+			Dir.CONFIG = System.getProperty("user.home") + "/rscplus";
+			Logger.Info("config.ini not found in JAR directory, using directory '" + Dir.CONFIG + "' instead");
+		}
+		Util.MakeDirectory(Dir.CONFIG);
 
 		// Load other directories
-		Dir.CACHE = Dir.JAR + "/cache";
+		Dir.CACHE = Dir.CONFIG + "/cache";
 		Util.MakeDirectory(Dir.CACHE);
-		Dir.SCREENSHOT = Dir.JAR + "/screenshots";
+		Dir.SCREENSHOT = Dir.CONFIG + "/screenshots";
 		Util.MakeDirectory(Dir.SCREENSHOT);
+
+		Logger.Info("rscplus jar directory: " + Dir.JAR);
+		Logger.Info("rscplus config directory: " + Dir.CONFIG);
+		Logger.Info("rscplus cache directory: " + Dir.CACHE);
+		Logger.Info("rscplus screenshot directory: " + Dir.SCREENSHOT);
 
 		// Load settings
 		try
 		{
 			Properties props = new Properties();
-			FileInputStream in = new FileInputStream(Dir.JAR + "/config.ini");
+			FileInputStream in = new FileInputStream(Dir.CONFIG + "/config.ini");
 			props.load(in);
 			in.close();
 
@@ -78,7 +96,6 @@ public class Settings
 			SHOW_INVCOUNT = getBoolean(props, "show_invcount", true);
 			SHOW_STATUSDISPLAY = getBoolean(props, "show_statusdisplay", true);
 			SHOW_FATIGUEDROPS = getBoolean(props, "show_fatiguedrops", true);
-			SOFTWARE_CURSOR = getBoolean(props, "software_cursor", false);
 			DEBUG = getBoolean(props, "debug", false);
 			DISASSEMBLE = getBoolean(props, "disassemble", false);
 			DISASSEMBLE_DIRECTORY = getString(props, "disassemble_directory", "dump");
@@ -134,9 +151,14 @@ public class Settings
 
 		if(DISASSEMBLE)
 		{
-			Dir.DUMP = Dir.JAR + "/" + DISASSEMBLE_DIRECTORY;
+			Dir.DUMP = Dir.CONFIG + "/" + DISASSEMBLE_DIRECTORY;
 			Util.MakeDirectory(Dir.DUMP);
+
+			Logger.Info("rscplus class dump directory: " + Dir.DUMP);
 		}
+
+		// Force a config save incase we just generated it for the first time
+		Save();
 	}
 
 	public static void Save()
@@ -158,7 +180,6 @@ public class Settings
 			props.setProperty("show_xpdrops", "" + SHOW_XPDROPS);
 			props.setProperty("show_fatiguedrops", "" + SHOW_FATIGUEDROPS);
 			props.setProperty("show_statusdisplay", "" + SHOW_STATUSDISPLAY);
-			props.setProperty("software_cursor", "" + SOFTWARE_CURSOR);
 			props.setProperty("debug", "" + DEBUG);
 			props.setProperty("disassemble", "" + DISASSEMBLE);
 			props.setProperty("disassemble_directory", "" + DISASSEMBLE_DIRECTORY);
@@ -174,7 +195,7 @@ public class Settings
 			props.setProperty("fatigue_figures", "" + FATIGUE_FIGURES);
 			props.setProperty("first_time", "" + FIRST_TIME);
 
-			FileOutputStream out = new FileOutputStream(Dir.JAR + "/config.ini");
+			FileOutputStream out = new FileOutputStream(Dir.CONFIG + "/config.ini");
 			props.store(out, "---rscplus config---");
 			out.close();
 		}
@@ -189,7 +210,7 @@ public class Settings
 		URL url = null;
 		try
 		{
-			url = Game.getInstance().getClass().getResource(fname);
+			url = rscplus.getInstance().getClass().getResource(fname);
 		}
 		catch(Exception e) {}
 
@@ -212,7 +233,7 @@ public class Settings
 		InputStream stream = null;
 		try
 		{
-			stream = Game.getInstance().getClass().getResourceAsStream(fname);
+			stream = rscplus.getInstance().getClass().getResourceAsStream(fname);
 		}
 		catch(Exception e) {}
 
@@ -436,6 +457,7 @@ public class Settings
 	public static class Dir
 	{
 		public static String JAR;
+		public static String CONFIG;
 		public static String CACHE;
 		public static String DUMP;
 		public static String SCREENSHOT;
@@ -468,7 +490,6 @@ public class Settings
 	public static boolean SHOW_STATUSDISPLAY = true;
 	public static boolean SHOW_XPDROPS = true;
 	public static boolean SHOW_FATIGUEDROPS = true;
-	public static boolean SOFTWARE_CURSOR = false;
 	public static boolean DEBUG = false;
 	public static boolean DISASSEMBLE = false;
 	public static String DISASSEMBLE_DIRECTORY = "dump";

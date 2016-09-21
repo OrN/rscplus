@@ -5,7 +5,7 @@
 	<property name="bin.dir" value="bin/rscplus" />
 	<property name="assets.dir" value="assets" />
 
-	<property name="jar.main-class" value="Client.Launcher" />
+	<property name="jar.main-class" value="rscplus.rscplus" />
 	<property name="jar.name" value="${ant.project.name}.jar" />
 	<property name="jar.file" value="${bin.dir}/${jar.name}" />
 
@@ -38,7 +38,10 @@
 
         <jar destfile="${jar.file}" basedir="${build.dir}">
             <manifest>
-                <attribute name="Main-Class" value="${jar.main-class}"/>
+                <attribute name="Main-Class" value="${jar.main-class}" />
+		<attribute name="Permissions" value="all-permissions" />
+		<attribute name="Application-Name" value="rscplus" />
+		<attribute name="Codebase" value="*" />
             </manifest>
 			<fileset dir=".">
 				<include name="${assets.dir}/**" />

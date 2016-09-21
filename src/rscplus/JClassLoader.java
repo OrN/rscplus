@@ -19,7 +19,7 @@
  *	Authors: see <https://github.com/OrN/rscplus>
  */
 
-package Client;
+package rscplus;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,6 +37,11 @@ import javax.xml.bind.DatatypeConverter;
 
 public class JClassLoader extends ClassLoader
 {
+	public JClassLoader()
+	{
+		super(rscplus.class.getClassLoader());
+	}
+
 	public boolean fetch(URL jarURL)
 	{
 		Logger.Info("Fetching Jar: " + jarURL);
@@ -86,7 +91,7 @@ public class JClassLoader extends ClassLoader
 						if(name.endsWith(".class"))
 						{
 							Logger.Info("Found cached file: " + name);
-							Launcher.getInstance().setStatus("Loading " + name + "...");
+							rscplus.getInstance().setStatus("loading cached file " + name + "...");
 							name = name.substring(0, name.indexOf(".class"));
 							classData = patchClass(classData);
 							m_classData.put(name, classData);
@@ -104,7 +109,7 @@ public class JClassLoader extends ClassLoader
 				}
 
 				totalNeeded += 1;
-				Launcher.getInstance().setProgress(totalLoaded, totalNeeded);
+				rscplus.getInstance().setProgress(totalLoaded, totalNeeded);
 			}
 
 			JarEntry entry;
@@ -130,7 +135,7 @@ public class JClassLoader extends ClassLoader
 				fOut.close();
 
 				Logger.Info("Retrieved file: " + name);
-				Launcher.getInstance().setStatus("Downloading " + name + "...");
+				rscplus.getInstance().setStatus("downloading " + name + "...");
 
 				if(name.endsWith(".class"))
 				{
@@ -141,7 +146,7 @@ public class JClassLoader extends ClassLoader
 				}
 
 				totalLoaded += 1;
-				Launcher.getInstance().setProgress(totalLoaded, totalNeeded);
+				rscplus.getInstance().setProgress(totalLoaded, totalNeeded);
 			}
 
 			in.close();
@@ -151,6 +156,8 @@ public class JClassLoader extends ClassLoader
 			e.printStackTrace();
 			return false;
 		}
+
+		rscplus.getInstance().setStatus("launching game");
 
 		return true;
 	}
@@ -163,6 +170,8 @@ public class JClassLoader extends ClassLoader
 	@Override
 	public final Class findClass(String name)
 	{
+		Logger.Debug("ClassLoader findClass: " + name);
+
 		byte data[] = m_classData.get(name);
 		if(data == null)
 			return null;
