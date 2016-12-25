@@ -14,6 +14,10 @@
 
 *I will not accept any game automation features (macroing, etc.)*
 
+## IRC
+
+Join #rscplus on Freenode ([Web Chat](http://webchat.freenode.net/?channels=%23rscplus))
+
 ## Features
 - Game resolution changing (about 80% complete)
 - NPC Dialogue options with 1-9 on keyboard
@@ -110,6 +114,8 @@ Most keybinds are configurable via the Settings GUI
 *::cmb* - WARNING! Because of color codes, this command will break the character limit and *may be bannable*. Don't send this command across PM to RS2/RS3 because they'll see a bunch of RS1 color codes and you may get banned if you're reported. Mimic's osbuddy's !cmb; outputs combat level (with decimal), Att, Str, Def, Hits, Ranged, Magic, and Prayer levels.
 
 *::cmbnocolor* - Mimic's osbuddy's !cmb; doesn't use color codes and is within character limits
+
+*::update* - Manually check if RSC+ is up to date
 
 ## Config Options
 

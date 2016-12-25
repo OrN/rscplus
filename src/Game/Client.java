@@ -24,9 +24,13 @@ package Game;
 import static org.fusesource.jansi.Ansi.ansi;
 
 import java.applet.Applet;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +98,7 @@ public class Client {
 
 				if (xpGain > 0.0f && dropXP) {
 					if (Settings.SHOW_XPDROPS)
-						xpdrop_handler.add("+" + xpGain + " (" + skill_name[i] + ")");
+						xpdrop_handler.add("+" + xpGain + " (" + skill_name[i] + ")", Renderer.color_text);
 
 					// XP/hr calculations
 					// TODO: After 5-10 minutes of tracking XP, make it display a rolling average instead of a session average
@@ -123,7 +127,7 @@ public class Client {
 				final float actualFatigue = getActualFatigue();
 				final float fatigueGain = actualFatigue - currentFatigue;
 				if (fatigueGain > 0.0f && !isWelcomeScreen()) {
-					xpdrop_handler.add("+" + trimNumber(fatigueGain,Settings.FATIGUE_FIGURES) + "% (Fatigue)");
+					xpdrop_handler.add("+" + trimNumber(fatigueGain,Settings.FATIGUE_FIGURES) + "% (Fatigue)", Renderer.color_fatigue);
 					currentFatigue = actualFatigue;
 				}
 			}
@@ -154,6 +158,8 @@ public class Client {
 
 		if (TwitchIRC.isUsing())
 			twitch.connect();
+
+		
 	}
 
 	public static void getPlayerName() {
@@ -318,6 +324,10 @@ public class Client {
 				return "Hey, everyone, I just tried to do something very silly!";
 			}
 			else
+			if (command.equals("update")) {
+				updateRSCP(true);
+			}
+			else
 			if (command.startsWith("next_")) {
 				for (int i = 0; i < 18; i++) {
 					if (command.equals("next_" + skill_name[i].toLowerCase())) {
@@ -367,6 +377,49 @@ public class Client {
 		}
 	}
 	
+	public static Double fetchLatestVersionNumber() { //returns current version number
+		try {
+			Double currentVersion = 0.0;
+			//URL updateURL = new URL("https://raw.githubusercontent.com/Hubcapp/rscplus/updater/src/Client/Settings.java");
+			URL updateURL = new URL("https://raw.githubusercontent.com/OrN/rscplus/master/src/Client/Settings.java");
+
+			// Open connection
+			URLConnection connection = updateURL.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			//in our current client version, we are looking at the source file of Settings.java in the main repository
+			//in order to parse what the current version number is.
+			String line;
+			while((line = in.readLine()) != null)
+			{
+				if (line.contains("VERSION_NUMBER"))
+				{
+					currentVersion = Double.parseDouble(line.substring(line.indexOf("=")+1,line.indexOf(";")));
+					break;
+				}	
+			}
+
+			// Close connection
+			in.close();
+			return currentVersion;
+		}
+		catch(Exception e)
+		{
+			displayMessage("@dre@error checking for update",0);
+			//System.out.println(e);
+			return Settings.VERSION_NUMBER;
+		}
+	}
+	public static void updateRSCP(boolean loudAndProud) {
+		double latestVersion = fetchLatestVersionNumber();
+		if (latestVersion > Settings.VERSION_NUMBER) {
+			displayMessage("@gre@A new version of RSC+ is available!",CHAT_QUEST);
+			displayMessage("~034~ Your version is @red@" + String.format("%8.6f",Settings.VERSION_NUMBER),CHAT_QUEST); //TODO: before Y10K update this to %9.6f
+			displayMessage("The latest version is @gre@" + String.format("%8.6f",latestVersion),CHAT_QUEST);
+		} else if (loudAndProud) {
+			displayMessage("You're up to date: @gre@" + String.format("%8.6f",latestVersion),CHAT_QUEST);
+		}
+	}
+	
 	// All messages added to chat are routed here
 	public static void messageHook(String username, String message, int type) {
 		if (type == CHAT_NONE) {
@@ -395,6 +448,37 @@ public class Client {
 		if (type == Client.CHAT_PRIVATE || type == Client.CHAT_PRIVATE_OUTGOING) {
 			if (username != null)
 				lastpm_username = username;
+		}
+
+		if (message.startsWith("Welcome to RuneScape!")) {
+			//because this section of code is triggered when the "Welcome to RuneScape!" message first appears,
+			//we can use it to do some first time set up
+			if (Settings.FIRST_TIME) {
+				Settings.FIRST_TIME = false;
+				Settings.Save();
+			}
+
+			// Get keybind to open the config window
+			String configWindowShortcut = "";
+			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
+				if (kbs.getCommandName().equals("show_config_window")) {
+					configWindowShortcut = kbs.getFormattedKeybindText();
+					break;
+				} 
+			}
+			if (configWindowShortcut.equals("")) {
+				Logger.Error("Could not find the keybind for the config window!");
+				configWindowShortcut = "<Keybind error>";
+			}
+
+			displayMessage("@mag@Type @yel@::help@mag@ for a list of commands", CHAT_QUEST); //TODO: possibly put this in welcome screen or at least _after_ "Welcome to RuneScape"
+			displayMessage("@mag@Open the settings with @yel@" + configWindowShortcut + "@mag@ or @yel@right-click the tray icon", CHAT_QUEST);
+			
+			//check to see if RSC+ is up to date
+			if (Settings.versionCheckRequired) {
+				Settings.versionCheckRequired = false;
+				updateRSCP(false);
+			}
 		}
 		
 		if (Settings.COLORIZE) { //no nonsense for those who don't want it
@@ -448,27 +532,8 @@ public class Client {
 			return "@|green,intensity_bold " + colorMessage + "|@";
 		} else if (whiteMessage) {
 			//if (colorMessage.contains("Welcome to RuneScape!")) { // this would be necessary if whiteMessage had more than one .contains()
-			if (Settings.FIRST_TIME) {
-				
-				// Get keybind to open the config window
-				String configWindowShortcut = "";
-				for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
-					if (kbs.getCommandName().equals("show_config_window")) {
-						configWindowShortcut = kbs.getFormattedKeybindText();
-						break;
-					} 
-				}
-				if (configWindowShortcut.equals("")) {
-					Logger.Error("Could not find the keybind for the config window!");
-					configWindowShortcut = "<Keybind error>";
-				}
-				
-				displayMessage("@mag@Type @yel@::help@mag@ for a list of commands", CHAT_QUEST); //TODO: possibly put this in welcome screen or at least _after_ "Welcome to RuneScape"
-				displayMessage("@mag@Open the settings with @yel@" + configWindowShortcut + "@mag@ or @yel@right-click the tray icon", CHAT_QUEST);
-				Settings.FIRST_TIME = false;
-				Settings.Save();
-			}
-			//}
+			// }
+
 			return "@|white,intensity_bold " + colorMessage + "|@";
 		}
 		
