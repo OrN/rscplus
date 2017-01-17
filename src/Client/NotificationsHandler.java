@@ -73,6 +73,7 @@ public class NotificationsHandler {
 	static JPanel mainContentPanel;
 	static Thread notifTimeoutThread;
 	static long notifLastShownTime;
+	static boolean libnotifyInitalized = false;
 
 	public enum NotifType {
 		PM, TRADE, DUEL, LOGOUT, LOWHP, FATIGUE
@@ -225,6 +226,7 @@ public class NotificationsHandler {
 				String[] arbitrary = {"arbitrary"}; //Gtk.init demands a String[], but it doesn't need to do anything.
 				Gtk.init(arbitrary); //required to use libnotify
 				Notify.init("also arbitrary");
+				libnotifyInitalized = true;
 				System.out.println("Initialized libnotify requirements");
 			} catch (UnsatisfiedLinkError e) {
 				e.printStackTrace();
