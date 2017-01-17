@@ -72,6 +72,7 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import org.gnome.gtk.Gtk;
 import org.gnome.notify.Notify;
+import org.gnome.notify.Notification; //even though this isn't used, importing it stops some "DANGER: invalid cast" messages from appearing in the console
 
 import Client.KeybindSet.KeyModifier;
 import Game.Camera;
