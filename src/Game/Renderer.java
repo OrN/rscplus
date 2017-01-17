@@ -208,7 +208,7 @@ public class Renderer {
 
 				if (Settings.SHOW_ITEMINFO) { //don't sort if we aren't displaying any item names anyway
 					try {
-						Collections.sort(Client.item_list, new ItemComparator()); //keep items in (technically reverse) alphabetical order for SHOW_ITEMINFO instead of randomly changing pla$
+						Collections.sort(Client.item_list, new ItemComparator()); //keep items in (technically reverse) alphabetical order for SHOW_ITEMINFO instead of randomly changing places each frame
 					} catch (Exception e) { //Sometimes Java helpfully complains that the sorting method violates its general contract.
 						e.printStackTrace();
 					}
