@@ -337,8 +337,6 @@ public class Client {
                                 String[] colours = {"@red@","@whi@","@gre@","@whi@"};
                                 int spaceCounter = 0;
                                 for (int i=0; i < line.length() - 7; i++) {
-					System.out.print(i);
-					System.out.println(", "+subline);
                                         if (line.substring(7 + i, 8 + i).equals(" ")) {
                                                 spaceCounter+=1;
                                         }
