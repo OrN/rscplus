@@ -449,7 +449,7 @@ public class Client {
 		}
 		catch(Exception e)
 		{
-			displayMessage("@dre@error checking for update",0);
+			displayMessage("@dre@Error checking latest version",0);
 			//System.out.println(e);
 			return Settings.VERSION_NUMBER;
 		}
@@ -536,6 +536,7 @@ public class Client {
 	}
 
 	public static String colorizeUsername(String colorMessage, int type) {
+		colorMessage = colorMessage.replace("\u00A0", " "); //Prevents non-breaking space in usernames appearing as á
 		switch (type) {
 			case CHAT_PRIVATE:
 				colorMessage = "@|cyan,intensity_bold "  + colorMessage + " tells you: |@"; //Username tells you:
