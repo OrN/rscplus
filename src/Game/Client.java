@@ -467,6 +467,8 @@ public class Client {
 
 	// All messages added to chat are routed here
 	public static void messageHook(String username, String message, int type) {
+		if (username != null)
+			username = username.replace("\u00A0", " "); //Prevents non-breaking space in colored usernames appearing as á in console
 		if (type == CHAT_NONE) {
 			if (username == null && message != null) {
 				if(message.contains("The spell fails! You may try again in 20 seconds"))
@@ -528,30 +530,60 @@ public class Client {
 
 		if (Settings.COLORIZE) { //no nonsense for those who don't want it
 			AnsiConsole.systemInstall();
-			System.out.println(ansi().render("@|white (" + type + ")|@ " + ((username == null) ? "" : colorizeUsername(username, type)) + colorizeMessage(message, type)));
+			System.out.println(ansi().render("@|white (" + type + ")|@ " + ((username == null) ? "" : colorizeUsername(formatUsername(username, type), type)) + colorizeMessage(message, type)));
 			AnsiConsole.systemUninstall();
 		} else {
-			System.out.println("(" + type + ") " + ((username == null) ? "" : username + ": ") + message);
+			System.out.println("(" + type + ") " + ((username == null) ? "" : formatUsername(username, type)) + message);
 		}
 	}
 
-	public static String colorizeUsername(String colorMessage, int type) {
-		colorMessage = colorMessage.replace("\u00A0", " "); //Prevents non-breaking space in usernames appearing as á
+	private static String formatUsername(String username, int type) {
 		switch (type) {
 			case CHAT_PRIVATE:
-				colorMessage = "@|cyan,intensity_bold "  + colorMessage + " tells you: |@"; //Username tells you:
+				username = username + " tells you: "; // Username tells you:
 				break;
 			case CHAT_PRIVATE_OUTGOING:
-				colorMessage = "@|cyan,intensity_bold You tell " + colorMessage + ": |@"; //You tell Username:
+				username = "You tell " + username + ": "; // You tell Username:
 				break;
 			case CHAT_QUEST:
-				colorMessage = "@|white,intensity_faint " + colorMessage + ": |@"; //If username != null during CHAT_QUEST, then this is your player name, which is usually white
+				username = username + ": "; // If username != null during CHAT_QUEST, then this is your player name
 				break;
 			case CHAT_CHAT:
-				colorMessage = "@|yellow,intensity_bold " + colorMessage + ": |@"; //just bold username for chat
+				username = username + ": ";
+				break;
+			case CHAT_PLAYER_INTERACT_IN: // happens when player trades you
+				username = username + " wishes to trade with you.";
+				break;
+			/* username will not appear in these chat types, but just to cover it I'm leaving code commented out here
+			case CHAT_NONE:
+			case CHAT_PRIVATE_LOG_IN_OUT:
+			case CHAT_PLAYER_INTERRACT_OUT:
+			*/
+	
+			default:
+				System.out.println("Username specified for unhandled chat type, please report this: " + type);
+				username = username + ": ";
+		}
+
+		return username;
+	}
+
+	public static String colorizeUsername(String colorMessage, int type) {
+		switch (type) {
+			case CHAT_PRIVATE:
+				colorMessage = "@|cyan,intensity_bold "  + colorMessage + "|@"; //Username tells you:
+				break;
+			case CHAT_PRIVATE_OUTGOING:
+				colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@"; //You tell Username:
+				break;
+			case CHAT_QUEST:
+				colorMessage = "@|white,intensity_faint " + colorMessage + "|@"; //If username != null during CHAT_QUEST, then this is your player name, which is usually white
+				break;
+			case CHAT_CHAT:
+				colorMessage = "@|yellow,intensity_bold " + colorMessage + "|@"; //just bold username for chat
 				break;
 			case CHAT_PLAYER_INTERACT_IN: //happens when player trades you
-				colorMessage = "@|white " + colorMessage + " wishes to trade with you.|@";
+				colorMessage = "@|white " + colorMessage + "|@";
 				break;
 			/*// username will not appear in these chat types, but just to cover it I'm leaving code commented out here
 			case CHAT_NONE:
@@ -561,7 +593,7 @@ public class Client {
 
 			default:
 				System.out.println("Username specified for unhandled chat type, please report this: " + type);
-				colorMessage = "@|white,intensity_bold " + colorMessage + ": |@";
+				colorMessage = "@|white,intensity_bold " + colorMessage + "|@";
 		}
 		return colorMessage;
 	}
