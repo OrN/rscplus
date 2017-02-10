@@ -29,9 +29,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.fusesource.jansi.AnsiConsole;
@@ -468,7 +470,9 @@ public class Client {
 	// All messages added to chat are routed here
 	public static void messageHook(String username, String message, int type) {
 		if (username != null)
-			username = username.replace("\u00A0", " "); //Prevents non-breaking space in colored usernames appearing as á in console
+			username = username.replace("\u00A0", " "); //Prevents non-breaking space in colored usernames appearing as an accented 'a' in console
+		if (message != null)
+			message = message.replace("\u00A0", " ");   //Prevents non-breaking space in colored usernames appearing as an accented 'a' in console
 		if (type == CHAT_NONE) {
 			if (username == null && message != null) {
 				if(message.contains("The spell fails! You may try again in 20 seconds"))
