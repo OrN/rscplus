@@ -1,17 +1,22 @@
 /**
- * rscplus
+ *	rscplus
  *
- * This file is part of rscplus.
+ *	This file is part of rscplus.
  *
- * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
- * 3 of the License, or (at your option) any later version.
+ *	rscplus is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ *	rscplus is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: see <https://github.com/OrN/rscplus>
+ *	Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Client;
@@ -239,7 +244,7 @@ public class JClassPatcher {
 					
 					if (findNode.getOpcode() == Opcodes.ALOAD && next.getOpcode() == Opcodes.ALOAD) {
 						AbstractInsnNode invokeNode = next.getNext();
-						MethodInsnNode invoke = (MethodInsnNode) invokeNode;
+						MethodInsnNode invoke = (MethodInsnNode)invokeNode;
 						methodNode.instructions.remove(next);
 						methodNode.instructions.remove(invokeNode);
 						if (invoke.name.equals("addMouseListener"))
@@ -271,14 +276,14 @@ public class JClassPatcher {
 					AbstractInsnNode insnNode = insnNodeList.next();
 					
 					if (insnNode.getOpcode() == Opcodes.BIPUSH) {
-						IntInsnNode bipush = (IntInsnNode) insnNode;
+						IntInsnNode bipush = (IntInsnNode)insnNode;
 						
 						if (bipush.operand == -9) {
 							AbstractInsnNode findNode = insnNode;
 							while (findNode.getOpcode() != Opcodes.IF_ICMPEQ)
 								findNode = findNode.getNext();
 							
-							LabelNode label = ((JumpInsnNode) findNode).label;
+							LabelNode label = ((JumpInsnNode)findNode).label;
 							methodNode.instructions.insertBefore(insnNode, new FieldInsnNode(Opcodes.GETSTATIC, "Client/Settings", "COMBAT_MENU", "Z"));
 							methodNode.instructions.insertBefore(insnNode, new JumpInsnNode(Opcodes.IFGT, label));
 							break;
@@ -292,7 +297,7 @@ public class JClassPatcher {
 					
 					// Chat command patch
 					if (insnNode.getOpcode() == Opcodes.SIPUSH) {
-						IntInsnNode call = (IntInsnNode) insnNode;
+						IntInsnNode call = (IntInsnNode)insnNode;
 						if (call.operand == 627) {
 							AbstractInsnNode jmpNode = insnNode;
 							while (jmpNode.getOpcode() != Opcodes.IFEQ)
@@ -302,7 +307,7 @@ public class JClassPatcher {
 							while (insertNode.getOpcode() != Opcodes.INVOKEVIRTUAL)
 								insertNode = insertNode.getPrevious();
 							
-							JumpInsnNode jmp = (JumpInsnNode) jmpNode;
+							JumpInsnNode jmp = (JumpInsnNode)jmpNode;
 							methodNode.instructions.insert(insertNode, new VarInsnNode(Opcodes.ASTORE, 2));
 							methodNode.instructions.insert(insertNode,
 									new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Client", "processChatCommand", "(Ljava/lang/String;)Ljava/lang/String;"));
@@ -317,7 +322,7 @@ public class JClassPatcher {
 					
 					// Private chat command patch
 					if (insnNode.getOpcode() == Opcodes.GETFIELD) {
-						FieldInsnNode field = (FieldInsnNode) insnNode;
+						FieldInsnNode field = (FieldInsnNode)insnNode;
 						if (field.owner.equals("client") && field.name.equals("Ob") && insnNode.getPrevious().getPrevious().getOpcode() != Opcodes.INVOKEVIRTUAL) {
 							insnNode = insnNode.getPrevious().getPrevious();
 							methodNode.instructions.insert(insnNode, new FieldInsnNode(Opcodes.PUTFIELD, "client", "Ob", "Ljava/lang/String;"));
@@ -376,7 +381,7 @@ public class JClassPatcher {
 					
 					// Right click bounds fix
 					if (insnNode.getOpcode() == Opcodes.SIPUSH) {
-						IntInsnNode call = (IntInsnNode) insnNode;
+						IntInsnNode call = (IntInsnNode)insnNode;
 						AbstractInsnNode nextNode = insnNode.getNext();
 						
 						if (call.operand == 510) {
@@ -402,7 +407,7 @@ public class JClassPatcher {
 					
 					// Friends chat mouse fix
 					if (insnNode.getOpcode() == Opcodes.SIPUSH) {
-						IntInsnNode call = (IntInsnNode) insnNode;
+						IntInsnNode call = (IntInsnNode)insnNode;
 						if (call.operand == 489 || call.operand == 429) {
 							call.operand = 512 - call.operand;
 							methodNode.instructions.insertBefore(insnNode, new FieldInsnNode(Opcodes.GETSTATIC, "Game/Renderer", "width", "I"));
@@ -463,7 +468,7 @@ public class JClassPatcher {
 					
 					// Camera view distance crash fix
 					if (insnNode.getOpcode() == Opcodes.SIPUSH) {
-						IntInsnNode call = (IntInsnNode) insnNode;
+						IntInsnNode call = (IntInsnNode)insnNode;
 						if (call.operand == 15000) {
 							call.operand = 32767;
 						}
@@ -527,12 +532,12 @@ public class JClassPatcher {
 					
 					// Hide Roof option
 					if (insnNode.getOpcode() == Opcodes.GETFIELD) {
-						FieldInsnNode field = (FieldInsnNode) insnNode;
+						FieldInsnNode field = (FieldInsnNode)insnNode;
 						
 						if (field.owner.equals("client") && field.name.equals("yj")) {
 							AbstractInsnNode nextNode = insnNode.getNext();
 							if (nextNode.getOpcode() == Opcodes.IFNE) {
-								LabelNode label = ((JumpInsnNode) nextNode).label;
+								LabelNode label = ((JumpInsnNode)nextNode).label;
 								methodNode.instructions.insert(nextNode, new JumpInsnNode(Opcodes.IFGT, label));
 								methodNode.instructions.insert(nextNode, new FieldInsnNode(Opcodes.GETSTATIC, "Client/Settings", "HIDE_ROOFS", "Z"));
 							}
@@ -541,7 +546,7 @@ public class JClassPatcher {
 					
 					// Move wilderness skull
 					if (insnNode.getOpcode() == Opcodes.SIPUSH) {
-						IntInsnNode call = (IntInsnNode) insnNode;
+						IntInsnNode call = (IntInsnNode)insnNode;
 						if (call.operand == 465 || call.operand == 453) {
 							call.operand = 512 - call.operand;
 							methodNode.instructions.insertBefore(insnNode, new FieldInsnNode(Opcodes.GETSTATIC, "Game/Renderer", "width", "I"));
@@ -556,7 +561,7 @@ public class JClassPatcher {
 					
 					// Move the load screen text dialogue
 					if (insnNode.getOpcode() == Opcodes.SIPUSH) {
-						IntInsnNode call = (IntInsnNode) insnNode;
+						IntInsnNode call = (IntInsnNode)insnNode;
 						if (call.operand == 256) {
 							call.operand = 2;
 							methodNode.instructions.insertBefore(insnNode, new FieldInsnNode(Opcodes.GETSTATIC, "Game/Renderer", "width", "I"));
@@ -577,7 +582,7 @@ public class JClassPatcher {
 					
 					// Center logout dialogue
 					if (insnNode.getOpcode() == Opcodes.SIPUSH || insnNode.getOpcode() == Opcodes.BIPUSH) {
-						IntInsnNode call = (IntInsnNode) insnNode;
+						IntInsnNode call = (IntInsnNode)insnNode;
 						if (call.operand == 256) {
 							call.operand = 2;
 							methodNode.instructions.insertBefore(insnNode, new FieldInsnNode(Opcodes.GETSTATIC, "Game/Renderer", "width", "I"));
@@ -608,7 +613,7 @@ public class JClassPatcher {
 					
 					// Center welcome box
 					if (insnNode.getOpcode() == Opcodes.SIPUSH || insnNode.getOpcode() == Opcodes.BIPUSH) {
-						IntInsnNode call = (IntInsnNode) insnNode;
+						IntInsnNode call = (IntInsnNode)insnNode;
 						if (call.operand == 256) {
 							call.operand = 2;
 							methodNode.instructions.insertBefore(insnNode, new FieldInsnNode(Opcodes.GETSTATIC, "Game/Renderer", "width", "I"));
@@ -660,7 +665,7 @@ public class JClassPatcher {
 					
 					// Save settings from combat menu
 					if (insnNode.getOpcode() == Opcodes.PUTFIELD) {
-						FieldInsnNode field = (FieldInsnNode) insnNode;
+						FieldInsnNode field = (FieldInsnNode)insnNode;
 						
 						if (field.owner.equals("client") && field.name.equals("Fg")) {
 							methodNode.instructions.insert(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Client/Settings", "Save", "()V", false));
@@ -702,7 +707,7 @@ public class JClassPatcher {
 				
 				while (findNode.getOpcode() != Opcodes.INVOKESPECIAL) {
 					if (findNode.getOpcode() == Opcodes.GETFIELD)
-						imageNode = (FieldInsnNode) findNode;
+						imageNode = (FieldInsnNode)findNode;
 					
 					AbstractInsnNode prev = findNode.getPrevious();
 					methodNode.instructions.remove(findNode);
@@ -725,7 +730,7 @@ public class JClassPatcher {
 				}
 				start = start.getPrevious();
 				
-				LabelNode finishLabel = ((JumpInsnNode) start.getPrevious().getPrevious()).label;
+				LabelNode finishLabel = ((JumpInsnNode)start.getPrevious().getPrevious()).label;
 				LabelNode failLabel = new LabelNode();
 				
 				methodNode.instructions.insertBefore(start, new IntInsnNode(Opcodes.BIPUSH, 126));
@@ -787,7 +792,7 @@ public class JClassPatcher {
 							break;
 						
 						if (insnNode.getOpcode() == Opcodes.ALOAD && nextNode.getOpcode() == Opcodes.ICONST_0) {
-							VarInsnNode call = (VarInsnNode) insnNode;
+							VarInsnNode call = (VarInsnNode)insnNode;
 							System.out.println("Patching validation...");
 							
 							methodNode.instructions.insert(insnNode, new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/util/Random", "nextBytes", "([B)V"));
@@ -810,7 +815,7 @@ public class JClassPatcher {
 			
 			int opcode = insnNode.getOpcode();
 			if (opcode == Opcodes.GETFIELD || opcode == Opcodes.PUTFIELD) {
-				FieldInsnNode field = (FieldInsnNode) insnNode;
+				FieldInsnNode field = (FieldInsnNode)insnNode;
 				if (field.owner.equals(owner) && field.name.equals(var) && field.desc.equals(desc)) {
 					if (opcode == Opcodes.GETFIELD && canWrite) {
 						methodNode.instructions.insert(insnNode, new FieldInsnNode(Opcodes.GETSTATIC, newClass, newVar, newDesc));
@@ -831,7 +836,7 @@ public class JClassPatcher {
 			
 			int opcode = insnNode.getOpcode();
 			if (opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC) {
-				FieldInsnNode field = (FieldInsnNode) insnNode;
+				FieldInsnNode field = (FieldInsnNode)insnNode;
 				if (field.owner.equals(owner) && field.name.equals(var) && field.desc.equals(desc)) {
 					field.owner = newClass;
 					field.name = newVar;

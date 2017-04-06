@@ -1,17 +1,22 @@
 /**
- * rscplus
+ *	rscplus
  *
- * This file is part of rscplus.
+ *	This file is part of rscplus.
  *
- * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
- * 3 of the License, or (at your option) any later version.
+ *	rscplus is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ *	rscplus is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: see <https://github.com/OrN/rscplus>
+ *	Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Game;
@@ -102,7 +107,7 @@ public class Renderer {
 		
 		if (Renderer.instance != null && Reflection.setGameBounds != null) {
 			try {
-				Reflection.setGameBounds.invoke(Renderer.instance, 0, Renderer.width, Renderer.height, 0, (byte) 119);
+				Reflection.setGameBounds.invoke(Renderer.instance, 0, Renderer.width, Renderer.height, 0, (byte)119);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -115,14 +120,14 @@ public class Renderer {
 	public static void present(Graphics g, Image image) {
 		// Update timing
 		long new_time = System.currentTimeMillis();
-		delta_time = (float) (new_time - time) / 1000.0f;
+		delta_time = (float)(new_time - time) / 1000.0f;
 		time = new_time;
-		alpha_time = 0.25f + (((float) Math.sin(time / 100) + 1.0f) / 2.0f * 0.75f);
+		alpha_time = 0.25f + (((float)Math.sin(time / 100) + 1.0f) / 2.0f * 0.75f);
 		
 		// Run other parts update methods
 		Client.update();
 		
-		Graphics2D g2 = (Graphics2D) game_image.getGraphics();
+		Graphics2D g2 = (Graphics2D)game_image.getGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setFont(font_main);
 		
@@ -348,8 +353,8 @@ public class Renderer {
 			// Draw under combat style info
 			if (!Client.isInterfaceOpen()) {
 				if (time <= Client.magic_timer) {
-					float timer = (float) Math.ceil((Client.magic_timer - time) / 1000.0);
-					drawShadowText(g2, "Magic Timer: " + (int) timer, x, y, color_text, false);
+					float timer = (float)Math.ceil((Client.magic_timer - time) / 1000.0);
+					drawShadowText(g2, "Magic Timer: " + (int)timer, x, y, color_text, false);
 					y += 14;
 				}
 				
@@ -387,7 +392,7 @@ public class Renderer {
 				
 				// Draw Fatigue
 				y += 16;
-				drawShadowText(g2, "Fatigue: " + ((float) Client.fatigue * 100.0f / 750.0f), x, y, color_text, false);
+				drawShadowText(g2, "Fatigue: " + ((float)Client.fatigue * 100.0f / 750.0f), x, y, color_text, false);
 				y += 16;
 				
 				// Draw Mouse Info
@@ -588,7 +593,7 @@ public class Renderer {
 	private static Dimension getStringBounds(Graphics2D g, String str) {
 		FontRenderContext context = g.getFontRenderContext();
 		Rectangle2D bounds = g.getFont().getStringBounds(str, context);
-		return new Dimension((int) bounds.getWidth(), (int) bounds.getHeight());
+		return new Dimension((int)bounds.getWidth(), (int)bounds.getHeight());
 	}
 	
 	private static Dimension new_size = new Dimension(0, 0);

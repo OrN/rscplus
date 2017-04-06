@@ -1,17 +1,22 @@
 /**
- * rscplus
+ *	rscplus
  *
- * This file is part of rscplus.
+ *	This file is part of rscplus.
  *
- * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
- * 3 of the License, or (at your option) any later version.
+ *	rscplus is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ *	rscplus is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: see <https://github.com/OrN/rscplus>
+ *	Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Game;
@@ -157,7 +162,7 @@ public class Client {
 	public static void getPlayerName() {
 		
 		try {
-			player_name = (String) Reflection.characterName.get(player_object);
+			player_name = (String)Reflection.characterName.get(player_object);
 		} catch (IllegalArgumentException | IllegalAccessException e1) {
 			e1.printStackTrace();
 		}
@@ -274,29 +279,43 @@ public class Client {
 			} else
 			
 			if (command.equals("cmb")) { // this command breaks character limits and might be bannable... would not recommend sending this command over PM to rs2/rs3
-				return "@whi@My Combat is Level " + "@gre@"
-						+ ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH] + base_level[SKILL_DEFENSE] + base_level[SKILL_HP]) * 0.25 // basic melee stats
-								+ ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH]) < base_level[SKILL_RANGED] * 1.5 ? base_level[SKILL_RANGED] * 0.25 : 0) // add ranged
-																																									// levels if
-																																									// ranger
-								+ (base_level[SKILL_PRAYER] + base_level[SKILL_MAGIC]) * 0.125 // prayer and mage
-						) + " @lre@A:@whi@ " + base_level[SKILL_ATTACK] + " @lre@S:@whi@ " + base_level[SKILL_STRENGTH] + " @lre@D:@whi@ " + base_level[SKILL_DEFENSE] + " @lre@H:@whi@ " + base_level[SKILL_HP] + " @lre@R:@whi@ " + base_level[SKILL_RANGED] + " @lre@P:@whi@ " + base_level[SKILL_PRAYER] + " @lre@M:@whi@ " + base_level[SKILL_MAGIC];
+				return "@whi@My Combat is Level "
+						+ "@gre@" +
+						// basic melee stats
+						((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH] + base_level[SKILL_DEFENSE] + base_level[SKILL_HP]) * 0.25
+								// add ranged levels if ranger
+								+ ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH]) < base_level[SKILL_RANGED] * 1.5 ? base_level[SKILL_RANGED] * 0.25 : 0)
+								// prayer and mage
+								+ (base_level[SKILL_PRAYER] + base_level[SKILL_MAGIC]) * 0.125)
+						+ " @lre@A:@whi@ " + base_level[SKILL_ATTACK]
+						+ " @lre@S:@whi@ " + base_level[SKILL_STRENGTH]
+						+ " @lre@D:@whi@ " + base_level[SKILL_DEFENSE]
+						+ " @lre@H:@whi@ " + base_level[SKILL_HP]
+						+ " @lre@R:@whi@ " + base_level[SKILL_RANGED]
+						+ " @lre@P:@whi@ " + base_level[SKILL_PRAYER]
+						+ " @lre@M:@whi@ " + base_level[SKILL_MAGIC];
 			}
-			
 			else if (command.equals("cmbnocolor")) { // this command stays within character limits and is safe.
-				return "My Combat is Level " + ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH] + base_level[SKILL_DEFENSE] + base_level[SKILL_HP]) * 0.25 // basic melee
-																																									// stats
-						+ ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH]) < base_level[SKILL_RANGED] * 1.5 ? base_level[SKILL_RANGED] * 0.25 : 0) // add ranged levels if
-																																							// ranger
-						+ (base_level[SKILL_PRAYER] + base_level[SKILL_MAGIC]) * 0.125 // prayer and mage
-				) + " A:" + base_level[SKILL_ATTACK] + " S:" + base_level[SKILL_STRENGTH] + " D:" + base_level[SKILL_DEFENSE] + " H:" + base_level[SKILL_HP] + " R:"
-						+ base_level[SKILL_RANGED] + " P:" + base_level[SKILL_PRAYER] + " M:" + base_level[SKILL_MAGIC];
+				return "My Combat is Level "
+						// basic melee stats
+						+ ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH] + base_level[SKILL_DEFENSE] + base_level[SKILL_HP]) * 0.25
+								// add ranged levels if ranger
+								+ ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH]) < base_level[SKILL_RANGED] * 1.5 ? base_level[SKILL_RANGED] * 0.25 : 0)
+								// prayer and mage
+								+ (base_level[SKILL_PRAYER] + base_level[SKILL_MAGIC]) * 0.125)
+						+ " A:" + base_level[SKILL_ATTACK]
+						+ " S:" + base_level[SKILL_STRENGTH]
+						+ " D:" + base_level[SKILL_DEFENSE]
+						+ " H:" + base_level[SKILL_HP]
+						+ " R:" + base_level[SKILL_RANGED]
+						+ " P:" + base_level[SKILL_PRAYER]
+						+ " M:" + base_level[SKILL_MAGIC];
 			} else if (command.equals("bank")) {
 				return "Hey, everyone, I just tried to do something very silly!";
 			} else if (command.equals("update")) {
 				updateRSCP(true);
 			} else if (command.startsWith("xmas ")) {
-				int randomStart = (int) System.currentTimeMillis();
+				int randomStart = (int)System.currentTimeMillis();
 				if (randomStart < 0) {
 					randomStart *= -1; // casting to long to int sometimes results in a negative number
 				}
@@ -312,7 +331,7 @@ public class Client {
 				}
 				return subline;
 			} else if (command.startsWith("rainbow ")) { // @red@A@ora@B@yel@C etc
-				int randomStart = (int) System.currentTimeMillis();
+				int randomStart = (int)System.currentTimeMillis();
 				if (randomStart < 0) {
 					randomStart *= -1; // casting to long to int sometimes results in a negative number
 				}
@@ -367,7 +386,7 @@ public class Client {
 			return;
 		
 		try {
-			Reflection.setLoginText.invoke(Client.instance, (byte) -49, line2, line1);
+			Reflection.setLoginText.invoke(Client.instance, (byte)-49, line2, line1);
 		} catch (Exception e) {
 		}
 	}
@@ -385,7 +404,6 @@ public class Client {
 	public static Double fetchLatestVersionNumber() { // returns current version number
 		try {
 			Double currentVersion = 0.0;
-			// URL updateURL = new URL("https://raw.githubusercontent.com/Hubcapp/rscplus/updater/src/Client/Settings.java");
 			URL updateURL = new URL("https://raw.githubusercontent.com/OrN/rscplus/master/src/Client/Settings.java");
 			
 			// Open connection
@@ -693,7 +711,7 @@ public class Client {
 	}
 	
 	public static float getXP(int i) {
-		return (float) xp[i] / 4.0f;
+		return (float)xp[i] / 4.0f;
 	}
 	
 	public static int getFatigue() {
@@ -701,7 +719,7 @@ public class Client {
 	}
 	
 	public static float getActualFatigue() {
-		return (float) (fatigue * 100.0 / 750);
+		return (float)(fatigue * 100.0 / 750);
 	}
 	
 	public static Double trimNumber(double num, int figures) {

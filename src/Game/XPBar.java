@@ -1,17 +1,22 @@
 /**
- * rscplus
+ *	rscplus
  *
- * This file is part of rscplus.
+ *	This file is part of rscplus.
  *
- * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
- * 3 of the License, or (at your option) any later version.
+ *	rscplus is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ *	rscplus is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: see <https://github.com/OrN/rscplus>
+ *	Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Game;
@@ -42,15 +47,15 @@ public class XPBar {
 		
 		float alpha = 1.0f;
 		if (delta >= timer_length - 250 && last_timer_finished)
-			alpha = (float) (timer_length - delta) / 250.0f; // fade in over 1/4th second
+			alpha = (float)(timer_length - delta) / 250.0f; // fade in over 1/4th second
 		else if (delta < timer_fadeout) // less than timer_fadeout milliseconds left to display the xpbar
-			alpha = (float) delta / timer_fadeout;
+			alpha = (float)delta / timer_fadeout;
 		
-		int skill_current_xp = (int) Client.getXPforLevel(Client.getBaseLevel(current_skill));
-		int skill_next_xp = (int) Client.getXPforLevel(Client.getBaseLevel(current_skill) + 1);
-		int xp_until_level = (int) Client.getXPUntilLevel(current_skill);
+		int skill_current_xp = (int)Client.getXPforLevel(Client.getBaseLevel(current_skill));
+		int skill_next_xp = (int)Client.getXPforLevel(Client.getBaseLevel(current_skill) + 1);
+		int xp_until_level = (int)Client.getXPUntilLevel(current_skill);
 		
-		int xp = (int) Client.getXP(current_skill) - skill_current_xp;
+		int xp = (int)Client.getXP(current_skill) - skill_current_xp;
 		int xp_needed = skill_next_xp - skill_current_xp;
 		
 		// Draw bar

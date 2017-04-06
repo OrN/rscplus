@@ -1,17 +1,22 @@
 /**
- * rscplus
+ *	rscplus
  *
- * This file is part of rscplus.
+ *	This file is part of rscplus.
  *
- * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
- * 3 of the License, or (at your option) any later version.
+ *	rscplus is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ *	rscplus is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: see <https://github.com/OrN/rscplus>
+ *	Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Client;
@@ -171,7 +176,7 @@ public class ConfigWindow {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
 					UIManager.setLookAndFeel(info.getClassName());
-					NimbusLookAndFeel laf = (NimbusLookAndFeel) UIManager.getLookAndFeel();
+					NimbusLookAndFeel laf = (NimbusLookAndFeel)UIManager.getLookAndFeel();
 					laf.getDefaults().put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, 11));
 					break;
 				}
@@ -309,8 +314,12 @@ public class ConfigWindow {
 		addButton("Restore Defaults", navigationPanel, Component.RIGHT_ALIGNMENT).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int choice = JOptionPane.showConfirmDialog(Launcher.getConfigWindow().frame, "Are you sure you want to restore this tab's settings to their defaults?", "Confirm",
-						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				int choice = JOptionPane.showConfirmDialog(
+						Launcher.getConfigWindow().frame,
+						"Are you sure you want to restore this tab's settings to their defaults?",
+						"Confirm",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
 				if (choice == JOptionPane.CLOSED_OPTION || choice == JOptionPane.NO_OPTION) {
 					return;
 				}
@@ -359,20 +368,20 @@ public class ConfigWindow {
 		generalPanelClientSizePanel.add(generalPanelClientSizeXSpinner);
 		generalPanelClientSizeXSpinner.setMaximumSize(new Dimension(58, 22));
 		generalPanelClientSizeXSpinner.setMinimumSize(new Dimension(58, 22));
-		generalPanelClientSizeXSpinner.setAlignmentY((float) 0.75);
+		generalPanelClientSizeXSpinner.setAlignmentY((float)0.75);
 		generalPanelClientSizeXSpinner.setToolTipText("Default client width (512 minimum)");
 		generalPanelClientSizeXSpinner.putClientProperty("JComponent.sizeVariant", "mini");
 		
 		JLabel generalPanelClientSizeByLabel = new JLabel("x");
 		generalPanelClientSizePanel.add(generalPanelClientSizeByLabel);
-		generalPanelClientSizeByLabel.setAlignmentY((float) 0.9);
+		generalPanelClientSizeByLabel.setAlignmentY((float)0.9);
 		generalPanelClientSizeByLabel.setBorder(new EmptyBorder(0, 2, 0, 2));
 		
 		generalPanelClientSizeYSpinner = new JSpinner();
 		generalPanelClientSizePanel.add(generalPanelClientSizeYSpinner);
 		generalPanelClientSizeYSpinner.setMaximumSize(new Dimension(58, 22));
 		generalPanelClientSizeYSpinner.setMinimumSize(new Dimension(58, 22));
-		generalPanelClientSizeYSpinner.setAlignmentY((float) 0.75);
+		generalPanelClientSizeYSpinner.setAlignmentY((float)0.75);
 		generalPanelClientSizeYSpinner.setToolTipText("Default client height (346 minimum)");
 		generalPanelClientSizeYSpinner.putClientProperty("JComponent.sizeVariant", "mini");
 		
@@ -410,13 +419,13 @@ public class ConfigWindow {
 		
 		JLabel generalPanelFatigueFigsLabel = new JLabel("Fatigue figures:");
 		generalPanelFatigueFigsPanel.add(generalPanelFatigueFigsLabel);
-		generalPanelFatigueFigsLabel.setAlignmentY((float) 0.9);
+		generalPanelFatigueFigsLabel.setAlignmentY((float)0.9);
 		generalPanelFatigueFigsLabel.setToolTipText("Number of significant figures past the decimal point to display on fatigue drops");
 		
 		generalPanelFatigueFigSpinner = new JSpinner();
 		generalPanelFatigueFigsPanel.add(generalPanelFatigueFigSpinner);
 		generalPanelFatigueFigSpinner.setMaximumSize(new Dimension(40, 22));
-		generalPanelFatigueFigSpinner.setAlignmentY((float) 0.7);
+		generalPanelFatigueFigSpinner.setAlignmentY((float)0.7);
 		generalPanelFatigueFigsPanel.setBorder(new EmptyBorder(0, 0, 7, 0));
 		generalPanelFatigueFigSpinner.putClientProperty("JComponent.sizeVariant", "mini");
 		
@@ -499,7 +508,7 @@ public class ConfigWindow {
 		JLabel generalPanelFoVLabel = new JLabel("Field of view (Default 9)");
 		generalPanelFoVLabel.setToolTipText("Sets the field of view (not recommended past 10)");
 		generalPanel.add(generalPanelFoVLabel);
-		generalPanelFoVLabel.setAlignmentY((float) 0.9);
+		generalPanelFoVLabel.setAlignmentY((float)0.9);
 		
 		generalPanelFoVSlider = new JSlider();
 		
@@ -516,7 +525,7 @@ public class ConfigWindow {
 		JLabel generalPanelViewDistanceLabel = new JLabel("View distance");
 		generalPanelViewDistanceLabel.setToolTipText("Sets the max render distance of structures and landscape");
 		generalPanel.add(generalPanelViewDistanceLabel);
-		generalPanelViewDistanceLabel.setAlignmentY((float) 0.9);
+		generalPanelViewDistanceLabel.setAlignmentY((float)0.9);
 		
 		generalPanelViewDistanceSlider = new JSlider();
 		
@@ -638,13 +647,13 @@ public class ConfigWindow {
 		notificationPanelLowHPNotifsSpinner = new JSpinner();
 		notificationPanelLowHPNotifsSpinner.setMaximumSize(new Dimension(45, 22));
 		notificationPanelLowHPNotifsSpinner.setMinimumSize(new Dimension(45, 22));
-		notificationPanelLowHPNotifsSpinner.setAlignmentY((float) 0.75);
+		notificationPanelLowHPNotifsSpinner.setAlignmentY((float)0.75);
 		notificationPanelLowHPNotifsPanel.add(notificationPanelLowHPNotifsSpinner);
 		notificationPanelLowHPNotifsSpinner.putClientProperty("JComponent.sizeVariant", "mini");
 		
 		notificationPanelLowHPNotifsEndLabel = new JLabel("% HP");
 		notificationPanelLowHPNotifsPanel.add(notificationPanelLowHPNotifsEndLabel);
-		notificationPanelLowHPNotifsEndLabel.setAlignmentY((float) 0.9);
+		notificationPanelLowHPNotifsEndLabel.setAlignmentY((float)0.9);
 		notificationPanelLowHPNotifsEndLabel.setBorder(new EmptyBorder(0, 2, 0, 0));
 		
 		// Sanitize JSpinner values
@@ -666,13 +675,13 @@ public class ConfigWindow {
 		notificationPanelFatigueNotifsSpinner = new JSpinner();
 		notificationPanelFatigueNotifsSpinner.setMaximumSize(new Dimension(45, 22));
 		notificationPanelFatigueNotifsSpinner.setMinimumSize(new Dimension(45, 22));
-		notificationPanelFatigueNotifsSpinner.setAlignmentY((float) 0.75);
+		notificationPanelFatigueNotifsSpinner.setAlignmentY((float)0.75);
 		notificationPanelFatigueNotifsPanel.add(notificationPanelFatigueNotifsSpinner);
 		notificationPanelFatigueNotifsSpinner.putClientProperty("JComponent.sizeVariant", "mini");
 		
 		notificationPanelFatigueNotifsEndLabel = new JLabel("% fatigue");
 		notificationPanelFatigueNotifsPanel.add(notificationPanelFatigueNotifsEndLabel);
-		notificationPanelFatigueNotifsEndLabel.setAlignmentY((float) 0.9);
+		notificationPanelFatigueNotifsEndLabel.setAlignmentY((float)0.9);
 		notificationPanelFatigueNotifsEndLabel.setBorder(new EmptyBorder(0, 2, 0, 0));
 		
 		// Sanitize JSpinner values
@@ -701,13 +710,13 @@ public class ConfigWindow {
 		JLabel streamingPanelTwitchChannelNameLabel = new JLabel("Twitch channel name: ");
 		streamingPanelTwitchChannelNameLabel.setToolTipText("The Twitch channel you want to chat in (leave empty to stop trying to connect to Twitch)");
 		streamingPanelTwitchChannelNamePanel.add(streamingPanelTwitchChannelNameLabel);
-		streamingPanelTwitchChannelNameLabel.setAlignmentY((float) 0.9);
+		streamingPanelTwitchChannelNameLabel.setAlignmentY((float)0.9);
 		
 		streamingPanelTwitchChannelNameTextField = new JTextField();
 		streamingPanelTwitchChannelNamePanel.add(streamingPanelTwitchChannelNameTextField);
 		streamingPanelTwitchChannelNameTextField.setMinimumSize(new Dimension(100, 28));
 		streamingPanelTwitchChannelNameTextField.setMaximumSize(new Dimension(Short.MAX_VALUE, 28));
-		streamingPanelTwitchChannelNameTextField.setAlignmentY((float) 0.75);
+		streamingPanelTwitchChannelNameTextField.setAlignmentY((float)0.75);
 		
 		JPanel streamingPanelTwitchUserPanel = new JPanel();
 		streamingPanel.add(streamingPanelTwitchUserPanel);
@@ -719,13 +728,13 @@ public class ConfigWindow {
 		JLabel streamingPanelTwitchUserLabel = new JLabel("Twitch username: ");
 		streamingPanelTwitchUserLabel.setToolTipText("The Twitch username you log into Twitch with");
 		streamingPanelTwitchUserPanel.add(streamingPanelTwitchUserLabel);
-		streamingPanelTwitchUserLabel.setAlignmentY((float) 0.9);
+		streamingPanelTwitchUserLabel.setAlignmentY((float)0.9);
 		
 		streamingPanelTwitchUserTextField = new JTextField();
 		streamingPanelTwitchUserPanel.add(streamingPanelTwitchUserTextField);
 		streamingPanelTwitchUserTextField.setMinimumSize(new Dimension(100, 28));
 		streamingPanelTwitchUserTextField.setMaximumSize(new Dimension(Short.MAX_VALUE, 28));
-		streamingPanelTwitchUserTextField.setAlignmentY((float) 0.75);
+		streamingPanelTwitchUserTextField.setAlignmentY((float)0.75);
 		
 		JPanel streamingPanelTwitchOAuthPanel = new JPanel();
 		streamingPanel.add(streamingPanelTwitchOAuthPanel);
@@ -737,13 +746,13 @@ public class ConfigWindow {
 		JLabel streamingPanelTwitchOAuthLabel = new JLabel("Twitch OAuth token: ");
 		streamingPanelTwitchOAuthLabel.setToolTipText("Your Twitch OAuth token (not your Stream Key)");
 		streamingPanelTwitchOAuthPanel.add(streamingPanelTwitchOAuthLabel);
-		streamingPanelTwitchOAuthLabel.setAlignmentY((float) 0.9);
+		streamingPanelTwitchOAuthLabel.setAlignmentY((float)0.9);
 		
 		streamingPanelTwitchOAuthTextField = new JPasswordField();
 		streamingPanelTwitchOAuthPanel.add(streamingPanelTwitchOAuthTextField);
 		streamingPanelTwitchOAuthTextField.setMinimumSize(new Dimension(100, 28));
 		streamingPanelTwitchOAuthTextField.setMaximumSize(new Dimension(Short.MAX_VALUE, 28));
-		streamingPanelTwitchOAuthTextField.setAlignmentY((float) 0.75);
+		streamingPanelTwitchOAuthTextField.setAlignmentY((float)0.75);
 		
 		streamingPanelIPAtLoginCheckbox = addCheckbox("Enable IP/DNS details at login welcome screen", streamingPanel);
 		streamingPanelIPAtLoginCheckbox.setToolTipText("Shows the last IP/DNS you last logged in from when you log in (Disable this if you're streaming)");
@@ -1116,13 +1125,13 @@ public class ConfigWindow {
 	public void saveSettings() {
 		// General options
 		Settings.CUSTOM_CLIENT_SIZE = generalPanelClientSizeCheckbox.isSelected();
-		Settings.CUSTOM_CLIENT_SIZE_X = ((SpinnerNumberModel) (generalPanelClientSizeXSpinner.getModel())).getNumber().intValue();
-		Settings.CUSTOM_CLIENT_SIZE_Y = ((SpinnerNumberModel) (generalPanelClientSizeYSpinner.getModel())).getNumber().intValue();
+		Settings.CUSTOM_CLIENT_SIZE_X = ((SpinnerNumberModel)(generalPanelClientSizeXSpinner.getModel())).getNumber().intValue();
+		Settings.CUSTOM_CLIENT_SIZE_Y = ((SpinnerNumberModel)(generalPanelClientSizeYSpinner.getModel())).getNumber().intValue();
 		Settings.LOAD_CHAT_HISTORY = generalPanelChatHistoryCheckbox.isSelected();
 		Settings.COMBAT_MENU = generalPanelCombatXPMenuCheckbox.isSelected();
 		Settings.SHOW_XPDROPS = generalPanelXPDropsCheckbox.isSelected();
 		Settings.SHOW_FATIGUEDROPS = generalPanelFatigueDropsCheckbox.isSelected();
-		Settings.FATIGUE_FIGURES = ((SpinnerNumberModel) (generalPanelFatigueFigSpinner.getModel())).getNumber().intValue();
+		Settings.FATIGUE_FIGURES = ((SpinnerNumberModel)(generalPanelFatigueFigSpinner.getModel())).getNumber().intValue();
 		Settings.FATIGUE_ALERT = generalPanelFatigueAlertCheckbox.isSelected();
 		Settings.INVENTORY_FULL_ALERT = generalPanelInventoryFullAlertCheckbox.isSelected();
 		Settings.NAME_PATCH_TYPE = generalPanelNamePatchModeSlider.getValue();
@@ -1150,9 +1159,9 @@ public class ConfigWindow {
 		Settings.DUEL_NOTIFICATIONS = notificationPanelDuelNotifsCheckbox.isSelected();
 		Settings.LOGOUT_NOTIFICATIONS = notificationPanelLogoutNotifsCheckbox.isSelected();
 		Settings.LOW_HP_NOTIFICATIONS = notificationPanelLowHPNotifsCheckbox.isSelected();
-		Settings.LOW_HP_NOTIF_VALUE = ((SpinnerNumberModel) (notificationPanelLowHPNotifsSpinner.getModel())).getNumber().intValue();
+		Settings.LOW_HP_NOTIF_VALUE = ((SpinnerNumberModel)(notificationPanelLowHPNotifsSpinner.getModel())).getNumber().intValue();
 		Settings.FATIGUE_NOTIFICATIONS = notificationPanelFatigueNotifsCheckbox.isSelected();
-		Settings.FATIGUE_NOTIF_VALUE = ((SpinnerNumberModel) (notificationPanelFatigueNotifsSpinner.getModel())).getNumber().intValue();
+		Settings.FATIGUE_NOTIF_VALUE = ((SpinnerNumberModel)(notificationPanelFatigueNotifsSpinner.getModel())).getNumber().intValue();
 		Settings.NOTIFICATION_SOUNDS = notificationPanelNotifSoundsCheckbox.isSelected();
 		Settings.USE_SYSTEM_NOTIFICATIONS = notificationPanelUseSystemNotifsCheckbox.isSelected();
 		Settings.TRAY_NOTIFS = notificationPanelTrayPopupCheckbox.isSelected();
@@ -1206,7 +1215,7 @@ public class ConfigWindow {
 class ClickListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		JButton button = (JButton) e.getSource();
+		JButton button = (JButton)e.getSource();
 		button.setText("...");
 		button.setFocusable(true);
 		button.requestFocusInWindow();
@@ -1220,7 +1229,7 @@ class ButtonFocusListener implements FocusListener {
 	
 	@Override
 	public void focusLost(FocusEvent arg0) {
-		JButton button = (JButton) arg0.getSource();
+		JButton button = (JButton)arg0.getSource();
 		
 		for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
 			if (button == kbs.button) {
@@ -1261,7 +1270,7 @@ class RebindListener implements KeyListener {
 		}
 		
 		int key = arg0.getKeyCode();
-		JButton jbtn = (JButton) arg0.getSource();
+		JButton jbtn = (JButton)arg0.getSource();
 		
 		if (key != -1)
 			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {

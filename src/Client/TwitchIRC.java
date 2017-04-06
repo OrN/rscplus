@@ -1,17 +1,22 @@
 /**
- * rscplus
+ *	rscplus
  *
- * This file is part of rscplus.
+ *	This file is part of rscplus.
  *
- * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
- * 3 of the License, or (at your option) any later version.
+ *	rscplus is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ *	rscplus is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: see <https://github.com/OrN/rscplus>
+ *	Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Client;
@@ -126,7 +131,7 @@ public class TwitchIRC implements Runnable {
 					if (message.toLowerCase().contains(Settings.TWITCH_USERNAME.toLowerCase()))
 						msgColor = "@gre@";
 					
-					if (message.startsWith(Character.toString((char) 1)) && message.endsWith(Character.toString((char) 1))) {
+					if (message.startsWith(Character.toString((char)1)) && message.endsWith(Character.toString((char)1))) {
 						message = message.substring(7, message.length() - 1);
 						Client.displayMessage("@red@[" + Settings.TWITCH_CHANNEL + "] " + username + " @lre@" + message, Client.CHAT_CHAT);
 					} else {
@@ -190,7 +195,7 @@ public class TwitchIRC implements Runnable {
 	
 	public void sendEmote(String message, boolean show) {
 		try {
-			m_writer.write("PRIVMSG #" + Settings.TWITCH_CHANNEL.toLowerCase() + " :" + Character.toString((char) 1) + "ACTION " + message + Character.toString((char) 1) + "\r\n");
+			m_writer.write("PRIVMSG #" + Settings.TWITCH_CHANNEL.toLowerCase() + " :" + Character.toString((char)1) + "ACTION " + message + Character.toString((char)1) + "\r\n");
 			m_writer.flush();
 			if (show) {
 				String username = Settings.TWITCH_USERNAME.toLowerCase();
