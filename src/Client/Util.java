@@ -1,22 +1,17 @@
 /**
- *	rscplus
+ * rscplus
  *
- *	This file is part of rscplus.
+ * This file is part of rscplus.
  *
- *	rscplus is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, either version 3 of the License, or
- *	(at your option) any later version.
+ * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
  *
- *	rscplus is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
  *
- *	Authors: see <https://github.com/OrN/rscplus>
+ * Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Client;
@@ -29,123 +24,101 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class Util
-{	
-	public static String MakeWorldURL(int world)
-	{
+public class Util {
+	public static String MakeWorldURL(int world) {
 		return "http://classic" + world + ".runescape.com/jav_config.ws";
 	}
-
-	public static void MakeDirectory(String name)
-	{
+	
+	public static void MakeDirectory(String name) {
 		File dir = new File(name);
-		if(dir.isFile())
+		if (dir.isFile())
 			dir.delete();
-		if(!dir.exists())
+		if (!dir.exists())
 			dir.mkdir();
 	}
-
-	public static String byteHexString(byte[] data)
-	{
+	
+	public static String byteHexString(byte[] data) {
 		String ret = "";
-		for(int i = 0; i < data.length; i++)
+		for (int i = 0; i < data.length; i++)
 			ret += String.format("%02x", data[i]);
 		return ret;
 	}
-
-	public static byte[] hexStringByte(String data)
-	{
-		byte [] bytes = new byte[(data.length() / 2)];
+	
+	public static byte[] hexStringByte(String data) {
+		byte[] bytes = new byte[(data.length() / 2)];
 		int j = 0;
-		for ( int i=0; i<bytes.length; i++ ) {
+		for (int i = 0; i < bytes.length; i++) {
 			j = i * 2;
-			String hex_pair = data.substring(j,j+2);
+			String hex_pair = data.substring(j, j + 2);
 			byte b = (byte) (Integer.parseInt(hex_pair, 16) & 0xFF);
-			bytes [i] = b;
+			bytes[i] = b;
 		}
 		return bytes;
 	}
-
-	public static int[] getPop()
-	{
-		if(worldPopArray == null)
+	
+	public static int[] getPop() {
+		if (worldPopArray == null)
 			worldPopArray = new int[6];
-
-		if (!(System.currentTimeMillis() >= lastPopCheck + 60000))
+		
+		if (System.currentTimeMillis() < lastPopCheck + 60000)
 			return worldPopArray;
-
+		
 		lastPopCheck = System.currentTimeMillis();
-
+		
 		URL url;
 		URLConnection con;
 		InputStream is = null;
 		BufferedReader br;
-    
-		try
-		{
+		
+		try {
 			url = new URL("http://www.runescape.com/classicapplet/playclassic.ws");
 			con = url.openConnection();
 			is = con.getInputStream();
 			br = new BufferedReader(new InputStreamReader(is));
-		}
-		catch(IOException ioe)
-		{
+		} catch (IOException ioe) {
 			Logger.Error("Network connection issues");
 			ioe.printStackTrace();
-			try
-			{
-				if(is != null)
+			try {
+				if (is != null)
 					is.close();
+			} catch (IOException e) {
 			}
-			catch(IOException e) {}
 			return worldPopArray;
 		}
-
+		
 		String line = null;
-
-		try
-		{
-			while ((line = br.readLine()) != null)
-			{
-				if(line.contains("<span class='classic-worlds__name'>Classic "))
-				{
+		
+		try {
+			while ((line = br.readLine()) != null) {
+				if (line.contains("<span class='classic-worlds__name'>Classic ")) {
 					String[] worldNumLine = line.split(" ");
 					int worldNum = Integer.parseInt(worldNumLine[2].split("<")[0]);
-
 					br.readLine();
-
 					String[] worldPopLine = br.readLine().split(" ");
 					int worldPop = Integer.parseInt(worldPopLine[0].trim());
 					worldPopArray[worldNum] = worldPop;
 				}
 			}
-		}
-		catch(IOException ioe)
-		{
+		} catch (IOException ioe) {
 			Logger.Error("Error parsing");
 			ioe.printStackTrace();
 			return null;
-		}
-		catch(NumberFormatException nfe)
-		{
+		} catch (NumberFormatException nfe) {
 			Logger.Error("Error parsing a number");
 			nfe.printStackTrace();
 			return null;
 		}
-
-		try
-		{
+		
+		try {
 			br.close();
 			is.close();
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
 		return worldPopArray;
 	}
-
+	
 	static int[] worldPopArray;
 	static long lastPopCheck = 0;
 }

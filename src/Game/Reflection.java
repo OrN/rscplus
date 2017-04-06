@@ -1,37 +1,32 @@
 /**
- *	rscplus
+ * rscplus
  *
- *	This file is part of rscplus.
+ * This file is part of rscplus.
  *
- *	rscplus is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, either version 3 of the License, or
- *	(at your option) any later version.
+ * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
  *
- *	rscplus is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
  *
- *	Authors: see <https://github.com/OrN/rscplus>
+ * Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Game;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import Client.JClassLoader;
 import Client.Launcher;
 import Client.Logger;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 public class Reflection {
 	public static void Load() {
 		try {
 			JClassLoader classLoader = Launcher.getInstance().getClassLoader();
-
+			
 			// Client
 			Class<?> c = classLoader.loadClass("client");
 			Method[] methods = c.getDeclaredMethods();
@@ -47,7 +42,7 @@ public class Reflection {
 					Logger.Info("Found logout");
 				}
 			}
-
+			
 			// Region X and Region Y
 			c.getDeclaredField("Qg").setAccessible(true);
 			c.getDeclaredField("zg").setAccessible(true);
@@ -55,7 +50,7 @@ public class Reflection {
 			maxInventory = c.getDeclaredField("cl");
 			if (maxInventory != null)
 				maxInventory.setAccessible(true);
-
+			
 			// Camera
 			c = classLoader.loadClass("lb");
 			methods = c.getDeclaredMethods();
@@ -65,7 +60,7 @@ public class Reflection {
 					Logger.Info("Found setCameraSize");
 				}
 			}
-
+			
 			// Renderer
 			c = classLoader.loadClass("ua");
 			methods = c.getDeclaredMethods();
@@ -75,7 +70,7 @@ public class Reflection {
 					Logger.Info("Found setGameBounds");
 				}
 			}
-
+			
 			// Character
 			c = classLoader.loadClass("ta");
 			characterName = c.getDeclaredField("C");
@@ -87,7 +82,7 @@ public class Reflection {
 				characterWaypointX.setAccessible(true);
 			if (characterWaypointY != null)
 				characterWaypointY.setAccessible(true);
-
+			
 			// Menu
 			c = classLoader.loadClass("qa");
 			menuX = c.getDeclaredField("kb");
@@ -98,7 +93,7 @@ public class Reflection {
 			menuHeight = c.getDeclaredField("O");
 			// this menu array I'm not sure whats for
 			menuUknown = c.getDeclaredField("sb");
-
+			
 			// Set all accessible
 			if (menuX != null)
 				menuX.setAccessible(true);
@@ -126,26 +121,26 @@ public class Reflection {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public static Field characterName = null;
 	public static Field characterWaypointX = null;
 	public static Field characterWaypointY = null;
-
+	
 	public static Field maxInventory = null;
-
+	
 	public static Field menuX = null;
 	public static Field menuY = null;
 	public static Field menuScroll = null;
 	public static Field menuWidth = null;
 	public static Field menuHeight = null;
 	public static Field menuUknown = null;
-
+	
 	public static Method displayMessage = null;
 	public static Method setCameraSize = null;
 	public static Method setGameBounds = null;
 	public static Method setLoginText = null;
 	public static Method logout = null;
-
+	
 	// Method descriptions
 	private static final String DISPLAYMESSAGE = "private final void client.a(boolean,java.lang.String,int,java.lang.String,int,int,java.lang.String,java.lang.String)";
 	private static final String SETCAMERASIZE = "final void lb.a(int,boolean,int,int,int,int,int)";

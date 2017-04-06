@@ -1,22 +1,17 @@
 /**
- *	rscplus
+ * rscplus
  *
- *	This file is part of rscplus.
+ * This file is part of rscplus.
  *
- *	rscplus is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, either version 3 of the License, or
- *	(at your option) any later version.
+ * rscplus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
  *
- *	rscplus is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * rscplus is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with rscplus.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with rscplus. If not, see <http://www.gnu.org/licenses/>.
  *
- *	Authors: see <https://github.com/OrN/rscplus>
+ * Authors: see <https://github.com/OrN/rscplus>
  */
 
 package Client;
@@ -39,7 +34,6 @@ import java.awt.event.KeyListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Hashtable;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -69,27 +63,27 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
 import Client.KeybindSet.KeyModifier;
 import Game.Camera;
 import Game.Game;
 import Game.KeyboardHandler;
 
 /**
- * GUI designed for the RSCPlus client that manages 
- * configuration options and keybind values from within an interface.<br>
+ * GUI designed for the RSCPlus client that manages configuration options and keybind values from within an interface.<br>
  * <br>
  * <b>To add a new configuration option to the GUI,</b> <br>
  * 1.) Declare an instance variable to hold the gui element (eg checkbox) and add it to the GUI from ConfigWindow.initialize() (see existing examples) <br>
- * 1.5.) If there is a helper method such as addCheckbox, use that method to create and store the element that is returned in the ConfigWindow.initialize() method. See existing code for examples.<br>
- * 2.) ^Add an appropriate variable to the Settings class as a class variable, <i>and</i> as an assignment in the appropriate restore default method below.<br>
+ * 1.5.) If there is a helper method such as addCheckbox, use that method to create and store the element that is returned in the ConfigWindow.initialize() method. See existing
+ * code for examples.<br>
+ * 2.) ^Add an appropriate variable to the Settings class as a class variable, <i>and</i> as an assignment in the appropriate restore default method below. <br>
  * 3.) Add an entry in the ConfigWindow.synchronizeGuiValues() method that references the variable, as per the already-existing examples.<br>
  * 4.) Add an entry in the ConfigWindow.saveSettings() method referencing the variable, as per the already-existing examples.<br>
  * 5.) ^Add an entry in the Settings.Save() class save method to save the option to file.<br>
  * 6.) ^Add an entry in the Settings.Load() class load method to load the option from file.<br>
- * 7.) (Optional) If a method needs to be called to adjust settings other than the setting value itself, add it to the ConfigWindow.applySettings() method below.<br><br>
- * <i>Entries marked with a ^ are steps used to add settings that are not included in the GUI.</i>
- * <br><br>
+ * 7.) (Optional) If a method needs to be called to adjust settings other than the setting value itself, add it to the ConfigWindow.applySettings() method below.<br>
+ * <br>
+ * <i>Entries marked with a ^ are steps used to add settings that are not included in the GUI.</i> <br>
+ * <br>
  * <b>To add a new keybind,</b><br>
  * 1.) Add a call in the initialize method to addKeybind with appropriate parameters.<br>
  * 2.) Add an entry to the command switch statement in Settings to process the command when its keybind is pressed.<br>
@@ -113,11 +107,11 @@ public class ConfigWindow {
 	/*
 	 * JComponent variables which hold configuration data
 	 */
-
-	//General tab
+	
+	// General tab
 	private JCheckBox generalPanelClientSizeCheckbox;
-		private JSpinner generalPanelClientSizeXSpinner;
-		private JSpinner generalPanelClientSizeYSpinner;
+	private JSpinner generalPanelClientSizeXSpinner;
+	private JSpinner generalPanelClientSizeYSpinner;
 	private JCheckBox generalPanelChatHistoryCheckbox;
 	private JCheckBox generalPanelCombatXPMenuCheckbox;
 	private JCheckBox generalPanelXPDropsCheckbox;
@@ -132,7 +126,7 @@ public class ConfigWindow {
 	private JCheckBox generalPanelCustomCursorCheckbox;
 	private JSlider generalPanelViewDistanceSlider;
 	
-	//Overlays tab	
+	// Overlays tab
 	private JCheckBox overlayPanelStatusDisplayCheckbox;
 	private JCheckBox overlayPanelInvCountCheckbox;
 	private JCheckBox overlayPanelItemNamesCheckbox;
@@ -144,16 +138,16 @@ public class ConfigWindow {
 	private JCheckBox overlayPanelHPRegenTimerCheckbox;
 	private JCheckBox overlayPanelDebugModeCheckbox;
 	
-	//Notifications tab
+	// Notifications tab
 	private JCheckBox notificationPanelPMNotifsCheckbox;
 	private JCheckBox notificationPanelTradeNotifsCheckbox;
 	private JCheckBox notificationPanelDuelNotifsCheckbox;
 	private JCheckBox notificationPanelLogoutNotifsCheckbox;
 	private JCheckBox notificationPanelLowHPNotifsCheckbox;
-		private JSpinner notificationPanelLowHPNotifsSpinner;
+	private JSpinner notificationPanelLowHPNotifsSpinner;
 	private JCheckBox notificationPanelFatigueNotifsCheckbox;
-		private JSpinner notificationPanelFatigueNotifsSpinner;
-	private JCheckBox notificationPanelNotifSoundsCheckbox;	
+	private JSpinner notificationPanelFatigueNotifsSpinner;
+	private JCheckBox notificationPanelNotifSoundsCheckbox;
 	private JCheckBox notificationPanelUseSystemNotifsCheckbox;
 	private JCheckBox notificationPanelTrayPopupCheckbox;
 	private JRadioButton notificationPanelTrayPopupClientFocusButton;
@@ -161,7 +155,7 @@ public class ConfigWindow {
 	private JRadioButton notificationPanelTrayPopupAnyFocusButton;
 	private JRadioButton notificationPanelNotifSoundAnyFocusButton;
 	
-	//Streaming & Privacy tab
+	// Streaming & Privacy tab
 	private JCheckBox streamingPanelTwitchChatCheckbox;
 	private JTextField streamingPanelTwitchChannelNameTextField;
 	private JTextField streamingPanelTwitchOAuthTextField;
@@ -174,14 +168,14 @@ public class ConfigWindow {
 		try {
 			// Set System L&F as a fall-back option.
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-		        if ("Nimbus".equals(info.getName())) {
-		            UIManager.setLookAndFeel(info.getClassName());
-		    	    NimbusLookAndFeel laf = (NimbusLookAndFeel)UIManager.getLookAndFeel();
-		    	    laf.getDefaults().put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, 11));
-		            break;
-		        }
-		    }
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					NimbusLookAndFeel laf = (NimbusLookAndFeel) UIManager.getLookAndFeel();
+					laf.getDefaults().put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, 11));
+					break;
+				}
+			}
 		} catch (UnsupportedLookAndFeelException e) {
 			Logger.Error("Unable to set L&F: Unsupported look and feel");
 		} catch (ClassNotFoundException e) {
@@ -202,7 +196,7 @@ public class ConfigWindow {
 	public void hideConfigWindow() {
 		frame.setVisible(false);
 	}
-
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -231,111 +225,98 @@ public class ConfigWindow {
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		URL iconURL = Settings.getResource("/assets/icon.png");
-		if(iconURL != null)
-		{
+		if (iconURL != null) {
 			ImageIcon icon = new ImageIcon(iconURL);
 			frame.setIconImage(icon.getImage());
 		}
 		
-		//Container declarations
+		// Container declarations
 		/** The tabbed pane holding the five configuration tabs */
 		tabbedPane = new JTabbedPane();
 		/** The JPanel containing the OK, Cancel, Apply, and Restore Defaults buttons at the bottom of the window */
 		JPanel navigationPanel = new JPanel();
-
+		
 		JScrollPane generalScrollPane = new JScrollPane();
 		JScrollPane overlayScrollPane = new JScrollPane();
 		JScrollPane notificationScrollPane = new JScrollPane();
 		JScrollPane streamingScrollPane = new JScrollPane();
 		JScrollPane keybindScrollPane = new JScrollPane();
-
+		
 		JPanel generalPanel = new JPanel();
 		JPanel overlayPanel = new JPanel();
 		JPanel notificationPanel = new JPanel();
 		JPanel streamingPanel = new JPanel();
 		JPanel keybindPanel = new JPanel();
-
+		
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		frame.getContentPane().add(navigationPanel, BorderLayout.PAGE_END);
-
-		tabbedPane.addTab("General", null, generalScrollPane, null);
-			generalScrollPane.setViewportView(generalPanel);
-		tabbedPane.addTab("Overlays", null, overlayScrollPane, null);
-			overlayScrollPane.setViewportView(overlayPanel);
-		tabbedPane.addTab("Notifications", null, notificationScrollPane, null);
-			notificationScrollPane.setViewportView(notificationPanel);
-		tabbedPane.addTab("Streaming & Privacy", null, streamingScrollPane, null);
-			streamingScrollPane.setViewportView(streamingPanel);
-		tabbedPane.addTab("Keybinds", null, keybindScrollPane, null);
-			keybindScrollPane.setViewportView(keybindPanel);
 		
-		//Adding padding for aesthetics
+		tabbedPane.addTab("General", null, generalScrollPane, null);
+		generalScrollPane.setViewportView(generalPanel);
+		tabbedPane.addTab("Overlays", null, overlayScrollPane, null);
+		overlayScrollPane.setViewportView(overlayPanel);
+		tabbedPane.addTab("Notifications", null, notificationScrollPane, null);
+		notificationScrollPane.setViewportView(notificationPanel);
+		tabbedPane.addTab("Streaming & Privacy", null, streamingScrollPane, null);
+		streamingScrollPane.setViewportView(streamingPanel);
+		tabbedPane.addTab("Keybinds", null, keybindScrollPane, null);
+		keybindScrollPane.setViewportView(keybindPanel);
+		
+		// Adding padding for aesthetics
 		navigationPanel.setBorder(BorderFactory.createEmptyBorder(7, 10, 10, 10));
 		generalPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		overlayPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		notificationPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		streamingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		keybindPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-			
+		
 		setScrollSpeed(generalScrollPane, 20, 15);
 		setScrollSpeed(overlayScrollPane, 20, 15);
 		setScrollSpeed(notificationScrollPane, 20, 15);
 		setScrollSpeed(streamingScrollPane, 20, 15);
 		setScrollSpeed(keybindScrollPane, 20, 15);
-			
+		
 		/*
 		 * Navigation buttons
 		 */
 		
 		navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.X_AXIS));
 		
-        addButton("OK", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
-			
+		addButton("OK", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Launcher.getConfigWindow().saveSettings();
 				Launcher.getConfigWindow().hideConfigWindow();
 			}
 		});
-        
-        addButton("Cancel", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
-        	
+		
+		addButton("Cancel", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Launcher.getConfigWindow().applySettings();
 				Launcher.getConfigWindow().hideConfigWindow();
-
 			}
 		});
-        
-        addButton("Apply", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
-			
+		
+		addButton("Apply", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Launcher.getConfigWindow().applySettings();
 			}
 		});
-        
-        navigationPanel.add(Box.createHorizontalGlue());
-        addButton("Restore Defaults", navigationPanel, Component.RIGHT_ALIGNMENT).addActionListener(new ActionListener() {
-			
+		
+		navigationPanel.add(Box.createHorizontalGlue());
+		addButton("Restore Defaults", navigationPanel, Component.RIGHT_ALIGNMENT).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				int choice = JOptionPane.showConfirmDialog(
-						Launcher.getConfigWindow().frame,
-						"Are you sure you want to restore this tab's settings to their defaults?",
-					    "Confirm",
-					    JOptionPane.YES_NO_OPTION,
-					    JOptionPane.QUESTION_MESSAGE);
-				
+				int choice = JOptionPane.showConfirmDialog(Launcher.getConfigWindow().frame, "Are you sure you want to restore this tab's settings to their defaults?", "Confirm",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if (choice == JOptionPane.CLOSED_OPTION || choice == JOptionPane.NO_OPTION) {
 					return;
 				}
 				
-				
-				//Restore defaults
-				switch(tabbedPane.getSelectedIndex()) {
+				// Restore defaults
+				switch (tabbedPane.getSelectedIndex()) {
 				case 0:
 					Settings.restoreDefaultGeneral();
 					Game.getInstance().resizeFrameWithContents();
@@ -343,19 +324,15 @@ public class ConfigWindow {
 				case 1:
 					Settings.restoreDefaultOverlays();
 					break;
-					
 				case 2:
 					Settings.restoreDefaultNotifications();
 					break;
-					
 				case 3:
 					Settings.restoreDefaultPrivacy();
 					break;
-					
 				case 4:
 					Settings.restoreDefaultKeybinds();
 					break;
-					
 				default:
 					Logger.Error("Restore defaults attempted to operate on a non-existent tab!");
 				}
@@ -365,53 +342,51 @@ public class ConfigWindow {
 		/*
 		 * General tab
 		 */
-        
+		
 		generalPanel.setLayout(new BoxLayout(generalPanel, BoxLayout.Y_AXIS));
 		
 		JPanel generalPanelClientSizePanel = new JPanel();
 		generalPanel.add(generalPanelClientSizePanel);
 		generalPanelClientSizePanel.setLayout(new BoxLayout(generalPanelClientSizePanel, BoxLayout.X_AXIS));
-		generalPanelClientSizePanel.setPreferredSize(new Dimension(0,37));
+		generalPanelClientSizePanel.setPreferredSize(new Dimension(0, 37));
 		generalPanelClientSizePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
-			// TODO: Perhaps change to "Save client size on close"?
-			generalPanelClientSizeCheckbox = addCheckbox("Default client size:", generalPanelClientSizePanel);
-			generalPanelClientSizeCheckbox.setToolTipText("Start the client with the supplied window size");
-			
-			generalPanelClientSizeXSpinner = new JSpinner();
-			generalPanelClientSizePanel.add(generalPanelClientSizeXSpinner);
-			generalPanelClientSizeXSpinner.setMaximumSize(new Dimension(58,22));
-			generalPanelClientSizeXSpinner.setMinimumSize(new Dimension(58,22));
-			generalPanelClientSizeXSpinner.setAlignmentY((float) 0.75);
-			generalPanelClientSizeXSpinner.setToolTipText("Default client width (512 minimum)");
-			generalPanelClientSizeXSpinner.putClientProperty("JComponent.sizeVariant", "mini");
-
-			
-			JLabel generalPanelClientSizeByLabel = new JLabel("x");
-			generalPanelClientSizePanel.add(generalPanelClientSizeByLabel);
-			generalPanelClientSizeByLabel.setAlignmentY((float) 0.9);
-			generalPanelClientSizeByLabel.setBorder(new EmptyBorder(0,2,0,2));
-			
-			generalPanelClientSizeYSpinner = new JSpinner();
-			generalPanelClientSizePanel.add(generalPanelClientSizeYSpinner);
-			generalPanelClientSizeYSpinner.setMaximumSize(new Dimension(58,22));
-			generalPanelClientSizeYSpinner.setMinimumSize(new Dimension(58,22));
-			generalPanelClientSizeYSpinner.setAlignmentY((float) 0.75);
-			generalPanelClientSizeYSpinner.setToolTipText("Default client height (346 minimum)");
-			generalPanelClientSizeYSpinner.putClientProperty("JComponent.sizeVariant", "mini");
-
-			
-			//Sanitize JSpinner values
-			SpinnerNumberModel spinnerWinXModel = new SpinnerNumberModel();
-			spinnerWinXModel.setMinimum(512);
-			spinnerWinXModel.setValue(512);
-			spinnerWinXModel.setStepSize(10);
-			generalPanelClientSizeXSpinner.setModel(spinnerWinXModel);
-			SpinnerNumberModel spinnerWinYModel = new SpinnerNumberModel();
-			spinnerWinYModel.setMinimum(346);
-			spinnerWinYModel.setValue(346);
-			spinnerWinYModel.setStepSize(10);
-			generalPanelClientSizeYSpinner.setModel(spinnerWinYModel);
+		// TODO: Perhaps change to "Save client size on close"?
+		generalPanelClientSizeCheckbox = addCheckbox("Default client size:", generalPanelClientSizePanel);
+		generalPanelClientSizeCheckbox.setToolTipText("Start the client with the supplied window size");
+		
+		generalPanelClientSizeXSpinner = new JSpinner();
+		generalPanelClientSizePanel.add(generalPanelClientSizeXSpinner);
+		generalPanelClientSizeXSpinner.setMaximumSize(new Dimension(58, 22));
+		generalPanelClientSizeXSpinner.setMinimumSize(new Dimension(58, 22));
+		generalPanelClientSizeXSpinner.setAlignmentY((float) 0.75);
+		generalPanelClientSizeXSpinner.setToolTipText("Default client width (512 minimum)");
+		generalPanelClientSizeXSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+		
+		JLabel generalPanelClientSizeByLabel = new JLabel("x");
+		generalPanelClientSizePanel.add(generalPanelClientSizeByLabel);
+		generalPanelClientSizeByLabel.setAlignmentY((float) 0.9);
+		generalPanelClientSizeByLabel.setBorder(new EmptyBorder(0, 2, 0, 2));
+		
+		generalPanelClientSizeYSpinner = new JSpinner();
+		generalPanelClientSizePanel.add(generalPanelClientSizeYSpinner);
+		generalPanelClientSizeYSpinner.setMaximumSize(new Dimension(58, 22));
+		generalPanelClientSizeYSpinner.setMinimumSize(new Dimension(58, 22));
+		generalPanelClientSizeYSpinner.setAlignmentY((float) 0.75);
+		generalPanelClientSizeYSpinner.setToolTipText("Default client height (346 minimum)");
+		generalPanelClientSizeYSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+		
+		// Sanitize JSpinner values
+		SpinnerNumberModel spinnerWinXModel = new SpinnerNumberModel();
+		spinnerWinXModel.setMinimum(512);
+		spinnerWinXModel.setValue(512);
+		spinnerWinXModel.setStepSize(10);
+		generalPanelClientSizeXSpinner.setModel(spinnerWinXModel);
+		SpinnerNumberModel spinnerWinYModel = new SpinnerNumberModel();
+		spinnerWinYModel.setMinimum(346);
+		spinnerWinYModel.setValue(346);
+		spinnerWinYModel.setStepSize(10);
+		generalPanelClientSizeYSpinner.setModel(spinnerWinYModel);
 		
 		generalPanelChatHistoryCheckbox = addCheckbox("Load chat history after relogging (Not implemented yet)", generalPanel);
 		generalPanelChatHistoryCheckbox.setToolTipText("Make chat history persist between logins");
@@ -429,30 +404,29 @@ public class ConfigWindow {
 		JPanel generalPanelFatigueFigsPanel = new JPanel();
 		generalPanel.add(generalPanelFatigueFigsPanel);
 		generalPanelFatigueFigsPanel.setLayout(new BoxLayout(generalPanelFatigueFigsPanel, BoxLayout.X_AXIS));
-		generalPanelFatigueFigsPanel.setPreferredSize(new Dimension(0,37));
+		generalPanelFatigueFigsPanel.setPreferredSize(new Dimension(0, 37));
 		generalPanelFatigueFigsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		generalPanelFatigueFigsPanel.setLayout(new BoxLayout(generalPanelFatigueFigsPanel, BoxLayout.X_AXIS));
 		
-			JLabel generalPanelFatigueFigsLabel = new JLabel("Fatigue figures:");
-			generalPanelFatigueFigsPanel.add(generalPanelFatigueFigsLabel);
-			generalPanelFatigueFigsLabel.setAlignmentY((float) 0.9);
-			generalPanelFatigueFigsLabel.setToolTipText("Number of significant figures past the decimal point to display on fatigue drops");
-			
-			generalPanelFatigueFigSpinner = new JSpinner();
-			generalPanelFatigueFigsPanel.add(generalPanelFatigueFigSpinner);
-			generalPanelFatigueFigSpinner.setMaximumSize(new Dimension(40,22));
-			generalPanelFatigueFigSpinner.setAlignmentY((float) 0.7);
-			generalPanelFatigueFigsPanel.setBorder(new EmptyBorder(0,0,7,0));
-			generalPanelFatigueFigSpinner.putClientProperty("JComponent.sizeVariant", "mini");
-
-			
-			//Sanitize JSpinner values
-			SpinnerNumberModel spinnerNumModel = new SpinnerNumberModel();
-			spinnerNumModel.setMinimum(1);
-			spinnerNumModel.setMaximum(7);
-			spinnerNumModel.setValue(2);
-			generalPanelFatigueFigSpinner.setModel(spinnerNumModel);
-			
+		JLabel generalPanelFatigueFigsLabel = new JLabel("Fatigue figures:");
+		generalPanelFatigueFigsPanel.add(generalPanelFatigueFigsLabel);
+		generalPanelFatigueFigsLabel.setAlignmentY((float) 0.9);
+		generalPanelFatigueFigsLabel.setToolTipText("Number of significant figures past the decimal point to display on fatigue drops");
+		
+		generalPanelFatigueFigSpinner = new JSpinner();
+		generalPanelFatigueFigsPanel.add(generalPanelFatigueFigSpinner);
+		generalPanelFatigueFigSpinner.setMaximumSize(new Dimension(40, 22));
+		generalPanelFatigueFigSpinner.setAlignmentY((float) 0.7);
+		generalPanelFatigueFigsPanel.setBorder(new EmptyBorder(0, 0, 7, 0));
+		generalPanelFatigueFigSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+		
+		// Sanitize JSpinner values
+		SpinnerNumberModel spinnerNumModel = new SpinnerNumberModel();
+		spinnerNumModel.setMinimum(1);
+		spinnerNumModel.setMaximum(7);
+		spinnerNumModel.setValue(2);
+		generalPanelFatigueFigSpinner.setModel(spinnerNumModel);
+		
 		generalPanelFatigueAlertCheckbox = addCheckbox("Fatigue alert", generalPanel);
 		generalPanelFatigueAlertCheckbox.setToolTipText("Displays a large notice when fatigue approaches 100%");
 		
@@ -461,7 +435,7 @@ public class ConfigWindow {
 		
 		JPanel generalPanelNamePatchModePanel = new JPanel();
 		generalPanelNamePatchModePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		generalPanelNamePatchModePanel.setMaximumSize(new Dimension(300,60));
+		generalPanelNamePatchModePanel.setMaximumSize(new Dimension(300, 60));
 		generalPanelNamePatchModePanel.setLayout(new BoxLayout(generalPanelNamePatchModePanel, BoxLayout.X_AXIS));
 		generalPanel.add(generalPanelNamePatchModePanel);
 		
@@ -472,16 +446,16 @@ public class ConfigWindow {
 		generalPanelNamePatchModeSlider.setSnapToTicks(true);
 		generalPanelNamePatchModeSlider.setMinimum(0);
 		generalPanelNamePatchModeSlider.setMaximum(3);
-		generalPanelNamePatchModeSlider.setPreferredSize(new Dimension(33,0));
+		generalPanelNamePatchModeSlider.setPreferredSize(new Dimension(33, 0));
 		generalPanelNamePatchModeSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
 		generalPanelNamePatchModeSlider.setBorder(new EmptyBorder(0, 0, 5, 0));
 		generalPanelNamePatchModeSlider.setOrientation(SwingConstants.VERTICAL);
 		generalPanelNamePatchModePanel.add(generalPanelNamePatchModeSlider);
 		
 		JPanel generalPanelNamePatchModeTextPanel = new JPanel();
-		generalPanelNamePatchModeTextPanel.setPreferredSize(new Dimension(255,55));
+		generalPanelNamePatchModeTextPanel.setPreferredSize(new Dimension(255, 55));
 		generalPanelNamePatchModeTextPanel.setLayout(new BorderLayout());
-		generalPanelNamePatchModeTextPanel.setBorder(new EmptyBorder(0,10,0,0));
+		generalPanelNamePatchModeTextPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
 		generalPanelNamePatchModePanel.add(generalPanelNamePatchModeTextPanel);
 		
 		JLabel generalPanelNamePatchModeTitle = new JLabel("<html><b>Item name patch mode</b> (Requires restart)</html>");
@@ -491,7 +465,6 @@ public class ConfigWindow {
 		generalPanelNamePatchModeTextPanel.add(generalPanelNamePatchModeDesc, BorderLayout.CENTER);
 		
 		generalPanelNamePatchModeSlider.addChangeListener(new ChangeListener() {
-			
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				switch (generalPanelNamePatchModeSlider.getValue()) {
@@ -532,7 +505,7 @@ public class ConfigWindow {
 		
 		generalPanel.add(generalPanelFoVSlider);
 		generalPanelFoVSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
-		generalPanelFoVSlider.setMaximumSize(new Dimension(200,55));
+		generalPanelFoVSlider.setMaximumSize(new Dimension(200, 55));
 		generalPanelFoVSlider.setBorder(new EmptyBorder(0, 0, 5, 0));
 		generalPanelFoVSlider.setMinimum(7);
 		generalPanelFoVSlider.setMaximum(16);
@@ -549,7 +522,7 @@ public class ConfigWindow {
 		
 		generalPanel.add(generalPanelViewDistanceSlider);
 		generalPanelViewDistanceSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
-		generalPanelViewDistanceSlider.setMaximumSize(new Dimension(200,55));
+		generalPanelViewDistanceSlider.setMaximumSize(new Dimension(200, 55));
 		generalPanelViewDistanceSlider.setBorder(new EmptyBorder(0, 0, 0, 0));
 		generalPanelViewDistanceSlider.setMinorTickSpacing(500);
 		generalPanelViewDistanceSlider.setMajorTickSpacing(1000);
@@ -610,32 +583,33 @@ public class ConfigWindow {
 		addNotificationCategory(notificationPanel, "Notification Settings");
 		
 		notificationPanelTrayPopupCheckbox = addCheckbox("Enable notification tray popups", notificationPanel);
-		notificationPanelTrayPopupCheckbox.setBorder(BorderFactory.createEmptyBorder(0,0,7,0));
+		notificationPanelTrayPopupCheckbox.setBorder(BorderFactory.createEmptyBorder(0, 0, 7, 0));
 		notificationPanelTrayPopupCheckbox.setToolTipText("Shows a system notification when a notification is triggered");
 		
-			ButtonGroup trayPopupButtonGroup = new ButtonGroup();
-			notificationPanelTrayPopupClientFocusButton = addRadioButton("Only when client is not focused", notificationPanel, 20);
-			notificationPanelTrayPopupAnyFocusButton = addRadioButton("Regardless of client focus", notificationPanel, 20);
-			trayPopupButtonGroup.add(notificationPanelTrayPopupClientFocusButton);
-			trayPopupButtonGroup.add(notificationPanelTrayPopupAnyFocusButton);
+		ButtonGroup trayPopupButtonGroup = new ButtonGroup();
+		notificationPanelTrayPopupClientFocusButton = addRadioButton("Only when client is not focused", notificationPanel, 20);
+		notificationPanelTrayPopupAnyFocusButton = addRadioButton("Regardless of client focus", notificationPanel, 20);
+		trayPopupButtonGroup.add(notificationPanelTrayPopupClientFocusButton);
+		trayPopupButtonGroup.add(notificationPanelTrayPopupAnyFocusButton);
 		
 		notificationPanelNotifSoundsCheckbox = addCheckbox("Enable notification sounds", notificationPanel);
-		notificationPanelNotifSoundsCheckbox.setBorder(BorderFactory.createEmptyBorder(0,0,7,0));
+		notificationPanelNotifSoundsCheckbox.setBorder(BorderFactory.createEmptyBorder(0, 0, 7, 0));
 		notificationPanelNotifSoundsCheckbox.setToolTipText("Plays a sound when a notification is triggered");
 		
-			ButtonGroup notifSoundButtonGroup = new ButtonGroup();
-			notificationPanelNotifSoundClientFocusButton = addRadioButton("Only when client is not focused", notificationPanel, 20);
-			notificationPanelNotifSoundAnyFocusButton = addRadioButton("Regardless of client focus", notificationPanel, 20);
-			notifSoundButtonGroup.add(notificationPanelNotifSoundClientFocusButton);
-			notifSoundButtonGroup.add(notificationPanelNotifSoundAnyFocusButton);
+		ButtonGroup notifSoundButtonGroup = new ButtonGroup();
+		notificationPanelNotifSoundClientFocusButton = addRadioButton("Only when client is not focused", notificationPanel, 20);
+		notificationPanelNotifSoundAnyFocusButton = addRadioButton("Regardless of client focus", notificationPanel, 20);
+		notifSoundButtonGroup.add(notificationPanelNotifSoundClientFocusButton);
+		notifSoundButtonGroup.add(notificationPanelNotifSoundAnyFocusButton);
 		
-		if(SystemTray.isSupported())
+		if (SystemTray.isSupported())
 			notificationPanelUseSystemNotifsCheckbox = addCheckbox("Use system notifications if available", notificationPanel);
 		else {
 			notificationPanelUseSystemNotifsCheckbox = addCheckbox("Use system notifications if available (INCOMPATIBLE OS)", notificationPanel);
 			notificationPanelUseSystemNotifsCheckbox.setEnabled(false);
 		}
-		notificationPanelUseSystemNotifsCheckbox.setToolTipText("Uses built-in system notifications. Enable this to attempt to use your operating system's notification system instead of the built-in pop-up");
+		notificationPanelUseSystemNotifsCheckbox
+				.setToolTipText("Uses built-in system notifications. Enable this to attempt to use your operating system's notification system instead of the built-in pop-up");
 		
 		addNotificationCategory(notificationPanel, "Notifications");
 		
@@ -655,61 +629,60 @@ public class ConfigWindow {
 		JPanel notificationPanelLowHPNotifsPanel = new JPanel();
 		notificationPanel.add(notificationPanelLowHPNotifsPanel);
 		notificationPanelLowHPNotifsPanel.setLayout(new BoxLayout(notificationPanelLowHPNotifsPanel, BoxLayout.X_AXIS));
-		notificationPanelLowHPNotifsPanel.setPreferredSize(new Dimension(0,37));
+		notificationPanelLowHPNotifsPanel.setPreferredSize(new Dimension(0, 37));
 		notificationPanelLowHPNotifsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
 		notificationPanelLowHPNotifsCheckbox = addCheckbox("Enable low HP notification at", notificationPanelLowHPNotifsPanel);
 		notificationPanelLowHPNotifsCheckbox.setToolTipText("Shows a system notification when your HP drops below the specified value");
 		
-			notificationPanelLowHPNotifsSpinner = new JSpinner();
-			notificationPanelLowHPNotifsSpinner.setMaximumSize(new Dimension(45,22));
-			notificationPanelLowHPNotifsSpinner.setMinimumSize(new Dimension(45,22));
-			notificationPanelLowHPNotifsSpinner.setAlignmentY((float) 0.75);
-			notificationPanelLowHPNotifsPanel.add(notificationPanelLowHPNotifsSpinner);
-			notificationPanelLowHPNotifsSpinner.putClientProperty("JComponent.sizeVariant", "mini");
-			
-			notificationPanelLowHPNotifsEndLabel = new JLabel("% HP");
-			notificationPanelLowHPNotifsPanel.add(notificationPanelLowHPNotifsEndLabel);
-			notificationPanelLowHPNotifsEndLabel.setAlignmentY((float) 0.9);
-			notificationPanelLowHPNotifsEndLabel.setBorder(new EmptyBorder(0,2,0,0));
-			
-			//Sanitize JSpinner values
-			SpinnerNumberModel spinnerHPNumModel = new SpinnerNumberModel();
-			spinnerHPNumModel.setMinimum(1);
-			spinnerHPNumModel.setMaximum(99);
-			spinnerHPNumModel.setValue(25);
-			notificationPanelLowHPNotifsSpinner.setModel(spinnerHPNumModel);
+		notificationPanelLowHPNotifsSpinner = new JSpinner();
+		notificationPanelLowHPNotifsSpinner.setMaximumSize(new Dimension(45, 22));
+		notificationPanelLowHPNotifsSpinner.setMinimumSize(new Dimension(45, 22));
+		notificationPanelLowHPNotifsSpinner.setAlignmentY((float) 0.75);
+		notificationPanelLowHPNotifsPanel.add(notificationPanelLowHPNotifsSpinner);
+		notificationPanelLowHPNotifsSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+		
+		notificationPanelLowHPNotifsEndLabel = new JLabel("% HP");
+		notificationPanelLowHPNotifsPanel.add(notificationPanelLowHPNotifsEndLabel);
+		notificationPanelLowHPNotifsEndLabel.setAlignmentY((float) 0.9);
+		notificationPanelLowHPNotifsEndLabel.setBorder(new EmptyBorder(0, 2, 0, 0));
+		
+		// Sanitize JSpinner values
+		SpinnerNumberModel spinnerHPNumModel = new SpinnerNumberModel();
+		spinnerHPNumModel.setMinimum(1);
+		spinnerHPNumModel.setMaximum(99);
+		spinnerHPNumModel.setValue(25);
+		notificationPanelLowHPNotifsSpinner.setModel(spinnerHPNumModel);
 		
 		JPanel notificationPanelFatigueNotifsPanel = new JPanel();
 		notificationPanel.add(notificationPanelFatigueNotifsPanel);
 		notificationPanelFatigueNotifsPanel.setLayout(new BoxLayout(notificationPanelFatigueNotifsPanel, BoxLayout.X_AXIS));
-		notificationPanelFatigueNotifsPanel.setPreferredSize(new Dimension(0,37));
+		notificationPanelFatigueNotifsPanel.setPreferredSize(new Dimension(0, 37));
 		notificationPanelFatigueNotifsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
 		notificationPanelFatigueNotifsCheckbox = addCheckbox("Enable high fatigue notifications at", notificationPanelFatigueNotifsPanel);
 		notificationPanelFatigueNotifsCheckbox.setToolTipText("Shows a system notification when your fatigue gets past the specified value");
 		
-			notificationPanelFatigueNotifsSpinner = new JSpinner();
-			notificationPanelFatigueNotifsSpinner.setMaximumSize(new Dimension(45,22));
-			notificationPanelFatigueNotifsSpinner.setMinimumSize(new Dimension(45,22));
-			notificationPanelFatigueNotifsSpinner.setAlignmentY((float) 0.75);
-			notificationPanelFatigueNotifsPanel.add(notificationPanelFatigueNotifsSpinner);
-			notificationPanelFatigueNotifsSpinner.putClientProperty("JComponent.sizeVariant", "mini");
-
-			
-			notificationPanelFatigueNotifsEndLabel = new JLabel("% fatigue");
-			notificationPanelFatigueNotifsPanel.add(notificationPanelFatigueNotifsEndLabel);
-			notificationPanelFatigueNotifsEndLabel.setAlignmentY((float) 0.9);
-			notificationPanelFatigueNotifsEndLabel.setBorder(new EmptyBorder(0,2,0,0));
-			
-			//Sanitize JSpinner values
-			SpinnerNumberModel spinnerFatigueNumModel = new SpinnerNumberModel();
-			spinnerFatigueNumModel.setMinimum(1);
-			spinnerFatigueNumModel.setMaximum(100);
-			spinnerFatigueNumModel.setValue(98);
-			notificationPanelFatigueNotifsSpinner.setModel(spinnerFatigueNumModel);
-			
-		/* 
+		notificationPanelFatigueNotifsSpinner = new JSpinner();
+		notificationPanelFatigueNotifsSpinner.setMaximumSize(new Dimension(45, 22));
+		notificationPanelFatigueNotifsSpinner.setMinimumSize(new Dimension(45, 22));
+		notificationPanelFatigueNotifsSpinner.setAlignmentY((float) 0.75);
+		notificationPanelFatigueNotifsPanel.add(notificationPanelFatigueNotifsSpinner);
+		notificationPanelFatigueNotifsSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+		
+		notificationPanelFatigueNotifsEndLabel = new JLabel("% fatigue");
+		notificationPanelFatigueNotifsPanel.add(notificationPanelFatigueNotifsEndLabel);
+		notificationPanelFatigueNotifsEndLabel.setAlignmentY((float) 0.9);
+		notificationPanelFatigueNotifsEndLabel.setBorder(new EmptyBorder(0, 2, 0, 0));
+		
+		// Sanitize JSpinner values
+		SpinnerNumberModel spinnerFatigueNumModel = new SpinnerNumberModel();
+		spinnerFatigueNumModel.setMinimum(1);
+		spinnerFatigueNumModel.setMaximum(100);
+		spinnerFatigueNumModel.setValue(98);
+		notificationPanelFatigueNotifsSpinner.setModel(spinnerFatigueNumModel);
+		
+		/*
 		 * Streaming & Privacy tab
 		 */
 		
@@ -721,56 +694,56 @@ public class ConfigWindow {
 		JPanel streamingPanelTwitchChannelNamePanel = new JPanel();
 		streamingPanel.add(streamingPanelTwitchChannelNamePanel);
 		streamingPanelTwitchChannelNamePanel.setLayout(new BoxLayout(streamingPanelTwitchChannelNamePanel, BoxLayout.X_AXIS));
-		streamingPanelTwitchChannelNamePanel.setPreferredSize(new Dimension(0,37));
+		streamingPanelTwitchChannelNamePanel.setPreferredSize(new Dimension(0, 37));
 		streamingPanelTwitchChannelNamePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		streamingPanelTwitchChannelNamePanel.setBorder(new EmptyBorder(0,0,9,0));
+		streamingPanelTwitchChannelNamePanel.setBorder(new EmptyBorder(0, 0, 9, 0));
 		
-			JLabel streamingPanelTwitchChannelNameLabel = new JLabel("Twitch channel name: ");
-			streamingPanelTwitchChannelNameLabel.setToolTipText("The Twitch channel you want to chat in (leave empty to stop trying to connect to Twitch)");
-			streamingPanelTwitchChannelNamePanel.add(streamingPanelTwitchChannelNameLabel);
-			streamingPanelTwitchChannelNameLabel.setAlignmentY((float) 0.9);
-			
-			streamingPanelTwitchChannelNameTextField = new JTextField();
-			streamingPanelTwitchChannelNamePanel.add(streamingPanelTwitchChannelNameTextField);
-			streamingPanelTwitchChannelNameTextField.setMinimumSize(new Dimension(100,28));
-			streamingPanelTwitchChannelNameTextField.setMaximumSize(new Dimension(Short.MAX_VALUE,28));
-			streamingPanelTwitchChannelNameTextField.setAlignmentY((float) 0.75);
-			
+		JLabel streamingPanelTwitchChannelNameLabel = new JLabel("Twitch channel name: ");
+		streamingPanelTwitchChannelNameLabel.setToolTipText("The Twitch channel you want to chat in (leave empty to stop trying to connect to Twitch)");
+		streamingPanelTwitchChannelNamePanel.add(streamingPanelTwitchChannelNameLabel);
+		streamingPanelTwitchChannelNameLabel.setAlignmentY((float) 0.9);
+		
+		streamingPanelTwitchChannelNameTextField = new JTextField();
+		streamingPanelTwitchChannelNamePanel.add(streamingPanelTwitchChannelNameTextField);
+		streamingPanelTwitchChannelNameTextField.setMinimumSize(new Dimension(100, 28));
+		streamingPanelTwitchChannelNameTextField.setMaximumSize(new Dimension(Short.MAX_VALUE, 28));
+		streamingPanelTwitchChannelNameTextField.setAlignmentY((float) 0.75);
+		
 		JPanel streamingPanelTwitchUserPanel = new JPanel();
 		streamingPanel.add(streamingPanelTwitchUserPanel);
 		streamingPanelTwitchUserPanel.setLayout(new BoxLayout(streamingPanelTwitchUserPanel, BoxLayout.X_AXIS));
-		streamingPanelTwitchUserPanel.setPreferredSize(new Dimension(0,37));
+		streamingPanelTwitchUserPanel.setPreferredSize(new Dimension(0, 37));
 		streamingPanelTwitchUserPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		streamingPanelTwitchUserPanel.setBorder(new EmptyBorder(0,0,9,0));
+		streamingPanelTwitchUserPanel.setBorder(new EmptyBorder(0, 0, 9, 0));
 		
-			JLabel streamingPanelTwitchUserLabel = new JLabel("Twitch username: ");
-			streamingPanelTwitchUserLabel.setToolTipText("The Twitch username you log into Twitch with");
-			streamingPanelTwitchUserPanel.add(streamingPanelTwitchUserLabel);
-			streamingPanelTwitchUserLabel.setAlignmentY((float) 0.9);
-			
-			streamingPanelTwitchUserTextField = new JTextField();
-			streamingPanelTwitchUserPanel.add(streamingPanelTwitchUserTextField);
-			streamingPanelTwitchUserTextField.setMinimumSize(new Dimension(100,28));
-			streamingPanelTwitchUserTextField.setMaximumSize(new Dimension(Short.MAX_VALUE,28));
-			streamingPanelTwitchUserTextField.setAlignmentY((float) 0.75);
+		JLabel streamingPanelTwitchUserLabel = new JLabel("Twitch username: ");
+		streamingPanelTwitchUserLabel.setToolTipText("The Twitch username you log into Twitch with");
+		streamingPanelTwitchUserPanel.add(streamingPanelTwitchUserLabel);
+		streamingPanelTwitchUserLabel.setAlignmentY((float) 0.9);
+		
+		streamingPanelTwitchUserTextField = new JTextField();
+		streamingPanelTwitchUserPanel.add(streamingPanelTwitchUserTextField);
+		streamingPanelTwitchUserTextField.setMinimumSize(new Dimension(100, 28));
+		streamingPanelTwitchUserTextField.setMaximumSize(new Dimension(Short.MAX_VALUE, 28));
+		streamingPanelTwitchUserTextField.setAlignmentY((float) 0.75);
 		
 		JPanel streamingPanelTwitchOAuthPanel = new JPanel();
 		streamingPanel.add(streamingPanelTwitchOAuthPanel);
 		streamingPanelTwitchOAuthPanel.setLayout(new BoxLayout(streamingPanelTwitchOAuthPanel, BoxLayout.X_AXIS));
-		streamingPanelTwitchOAuthPanel.setPreferredSize(new Dimension(0,37));
+		streamingPanelTwitchOAuthPanel.setPreferredSize(new Dimension(0, 37));
 		streamingPanelTwitchOAuthPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		streamingPanelTwitchOAuthPanel.setBorder(new EmptyBorder(0,0,9,0));
+		streamingPanelTwitchOAuthPanel.setBorder(new EmptyBorder(0, 0, 9, 0));
 		
-			JLabel streamingPanelTwitchOAuthLabel = new JLabel("Twitch OAuth token: ");
-			streamingPanelTwitchOAuthLabel.setToolTipText("Your Twitch OAuth token (not your Stream Key)");
-			streamingPanelTwitchOAuthPanel.add(streamingPanelTwitchOAuthLabel);
-			streamingPanelTwitchOAuthLabel.setAlignmentY((float) 0.9);
-			
-			streamingPanelTwitchOAuthTextField = new JPasswordField();
-			streamingPanelTwitchOAuthPanel.add(streamingPanelTwitchOAuthTextField);
-			streamingPanelTwitchOAuthTextField.setMinimumSize(new Dimension(100,28));
-			streamingPanelTwitchOAuthTextField.setMaximumSize(new Dimension(Short.MAX_VALUE,28));
-			streamingPanelTwitchOAuthTextField.setAlignmentY((float) 0.75);
+		JLabel streamingPanelTwitchOAuthLabel = new JLabel("Twitch OAuth token: ");
+		streamingPanelTwitchOAuthLabel.setToolTipText("Your Twitch OAuth token (not your Stream Key)");
+		streamingPanelTwitchOAuthPanel.add(streamingPanelTwitchOAuthLabel);
+		streamingPanelTwitchOAuthLabel.setAlignmentY((float) 0.9);
+		
+		streamingPanelTwitchOAuthTextField = new JPasswordField();
+		streamingPanelTwitchOAuthPanel.add(streamingPanelTwitchOAuthTextField);
+		streamingPanelTwitchOAuthTextField.setMinimumSize(new Dimension(100, 28));
+		streamingPanelTwitchOAuthTextField.setMaximumSize(new Dimension(Short.MAX_VALUE, 28));
+		streamingPanelTwitchOAuthTextField.setAlignmentY((float) 0.75);
 		
 		streamingPanelIPAtLoginCheckbox = addCheckbox("Enable IP/DNS details at login welcome screen", streamingPanel);
 		streamingPanelIPAtLoginCheckbox.setToolTipText("Shows the last IP/DNS you last logged in from when you log in (Disable this if you're streaming)");
@@ -782,13 +755,13 @@ public class ConfigWindow {
 		 * Keybind tab
 		 */
 		
-		//TODO: Make the contents top aligned
+		// TODO: Make the contents top aligned
 		keybindPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 		keybindPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		
 		keybindPanel.setLayout(gbl_panel);
-
+		
 		addKeybindCategory(keybindPanel, "General");
 		addKeybindSet(keybindPanel, "Logout", "logout", KeyModifier.CTRL, KeyEvent.VK_L);
 		addKeybindSet(keybindPanel, "Take screenshot", "screenshot", KeyModifier.CTRL, KeyEvent.VK_S);
@@ -816,8 +789,9 @@ public class ConfigWindow {
 		addKeybindCategory(keybindPanel, "Streaming & Privacy");
 		addKeybindSet(keybindPanel, "Toggle Twitch chat", "toggle_twitch_chat", KeyModifier.CTRL, KeyEvent.VK_T);
 		addKeybindSet(keybindPanel, "Toggle IP/DNS shown at login screen", "toggle_ipdns", KeyModifier.NONE, -1);
-		//addKeybindSet(keybindPanel, "Toggle save login information", "toggle_save_login_info", KeyModifier.NONE, -1); // TODO: Uncomment line if this feature no longer requires a restart
-
+		// TODO: Uncomment the following line if this feature no longer requires a restart
+		// addKeybindSet(keybindPanel, "Toggle save login information", "toggle_save_login_info", KeyModifier.NONE, -1);
+		
 		addKeybindCategory(keybindPanel, "Miscellaneous");
 		addKeybindSet(keybindPanel, "Switch to world 1 at login screen", "world_1", KeyModifier.CTRL, KeyEvent.VK_1);
 		addKeybindSet(keybindPanel, "Switch to world 2 at login screen", "world_2", KeyModifier.CTRL, KeyEvent.VK_2);
@@ -828,6 +802,7 @@ public class ConfigWindow {
 	
 	/**
 	 * Adds a new keybind to the GUI and settings and registers it to be checked when keypresses are sent to the applet.
+	 * 
 	 * @param panel - Panel to add the keybind label and button to
 	 * @param labelText - Text describing the keybind's function as shown to the user on the config window.
 	 * @param commandID - Unique String matching an entry in the processKeybindCommand switch statement.
@@ -842,13 +817,13 @@ public class ConfigWindow {
 		JButton b = addKeybindButton(panel, buttonText);
 		KeybindSet kbs = new KeybindSet(b, commandID, defaultModifier, defaultKeyValue);
 		KeyboardHandler.keybindSetList.add(kbs);
-		setKeybindButtonText(kbs); //Set the text of the keybind button now that it has been initialized properly
+		setKeybindButtonText(kbs); // Set the text of the keybind button now that it has been initialized properly
 		b.addActionListener(this.clickListener);
 		b.addKeyListener(this.rebindListener);
 		b.addFocusListener(focusListener);
 		b.setFocusable(false);
 		
-		//Default KeybindSet
+		// Default KeybindSet
 		KeyboardHandler.defaultKeybindSetList.put(commandID, new KeybindSet(null, commandID, defaultModifier, defaultKeyValue));
 	}
 	
@@ -856,8 +831,10 @@ public class ConfigWindow {
 	 * Tracks the number of keybind labels added to the keybind panel. Used to determine the gbc.gridy and panel preferred height.
 	 */
 	private int keybindLabelGridYCounter = 0;
+	
 	/**
 	 * Adds a new label to the keybinds list. This should be used in conjunction with adding a button in a 1:1 ratio. The new label will be added below the existing ones.
+	 * 
 	 * @param panel - Panel to add the label to.
 	 * @param labelText - Text of the label to add.
 	 * @return - The label that was added.
@@ -878,8 +855,10 @@ public class ConfigWindow {
 	 * Tracks the number of keybind buttons added to the keybind panel. Used to determine the gbc.gridy.
 	 */
 	private int keybindButtonGridYCounter = 0;
+	
 	/**
 	 * Adds a new button to the keybinds list. This should be used in conjunction with adding a label in a 1:1 ratio. The new button will be added below the existing ones.
+	 * 
 	 * @param panel - Panel to add the button to.
 	 * @param buttonText - Text of the label to add.
 	 * @return - The label that was added.
@@ -898,6 +877,7 @@ public class ConfigWindow {
 	
 	/**
 	 * Adds a new category title to the keybinds list.
+	 * 
 	 * @param panel - Panel to add the title to.
 	 * @param categoryName - Name of the category to add.
 	 */
@@ -910,6 +890,7 @@ public class ConfigWindow {
 	
 	/**
 	 * Adds a new horizontal separator to the keybinds list. The JSeparator spans 2 columns.
+	 * 
 	 * @param panel - Panel to add the separator to.
 	 */
 	private void addKeybindCategorySeparator(JPanel panel) {
@@ -930,6 +911,7 @@ public class ConfigWindow {
 	
 	/**
 	 * Adds a new category label to the keybinds list. The JLabel spans 2 columns.
+	 * 
 	 * @param panel - Panel to add the label to.
 	 * @param categoryName - Name of the category to add.
 	 * @return - The label that was added.
@@ -938,7 +920,7 @@ public class ConfigWindow {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.gridx = 0;
-		if(keybindLabelGridYCounter == 0)
+		if (keybindLabelGridYCounter == 0)
 			gbc.insets = new Insets(0, 0, 0, 0);
 		else
 			gbc.insets = new Insets(7, 0, 0, 0);
@@ -954,6 +936,7 @@ public class ConfigWindow {
 	
 	/**
 	 * Adds a new category title to the notifications list.
+	 * 
 	 * @param panel - Panel to add the title to.
 	 * @param categoryName - Name of the category to add.
 	 */
@@ -964,6 +947,7 @@ public class ConfigWindow {
 	
 	/**
 	 * Adds a new horizontal separator to the notifications list.
+	 * 
 	 * @param panel - Panel to add the separator to.
 	 */
 	private void addNotificationCategorySeparator(JPanel panel) {
@@ -974,6 +958,7 @@ public class ConfigWindow {
 	
 	/**
 	 * Adds a new category label to the notifications list.
+	 * 
 	 * @param panel - Panel to add the label to.
 	 * @param categoryName - Name of the category to add.
 	 * @return - The label that was added.
@@ -986,49 +971,53 @@ public class ConfigWindow {
 	
 	/**
 	 * Adds a preconfigured JCheckbox to the specified container, setting its alignment constraint to left and adding an empty padding border.
+	 * 
 	 * @param text - The text of the checkbox
 	 * @param container - The container to add the checkbox to.
 	 * @return The newly created JCheckBox.
 	 */
 	private JCheckBox addCheckbox(String text, Container container) {
-        JCheckBox checkbox = new JCheckBox(text);
-        checkbox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        checkbox.setBorder(BorderFactory.createEmptyBorder(0,0,10,5));
-        container.add(checkbox);
+		JCheckBox checkbox = new JCheckBox(text);
+		checkbox.setAlignmentX(Component.LEFT_ALIGNMENT);
+		checkbox.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 5));
+		container.add(checkbox);
 		return checkbox;
-    }
+	}
 	
 	/**
 	 * Adds a preconfigured JButton to the specified container using the specified alignment constraint. Does not modify the button's border.
+	 * 
 	 * @param text - The text of the button
 	 * @param container - The container to add the button to
 	 * @param alignment - The alignment of the button.
 	 * @return The newly created JButton.
 	 */
-    private JButton addButton(String text, Container container, float alignment) {
-        JButton button = new JButton(text);
-        button.setAlignmentX(alignment);
-        container.add(button);
+	private JButton addButton(String text, Container container, float alignment) {
+		JButton button = new JButton(text);
+		button.setAlignmentX(alignment);
+		container.add(button);
 		return button;
-    }
-    
-    /**
-     * Adds a preconfigured radio button to the specified container. Does not currently assign the radio button to a group.
-     * @param text - The text of the radio button
-     * @param container - The container to add the button to
-     * @param leftIndent - The amount of padding to add to the left of the radio button as an empty border argument.
-     * @return The newly created JRadioButton
-     */
+	}
+	
+	/**
+	 * Adds a preconfigured radio button to the specified container. Does not currently assign the radio button to a group.
+	 * 
+	 * @param text - The text of the radio button
+	 * @param container - The container to add the button to
+	 * @param leftIndent - The amount of padding to add to the left of the radio button as an empty border argument.
+	 * @return The newly created JRadioButton
+	 */
 	private JRadioButton addRadioButton(String text, Container container, int leftIndent) {
 		JRadioButton radioButton = new JRadioButton(text);
-        radioButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        radioButton.setBorder(BorderFactory.createEmptyBorder(0,leftIndent,7,5));
-        container.add(radioButton);
+		radioButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+		radioButton.setBorder(BorderFactory.createEmptyBorder(0, leftIndent, 7, 5));
+		container.add(radioButton);
 		return radioButton;
-    }
-    
+	}
+	
 	/**
 	 * Sets the scroll speed of a JScrollPane
+	 * 
 	 * @param scrollPane - The JScrollPane to modify
 	 * @param horizontalInc - The horizontal increment value
 	 * @param verticalInc - The vertical increment value
@@ -1042,11 +1031,11 @@ public class ConfigWindow {
 	 * Synchronizes all relevant values in the gui's elements to match those in Settings.java
 	 */
 	public void synchronizeGuiValues() {
-		//General tab
+		// General tab
 		generalPanelClientSizeCheckbox.setSelected(Settings.CUSTOM_CLIENT_SIZE);
 		generalPanelClientSizeXSpinner.setValue(Settings.CUSTOM_CLIENT_SIZE_X);
 		generalPanelClientSizeYSpinner.setValue(Settings.CUSTOM_CLIENT_SIZE_Y);
-		generalPanelChatHistoryCheckbox.setSelected(Settings.LOAD_CHAT_HISTORY); 			// TODO: Implement this feature
+		generalPanelChatHistoryCheckbox.setSelected(Settings.LOAD_CHAT_HISTORY); // TODO: Implement this feature
 		generalPanelCombatXPMenuCheckbox.setSelected(Settings.COMBAT_MENU);
 		generalPanelXPDropsCheckbox.setSelected(Settings.SHOW_XPDROPS);
 		generalPanelFatigueDropsCheckbox.setSelected(Settings.SHOW_FATIGUEDROPS);
@@ -1059,7 +1048,8 @@ public class ConfigWindow {
 		generalPanelFoVSlider.setValue(Settings.FOV);
 		generalPanelCustomCursorCheckbox.setSelected(Settings.SOFTWARE_CURSOR);
 		generalPanelViewDistanceSlider.setValue(Settings.VIEW_DISTANCE);
-		//Sets the text associated with the name patch slider.
+		
+		// Sets the text associated with the name patch slider.
 		switch (generalPanelNamePatchModeSlider.getValue()) {
 		case 3:
 			generalPanelNamePatchModeDesc.setText("<html>Reworded vague stuff to be more descriptive on top of type 1 & 2 changes</html>");
@@ -1074,11 +1064,11 @@ public class ConfigWindow {
 			generalPanelNamePatchModeDesc.setText("<html>No item name patching</html>");
 			break;
 		default:
-			System.err.println("Invalid name patch mode value");
+			Logger.Error("Invalid name patch mode value");
 			break;
 		}
-
-		//Overlays tab	
+		
+		// Overlays tab
 		overlayPanelStatusDisplayCheckbox.setSelected(Settings.SHOW_STATUSDISPLAY);
 		overlayPanelInvCountCheckbox.setSelected(Settings.SHOW_INVCOUNT);
 		overlayPanelItemNamesCheckbox.setSelected(Settings.SHOW_ITEMINFO);
@@ -1086,13 +1076,13 @@ public class ConfigWindow {
 		overlayPanelFriendNamesCheckbox.setSelected(Settings.SHOW_FRIENDINFO);
 		overlayPanelNPCNamesCheckbox.setSelected(Settings.SHOW_NPCINFO);
 		overlayPanelNPCHitboxCheckbox.setSelected(Settings.SHOW_HITBOX);
-		overlayPanelFoodHealingCheckbox.setSelected(Settings.SHOW_FOOD_HEAL_OVERLAY);		// TODO: Implement this feature
-		overlayPanelHPRegenTimerCheckbox.setSelected(Settings.SHOW_TIME_UNTIL_HP_REGEN); 	// TODO: Implement this feature
+		overlayPanelFoodHealingCheckbox.setSelected(Settings.SHOW_FOOD_HEAL_OVERLAY); // TODO: Implement this feature
+		overlayPanelHPRegenTimerCheckbox.setSelected(Settings.SHOW_TIME_UNTIL_HP_REGEN); // TODO: Implement this feature
 		overlayPanelDebugModeCheckbox.setSelected(Settings.DEBUG);
-
-		//Notifications tab
+		
+		// Notifications tab
 		notificationPanelPMNotifsCheckbox.setSelected(Settings.PM_NOTIFICATIONS);
-		notificationPanelTradeNotifsCheckbox.setSelected(Settings.TRADE_NOTIFICATIONS); 	// TODO: Implement this feature
+		notificationPanelTradeNotifsCheckbox.setSelected(Settings.TRADE_NOTIFICATIONS); // TODO: Implement this feature
 		notificationPanelDuelNotifsCheckbox.setSelected(Settings.DUEL_NOTIFICATIONS);
 		notificationPanelLogoutNotifsCheckbox.setSelected(Settings.LOGOUT_NOTIFICATIONS);
 		notificationPanelLowHPNotifsCheckbox.setSelected(Settings.LOW_HP_NOTIFICATIONS);
@@ -1107,7 +1097,7 @@ public class ConfigWindow {
 		notificationPanelNotifSoundClientFocusButton.setSelected(!Settings.SOUND_NOTIFS_ALWAYS);
 		notificationPanelNotifSoundAnyFocusButton.setSelected(Settings.SOUND_NOTIFS_ALWAYS);
 		
-		//Streaming & Privacy tab
+		// Streaming & Privacy tab
 		streamingPanelTwitchChatCheckbox.setSelected(Settings.TWITCH_HIDE);
 		streamingPanelTwitchChannelNameTextField.setText(Settings.TWITCH_CHANNEL);
 		streamingPanelTwitchOAuthTextField.setText(Settings.TWITCH_OAUTH);
@@ -1124,15 +1114,15 @@ public class ConfigWindow {
 	 * Saves the settings from the gui values to the settings class variables
 	 */
 	public void saveSettings() {
-		//General options
+		// General options
 		Settings.CUSTOM_CLIENT_SIZE = generalPanelClientSizeCheckbox.isSelected();
-		Settings.CUSTOM_CLIENT_SIZE_X = ((SpinnerNumberModel)(generalPanelClientSizeXSpinner.getModel())).getNumber().intValue();
-		Settings.CUSTOM_CLIENT_SIZE_Y = ((SpinnerNumberModel)(generalPanelClientSizeYSpinner.getModel())).getNumber().intValue();
+		Settings.CUSTOM_CLIENT_SIZE_X = ((SpinnerNumberModel) (generalPanelClientSizeXSpinner.getModel())).getNumber().intValue();
+		Settings.CUSTOM_CLIENT_SIZE_Y = ((SpinnerNumberModel) (generalPanelClientSizeYSpinner.getModel())).getNumber().intValue();
 		Settings.LOAD_CHAT_HISTORY = generalPanelChatHistoryCheckbox.isSelected();
 		Settings.COMBAT_MENU = generalPanelCombatXPMenuCheckbox.isSelected();
 		Settings.SHOW_XPDROPS = generalPanelXPDropsCheckbox.isSelected();
 		Settings.SHOW_FATIGUEDROPS = generalPanelFatigueDropsCheckbox.isSelected();
-		Settings.FATIGUE_FIGURES = ((SpinnerNumberModel)(generalPanelFatigueFigSpinner.getModel())).getNumber().intValue();
+		Settings.FATIGUE_FIGURES = ((SpinnerNumberModel) (generalPanelFatigueFigSpinner.getModel())).getNumber().intValue();
 		Settings.FATIGUE_ALERT = generalPanelFatigueAlertCheckbox.isSelected();
 		Settings.INVENTORY_FULL_ALERT = generalPanelInventoryFullAlertCheckbox.isSelected();
 		Settings.NAME_PATCH_TYPE = generalPanelNamePatchModeSlider.getValue();
@@ -1141,8 +1131,8 @@ public class ConfigWindow {
 		Settings.FOV = generalPanelFoVSlider.getValue();
 		Settings.SOFTWARE_CURSOR = generalPanelCustomCursorCheckbox.isSelected();
 		Settings.VIEW_DISTANCE = generalPanelViewDistanceSlider.getValue();
-
-		//Overlays options
+		
+		// Overlays options
 		Settings.SHOW_STATUSDISPLAY = overlayPanelStatusDisplayCheckbox.isSelected();
 		Settings.SHOW_INVCOUNT = overlayPanelInvCountCheckbox.isSelected();
 		Settings.SHOW_ITEMINFO = overlayPanelItemNamesCheckbox.isSelected();
@@ -1153,23 +1143,23 @@ public class ConfigWindow {
 		Settings.SHOW_FOOD_HEAL_OVERLAY = overlayPanelFoodHealingCheckbox.isSelected();
 		Settings.SHOW_TIME_UNTIL_HP_REGEN = overlayPanelHPRegenTimerCheckbox.isSelected();
 		Settings.DEBUG = overlayPanelDebugModeCheckbox.isSelected();
-
-		//Notifications options
+		
+		// Notifications options
 		Settings.PM_NOTIFICATIONS = notificationPanelPMNotifsCheckbox.isSelected();
 		Settings.TRADE_NOTIFICATIONS = notificationPanelTradeNotifsCheckbox.isSelected();
 		Settings.DUEL_NOTIFICATIONS = notificationPanelDuelNotifsCheckbox.isSelected();
 		Settings.LOGOUT_NOTIFICATIONS = notificationPanelLogoutNotifsCheckbox.isSelected();
 		Settings.LOW_HP_NOTIFICATIONS = notificationPanelLowHPNotifsCheckbox.isSelected();
-		Settings.LOW_HP_NOTIF_VALUE = ((SpinnerNumberModel)(notificationPanelLowHPNotifsSpinner.getModel())).getNumber().intValue();
+		Settings.LOW_HP_NOTIF_VALUE = ((SpinnerNumberModel) (notificationPanelLowHPNotifsSpinner.getModel())).getNumber().intValue();
 		Settings.FATIGUE_NOTIFICATIONS = notificationPanelFatigueNotifsCheckbox.isSelected();
-		Settings.FATIGUE_NOTIF_VALUE = ((SpinnerNumberModel)(notificationPanelFatigueNotifsSpinner.getModel())).getNumber().intValue();
+		Settings.FATIGUE_NOTIF_VALUE = ((SpinnerNumberModel) (notificationPanelFatigueNotifsSpinner.getModel())).getNumber().intValue();
 		Settings.NOTIFICATION_SOUNDS = notificationPanelNotifSoundsCheckbox.isSelected();
 		Settings.USE_SYSTEM_NOTIFICATIONS = notificationPanelUseSystemNotifsCheckbox.isSelected();
 		Settings.TRAY_NOTIFS = notificationPanelTrayPopupCheckbox.isSelected();
 		Settings.TRAY_NOTIFS_ALWAYS = notificationPanelTrayPopupAnyFocusButton.isSelected();
 		Settings.SOUND_NOTIFS_ALWAYS = notificationPanelNotifSoundAnyFocusButton.isSelected();
-
-		//Streaming & Privacy
+		
+		// Streaming & Privacy
 		Settings.TWITCH_HIDE = streamingPanelTwitchChatCheckbox.isSelected();
 		Settings.TWITCH_CHANNEL = streamingPanelTwitchChannelNameTextField.getText();
 		Settings.TWITCH_OAUTH = streamingPanelTwitchOAuthTextField.getText();
@@ -1179,30 +1169,30 @@ public class ConfigWindow {
 		
 		Settings.Save();
 	}
-
+	
 	public void disposeJFrame() {
 		frame.dispose();
 	}
 	
-    /**
-     * Sets the text of the button to its keybind.
-     * @param kbs - The KeybindSet object to set the button text of.
-     */
-    public static void setKeybindButtonText(KeybindSet kbs) {
-        kbs.button.setText(kbs.getFormattedKeybindText());
-    }
+	/**
+	 * Sets the text of the button to its keybind.
+	 * 
+	 * @param kbs - The KeybindSet object to set the button text of.
+	 */
+	public static void setKeybindButtonText(KeybindSet kbs) {
+		kbs.button.setText(kbs.getFormattedKeybindText());
+	}
 	
 	/**
-	 * Applies the settings in the Config GUI to the Settings class variables.<br>
-	 * Note that this method should be used to apply any additional settings that are not applied automatically, 
-	 * such as those already present. Also note that thread-unsafe operations affecting the applet should not
-	 * be done in this method, as this method is invoked by the AWT event queue.
+	 * Applies the settings in the Config GUI to the Settings class variables. <br>
+	 * Note that this method should be used to apply any additional settings that are not applied automatically, such as those already present. Also note that thread-unsafe
+	 * operations affecting the applet should not be done in this method, as this method is invoked by the AWT event queue.
 	 */
 	public void applySettings() {
 		saveSettings();
 		if (Settings.CUSTOM_CLIENT_SIZE)
 			Game.getInstance().resizeFrameWithContents();
-		Settings.fovUpdateRequired = true; //Tell the Renderer to update the FoV from its thread to avoid thread-safety issues.
+		Settings.fovUpdateRequired = true; // Tell the Renderer to update the FoV from its thread to avoid thread-safety issues.
 		Settings.checkSoftwareCursor();
 		Camera.setDistance(Settings.VIEW_DISTANCE);
 		
@@ -1214,24 +1204,23 @@ public class ConfigWindow {
  *
  */
 class ClickListener implements ActionListener {
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton button = (JButton) e.getSource();
 		button.setText("...");
 		button.setFocusable(true);
-		button.requestFocusInWindow();		
+		button.requestFocusInWindow();
 	}
 }
 
 class ButtonFocusListener implements FocusListener {
-
 	@Override
-	public void focusGained(FocusEvent arg0) {}
-
+	public void focusGained(FocusEvent arg0) {
+	}
+	
 	@Override
 	public void focusLost(FocusEvent arg0) {
-		JButton button = (JButton)arg0.getSource();
+		JButton button = (JButton) arg0.getSource();
 		
 		for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
 			if (button == kbs.button) {
@@ -1243,7 +1232,6 @@ class ButtonFocusListener implements FocusListener {
 }
 
 class RebindListener implements KeyListener {
-
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		KeyModifier modifier = KeyModifier.NONE;
@@ -1263,26 +1251,23 @@ class RebindListener implements KeyListener {
 		if (arg0.getKeyCode() == KeyEvent.VK_CONTROL || arg0.getKeyCode() == KeyEvent.VK_SHIFT || arg0.getKeyCode() == KeyEvent.VK_ALT) {
 			return;
 		}
+		
 		if (arg0.isControlDown()) {
 			modifier = KeyModifier.CTRL;
-			
 		} else if (arg0.isShiftDown()) {
 			modifier = KeyModifier.SHIFT;
-			
 		} else if (arg0.isAltDown()) {
 			modifier = KeyModifier.ALT;
 		}
 		
 		int key = arg0.getKeyCode();
-		JButton jbtn = (JButton)arg0.getSource();
+		JButton jbtn = (JButton) arg0.getSource();
 		
 		if (key != -1)
 			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
-				if (jbtn != kbs.button) {
-					if (kbs.isDuplicateKeybindSet(modifier, key)) {
-						jbtn.setText("DUPLICATE!");
-						return;
-					}
+				if ((jbtn != kbs.button) && kbs.isDuplicateKeybindSet(modifier, key)) {
+					jbtn.setText("DUPLICATE!");
+					return;
 				}
 			}
 		
@@ -1295,11 +1280,13 @@ class RebindListener implements KeyListener {
 			}
 		}
 	}
-
+	
 	@Override
-	public void keyReleased(KeyEvent arg0) {}
-
+	public void keyReleased(KeyEvent arg0) {
+	}
+	
 	@Override
-	public void keyTyped(KeyEvent arg0) {}
+	public void keyTyped(KeyEvent arg0) {
+	}
 	
 }
