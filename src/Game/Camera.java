@@ -26,8 +26,9 @@ import Client.Settings;
 public class Camera {
 	
 	private Camera() {
+		// Empty private constructor to prevent instantiation.
 	}
-	
+
 	public static void init() {
 		zoom = 750; // TODO: Preserve zoom on relog, but not necessarily between sessions
 		rotation = 126;

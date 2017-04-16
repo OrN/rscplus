@@ -47,12 +47,16 @@ import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 
+/**
+ * Singleton class which hooks variables and patches classes
+ */
 public class JClassPatcher {
 	
 	private JClassPatcher() {
+		// Empty private constructor to prevent extra instances from being created.
 	}
 	
-	public byte[] patch(byte data[]) {
+	public byte[] patch(byte[] data) {
 		ClassReader reader = new ClassReader(data);
 		ClassNode node = new ClassNode();
 		reader.accept(node, ClassReader.SKIP_DEBUG);
@@ -131,7 +135,7 @@ public class JClassPatcher {
 			hookClassVariable(methodNode, "client", "Ak", "[I", "Game/Client", "xp", "[I", true, false);
 			hookClassVariable(methodNode, "client", "vg", "I", "Game/Client", "fatigue", "I", true, false);
 			hookClassVariable(methodNode, "client", "Fg", "I", "Game/Client", "combat_style", "I", true, true);
-			if (Settings.SAVE_LOGININFO == true)
+			if (Settings.SAVE_LOGININFO)
 				hookClassVariable(methodNode, "client", "Xd", "I", "Game/Client", "login_screen", "I", false, true);
 			
 			hookClassVariable(methodNode, "client", "Ek", "Llb;", "Game/Camera", "instance", "Ljava/lang/Object;", true, false);
@@ -922,7 +926,12 @@ public class JClassPatcher {
 	}
 	
 	public static JClassPatcher getInstance() {
-		return (instance == null) ? (instance = new JClassPatcher()) : instance;
+		if (instance == null) {
+			synchronized (JClassPatcher.class) {
+				instance = new JClassPatcher();
+			}
+		}
+		return instance;
 	}
 	
 	private Printer printer = new Textifier();

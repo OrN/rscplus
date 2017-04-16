@@ -75,6 +75,7 @@ public class TrayHandler implements MouseListener {
 		MenuItem exit = new MenuItem("Exit");
 		
 		settings.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Launcher.getConfigWindow().showConfigWindow();
@@ -82,6 +83,7 @@ public class TrayHandler implements MouseListener {
 		});
 		
 		exit.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO: Perhaps find a way to close the client from the tray icon and call both WindowClosing() and WindowClosed(), though

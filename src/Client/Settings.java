@@ -37,6 +37,7 @@ import Game.KeyboardHandler;
 import Game.Renderer;
 
 public class Settings {
+	
 	// Internally used variables
 	public static boolean fovUpdateRequired;
 	public static boolean versionCheckRequired = true;
@@ -62,9 +63,9 @@ public class Settings {
 		
 		// Load other directories
 		Dir.CACHE = Dir.JAR + "/cache";
-		Util.MakeDirectory(Dir.CACHE);
+		Util.makeDirectory(Dir.CACHE);
 		Dir.SCREENSHOT = Dir.JAR + "/screenshots";
-		Util.MakeDirectory(Dir.SCREENSHOT);
+		Util.makeDirectory(Dir.SCREENSHOT);
 	}
 	
 	public static void Load() {
@@ -184,7 +185,7 @@ public class Settings {
 		
 		if (DISASSEMBLE) {
 			Dir.DUMP = Dir.JAR + "/" + DISASSEMBLE_DIRECTORY;
-			Util.MakeDirectory(Dir.DUMP);
+			Util.makeDirectory(Dir.DUMP);
 		}
 	}
 	
@@ -578,6 +579,7 @@ public class Settings {
 	}
 	
 	public static class Dir {
+		
 		public static String JAR;
 		public static String CACHE;
 		public static String DUMP;

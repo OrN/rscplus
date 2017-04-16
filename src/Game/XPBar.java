@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 import java.text.NumberFormat;
 
 public class XPBar {
+	
 	public XPBar() {
 		current_skill = -1;
 	}
@@ -36,9 +37,16 @@ public class XPBar {
 		m_timer = Renderer.time + timer_length;
 	}
 	
+	/**
+	 * Handles rendering the XP bar and hover information
+	 * 
+	 * @param g the Graphics2D object
+	 */
 	void draw(Graphics2D g) {
-		if (Renderer.time > m_timer)
+		if (Renderer.time > m_timer) {
 			current_skill = -1;
+			return;
+		}
 		
 		if (current_skill == -1)
 			return;
@@ -47,20 +55,20 @@ public class XPBar {
 		
 		float alpha = 1.0f;
 		if (delta >= timer_length - 250 && last_timer_finished)
-			alpha = (float)(timer_length - delta) / 250.0f; // fade in over 1/4th second
-		else if (delta < timer_fadeout) // less than timer_fadeout milliseconds left to display the xpbar
+			alpha = (float)(timer_length - delta) / 250.0f; // Fade in over 1/4th second
+		else if (delta < timer_fadeout) // Less than timer_fadeout milliseconds left to display the XP bar
 			alpha = (float)delta / timer_fadeout;
-		
+
 		int skill_current_xp = (int)Client.getXPforLevel(Client.getBaseLevel(current_skill));
 		int skill_next_xp = (int)Client.getXPforLevel(Client.getBaseLevel(current_skill) + 1);
-		int xp_until_level = (int)Client.getXPUntilLevel(current_skill);
+		int xp_until_level = (int)Client.getXPUntilLevel(current_skill); // TODO: Use this variable or remove it
 		
 		int xp = (int)Client.getXP(current_skill) - skill_current_xp;
 		int xp_needed = skill_next_xp - skill_current_xp;
 		
 		// Draw bar
 		
-		xp_bar_x = Renderer.width - 210 - bounds.width; // position to the left of the Settings wrench
+		xp_bar_x = Renderer.width - 210 - bounds.width; // Position to the left of the Settings wrench
 		int percent = xp * (bounds.width - 2) / xp_needed;
 		
 		int x = xp_bar_x;
@@ -84,7 +92,7 @@ public class XPBar {
 			y = MouseHandler.y + 16;
 			g.setColor(Renderer.color_gray);
 			Renderer.setAlpha(g, 0.5f);
-			if (Client.showXpPerHour[current_skill])
+			if (Client.getShowXpPerHour()[current_skill])
 				g.fillRect(x - 100, y, 200, 60);
 			else
 				g.fillRect(x - 100, y, 200, 36);
@@ -95,17 +103,17 @@ public class XPBar {
 			y += 12;
 			Renderer.drawShadowText(g, "XP until Level: " + formatXP(Client.getXPUntilLevel(current_skill)), x, y, Renderer.color_text, true);
 			y += 12;
-			if (Client.showXpPerHour[current_skill]) {
-				Renderer.drawShadowText(g, "XP/Hr: " + formatXP(Client.XpPerHour[current_skill]), x, y, Renderer.color_text, true);
+			if (Client.getShowXpPerHour()[current_skill]) {
+				Renderer.drawShadowText(g, "XP/Hr: " + formatXP(Client.getXpPerHour()[current_skill]), x, y, Renderer.color_text, true);
 				y += 12;
 				Renderer.drawShadowText(g,
 						"Actions until Level: "
-								+ formatXP(Client.getXPUntilLevel(current_skill) / (Client.lastXpGain[current_skill][0] / (Client.lastXpGain[current_skill][3] + 1))),
+								+ formatXP(Client.getXPUntilLevel(current_skill) / (Client.getLastXpGain()[current_skill][0] / (Client.getLastXpGain()[current_skill][3] + 1))),
 						x, y, Renderer.color_text, true);
 				y += 12;
 			}
 			
-			if (delta < timer_fadeout + 100) { // don't allow xp bar to disappear while user is still interacting with it.
+			if (delta < timer_fadeout + 100) { // Don't allow XP bar to disappear while user is still interacting with it.
 				m_timer += timer_fadeout + 1500;
 				last_timer_finished = false;
 			}
@@ -114,19 +122,25 @@ public class XPBar {
 		Renderer.setAlpha(g, 1.0f);
 	}
 	
+	/**
+	 * Rounds up a double to to the nearest integer and adds commas, periods, etc. according to the local of the user
+	 * 
+	 * @param number
+	 * @return a formatted version of the double as a String
+	 */
 	public static String formatXP(double number) {
 		return NumberFormat.getIntegerInstance().format(Math.ceil(number));
 	}
 	
 	public static Dimension bounds = new Dimension(110, 16);
 	public static int xp_bar_x;
-	// don't need to set this more than once; we are always positioning the xp_bar to be vertically center aligned with the Settings wrench.
+	// Don't need to set this more than once; we are always positioning the xp_bar to be vertically center aligned with the Settings wrench.
 	public static int xp_bar_y = 20 - (bounds.height / 2);
 	
 	public int current_skill;
 	public int timer_length = 5000;
 	public long timer_fadeout = 2000;
 	
-	private boolean last_timer_finished = false; // don't fade in if xp bar is already displayed
+	private boolean last_timer_finished = false; // Don't fade in if XP bar is already displayed
 	private long m_timer;
 }

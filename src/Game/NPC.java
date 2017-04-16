@@ -22,6 +22,7 @@
 package Game;
 
 class NPC {
+	
 	public NPC(int x, int y, int width, int height, String name, int type) {
 		this.x = x;
 		this.y = y;

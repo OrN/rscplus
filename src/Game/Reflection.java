@@ -28,6 +28,7 @@ import Client.Launcher;
 import Client.Logger;
 
 public class Reflection {
+	
 	public static void Load() {
 		try {
 			JClassLoader classLoader = Launcher.getInstance().getClassLoader();

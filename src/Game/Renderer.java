@@ -52,6 +52,7 @@ import Client.Settings;
 import Client.Util;
 
 public class Renderer {
+	
 	public static void init() {
 		// Resize game window
 		new_size.width = 512;
@@ -127,19 +128,19 @@ public class Renderer {
 		// Run other parts update methods
 		Client.update();
 		
-		Graphics2D g2 = (Graphics2D)game_image.getGraphics();
+		Graphics2D g2 = (Graphics2D)game_image.getGraphics(); // TODO: Declare g2 outside of the present method
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setFont(font_main);
 		
 		g2.drawImage(image, 0, 0, null);
 		g2.drawImage(image_border, 512, height - 13, width - 512, 13, null);
 		
-		// In-game ui
+		// In-game UI
 		if (Client.state == Client.STATE_GAME) {
 			if (!Client.isInterfaceOpen() && Client.show_menu == Client.MENU_NONE) {
-				List<Rectangle> npc_hitbox = new ArrayList<Rectangle>();
-				List<Rectangle> player_hitbox = new ArrayList<Rectangle>();
-				List<Point> entity_text_loc = new ArrayList<Point>();
+				List<Rectangle> npc_hitbox = new ArrayList<>();
+				List<Rectangle> player_hitbox = new ArrayList<>();
+				List<Point> entity_text_loc = new ArrayList<>();
 				
 				for (Iterator<NPC> iterator = Client.npc_list.iterator(); iterator.hasNext();) {
 					NPC npc = iterator.next();
@@ -199,12 +200,12 @@ public class Renderer {
 					}
 				}
 				
-				List<Rectangle> item_hitbox = new ArrayList<Rectangle>();
-				List<Point> item_text_loc = new ArrayList<Point>();
+				List<Rectangle> item_hitbox = new ArrayList<>();
+				List<Point> item_text_loc = new ArrayList<>();
 				
-				if (Settings.SHOW_ITEMINFO) { // don't sort if we aren't displaying any item names anyway
+				if (Settings.SHOW_ITEMINFO) { // Don't sort if we aren't displaying any item names anyway
 					try {
-						// keep items in (technically reverse) alphabetical order for SHOW_ITEMINFO instead of randomly changing places each frame
+						// Keep items in (technically reverse) alphabetical order for SHOW_ITEMINFO instead of randomly changing places each frame
 						Collections.sort(Client.item_list, new ItemComparator());
 					} catch (Exception e) { // Sometimes Java helpfully complains that the sorting method violates its general contract.
 						e.printStackTrace();
@@ -255,7 +256,7 @@ public class Renderer {
 							// click to pick them all up. Currently will just show "Coins (2)" if there are two stacks of coins on the ground.
 							drawShadowText(g2, item.getName() + ((freq == 1) ? "" : " (" + freq + ")"), x, y, color_prayer, true);
 						}
-						last_item = item; // done with item this loop, can save it as last_item
+						last_item = item; // Done with item this loop, can save it as last_item
 					}
 				}
 			}
@@ -636,6 +637,7 @@ public class Renderer {
 }
 
 class ItemComparator implements Comparator<Item> {
+	
 	@Override
 	public int compare(Item a, Item b) {
 		int offset = (a.getName().compareToIgnoreCase(b.getName()) * -1); // this is reverse alphabetical order b/c we display them/in reverse order (y-=12 ea item)

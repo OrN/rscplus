@@ -31,7 +31,18 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import Game.Game;
 
+/**
+ * Singleton main class which renders a loading window, followed by the game client window.
+ */
 public class Launcher extends JFrame implements Runnable {
+	
+	private Launcher() {
+		// Empty private constructor to prevent extra instances from being created.
+	}
+	
+	/**
+	 * Renders the launcher progress bar window, then calls {@link #run()}.
+	 */
 	public void init() {
 		Logger.Info("Starting rscplus");
 		
@@ -65,13 +76,17 @@ public class Launcher extends JFrame implements Runnable {
 		new Thread(this).start();
 	}
 	
+	/**
+	 * Generates a config file if needed and launches the main client window.
+	 */
 	@Override
 	public void run() {
+		// Generates a config file if needed
 		Settings.Save();
 		
 		setStatus("Loading JConfig...");
 		JConfig config = Game.getInstance().getJConfig();
-		if (!config.fetch(Util.MakeWorldURL(Settings.WORLD))) {
+		if (!config.fetch(Util.makeWorldURL(Settings.WORLD))) {
 			error("Unable to fetch JConfig");
 			return;
 		}
@@ -101,6 +116,11 @@ public class Launcher extends JFrame implements Runnable {
 		game.start();
 	}
 	
+	/**
+	 * Changes the launcher progress bar text and pauses the thread for 5 seconds.
+	 * 
+	 * @param text Text to change the progress bar text to
+	 */
 	public void error(String text) {
 		setStatus("Error: " + text);
 		try {
@@ -109,6 +129,11 @@ public class Launcher extends JFrame implements Runnable {
 		}
 	}
 	
+	/**
+	 * Changes the launcher progress bar text.
+	 * 
+	 * @param text Text to change the progress bar text to
+	 */
 	public void setStatus(final String text) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -118,6 +143,12 @@ public class Launcher extends JFrame implements Runnable {
 		});
 	}
 	
+	/**
+	 * Sets the progress value of the launcher progress bar.
+	 * 
+	 * @param value The number of tasks that have been completed
+	 * @param total The total number of tasks to complete 
+	 */
 	public void setProgress(final int value, final int total) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -136,7 +167,7 @@ public class Launcher extends JFrame implements Runnable {
 		return m_classLoader;
 	}
 	
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Settings.initDir();
 		setConfigWindow(new ConfigWindow());
 		Settings.Load();
@@ -146,7 +177,12 @@ public class Launcher extends JFrame implements Runnable {
 	}
 	
 	public static Launcher getInstance() {
-		return (instance == null) ? (instance = new Launcher()) : instance;
+		if (instance == null) {
+			synchronized (Launcher.class) {
+				instance = new Launcher();
+			}
+		}
+		return instance;
 	}
 	
 	/**

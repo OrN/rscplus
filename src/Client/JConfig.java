@@ -29,7 +29,17 @@ import java.util.HashMap;
 import java.util.Map;
 import Game.Game;
 
+/**
+ * Parses, stores, and retrieves values from a jav_config.ws file
+ */
 public class JConfig {
+	
+	/**
+	 * Opens and parses a jav_config.ws file.
+	 * 
+	 * @param url The URL to a jav_config.ws file
+	 * @return If no exceptions occurred
+	 */
 	public boolean fetch(String url) {
 		try {
 			URL configURL = new URL(url);
@@ -60,7 +70,6 @@ public class JConfig {
 					parameters.put(paramKey, paramValue);
 					Logger.Debug("parameters[" + paramKey + "]: " + paramValue);
 					break;
-				
 				default:
 					Logger.Debug("data[" + key + "]: " + value);
 					m_data.put(key, value);
@@ -77,7 +86,14 @@ public class JConfig {
 		return true;
 	}
 	
+	/**
+	 * An attempt to check if the version and subversion listed in jav_config.ws are compatible.<br>
+	 * However, as of 4/6/2017, 'viewerversion' and 'other_sub_version' do not appear in jav_config.ws
+	 * 
+	 * @return If the official version of the client is compatible with the RSC+ client
+	 */
 	public boolean isSupported() {
+		// TODO: Since 'viewerversion' and 'other_sub_version' do not appear in jav_config.ws, this method doesn't do anything meaningful
 		String version = m_data.get("viewerversion");
 		if (version == null)
 			version = "0";
@@ -89,6 +105,11 @@ public class JConfig {
 		return Integer.valueOf(version) <= VERSION && Integer.valueOf(subVersion) <= SUBVERSION;
 	}
 	
+	/**
+	 * Prepares the client to log into a given world and saves the choice in the config
+	 * 
+	 * @param world The desired world to log into
+	 */
 	public void changeWorld(int world) {
 		// Clip world to 1 - 5
 		if (world > 5)
@@ -112,10 +133,22 @@ public class JConfig {
 		Game.getInstance().setTitle("World " + (Settings.WORLD));
 	}
 	
+	/**
+	 * Gets the corresponding String from the {@link #m_data} HashMap, given the key
+	 * 
+	 * @param key A key for the {@link #m_data} HashMap
+	 * @return A String stored in the {@link #m_data} HashMap
+	 */
 	public String getString(String key) {
 		return m_data.get(key);
 	}
 	
+	/**
+	 * Attempts to return a URL from {@link #m_data}, given the key
+	 * 
+	 * @param key The key to a corresponding URL
+	 * @return A URL
+	 */
 	public URL getURL(String key) {
 		try {
 			return new URL(m_data.get(key));
@@ -124,6 +157,11 @@ public class JConfig {
 		}
 	}
 	
+	/**
+	 * Gets the URL that points to the vanilla RSC client jar.
+	 * 
+	 * @return The URL to the vanilla RSC client jar
+	 */
 	public URL getJarURL() {
 		String codebase = m_data.get("codebase");
 		if (codebase == null)
@@ -140,6 +178,11 @@ public class JConfig {
 		}
 	}
 	
+	/**
+	 * Gets the main class of the client jar from jav_config.ws.
+	 * 
+	 * @return The name of the main class of the client jar
+	 */
 	public String getJarClass() {
 		String initial_class = m_data.get("initial_class");
 		if (initial_class == null)
@@ -148,6 +191,12 @@ public class JConfig {
 		return initial_class.substring(0, initial_class.indexOf(".class"));
 	}
 	
+	/**
+	 * Gets values in the {@link #m_data} HashMap.
+	 * 
+	 * @param key The HashMap key
+	 * @return The value of the {@link #m_data} HashMap for the supplied key
+	 */
 	public int getInteger(String key) {
 		String string = m_data.get(key);
 		if (string != null)
@@ -160,7 +209,17 @@ public class JConfig {
 	public static final int VERSION = 124;
 	public static final int SUBVERSION = 2;
 	
+	/**
+	 * Stores the jav_config.ws 'param' value sets
+	 * 
+	 * @see {@link #m_data}
+	 */
 	public Map<String, String> parameters = new HashMap<String, String>();
 	
+	/**
+	 * Stores the jav_config.ws value sets for everything but 'param' and 'msg'
+	 * 
+	 * @see {@link JConfig#parameters}
+	 */
 	private Map<String, String> m_data = new HashMap<String, String>();
 }

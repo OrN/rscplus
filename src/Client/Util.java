@@ -30,11 +30,23 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class Util {
-	public static String MakeWorldURL(int world) {
+	
+	/**
+	 * Gets the URL to the RSC jav_config.ws file for a given world.
+	 * 
+	 * @param world
+	 * @return the URL to the jav_config.ws file
+	 */
+	public static String makeWorldURL(int world) {
 		return "http://classic" + world + ".runescape.com/jav_config.ws";
 	}
 	
-	public static void MakeDirectory(String name) {
+	/**
+	 * Creates a directory relative to the jar location.
+	 * 
+	 * @param name The name of the folder to create
+	 */
+	public static void makeDirectory(String name) {
 		File dir = new File(name);
 		if (dir.isFile())
 			dir.delete();
@@ -42,6 +54,13 @@ public class Util {
 			dir.mkdir();
 	}
 	
+	/**
+	 * Converts a byte array into a String of 2 digit hexadecimal numbers.
+	 * 
+	 * @param data
+	 * @return a String of hexadecimal numbers
+	 * @see {@link #hexStringByte}
+	 */
 	public static String byteHexString(byte[] data) {
 		String ret = "";
 		for (int i = 0; i < data.length; i++)
@@ -49,9 +68,16 @@ public class Util {
 		return ret;
 	}
 	
+	/**
+	 * Converts a String of 2 digit hexadecimal numbers into a byte array.
+	 * 
+	 * @param data
+	 * @return a byte array
+	 * @see {@link #byteHexString}
+	 */
 	public static byte[] hexStringByte(String data) {
-		byte[] bytes = new byte[(data.length() / 2)];
-		int j = 0;
+		byte[] bytes = new byte[data.length() / 2];
+		int j;
 		for (int i = 0; i < bytes.length; i++) {
 			j = i * 2;
 			String hex_pair = data.substring(j, j + 2);
@@ -61,6 +87,11 @@ public class Util {
 		return bytes;
 	}
 	
+	/**
+	 * Gets the populations of the worlds.
+	 * 
+	 * @return an array containing the population of each world
+	 */
 	public static int[] getPop() {
 		if (worldPopArray == null)
 			worldPopArray = new int[6];
@@ -125,5 +156,9 @@ public class Util {
 	}
 	
 	static int[] worldPopArray;
+	
+	/**
+	 * The last time the world populations were checked
+	 */
 	static long lastPopCheck = 0;
 }

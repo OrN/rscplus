@@ -38,10 +38,10 @@ public class KeybindSet {
 	/**
 	 * Creates a new KeybindSet object to store associated keybindings and their command values.
 	 * 
-	 * @param button - The button associated with the keybind
-	 * @param commandName - The command associated with the keybind. This should be a unique string with no spaces.
-	 * @param modifier - The modifier key, a KeyModifier with a possible value of NONE, CTRL, ALT, or SHIFT
-	 * @param key - The key associated with the keybind; does not include the modifier key.
+	 * @param button The button associated with the keybind
+	 * @param commandName The command associated with the keybind. This should be a unique string with no spaces.
+	 * @param modifier The modifier key, a KeyModifier with a possible value of NONE, CTRL, ALT, or SHIFT
+	 * @param key The key associated with the keybind; does not include the modifier key.
 	 */
 	public KeybindSet(JButton button, String commandName, KeyModifier modifier, int key) {
 		this.button = button;
@@ -81,7 +81,7 @@ public class KeybindSet {
 	/**
 	 * Returns a human-friendly format of this KeybindSet's keybind, for use in buttons and printing.
 	 * 
-	 * @return - A string representing the keybind.
+	 * @return A string representing the keybind.
 	 */
 	public String getFormattedKeybindText() {
 		String modifierText = modifier.toString() + " + ";

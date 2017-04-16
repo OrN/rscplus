@@ -28,6 +28,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 public class JClassLoader extends ClassLoader {
+	
+	/**
+	 * Fetches the game jar and loads and patches the classes
+	 * 
+	 * @param jarURL The URL of the jar to be loaded and patched
+	 * @return If no exceptions occurred
+	 */
 	public boolean fetch(String jarURL) {
 		Logger.Info("Fetching Jar: " + jarURL);
 		
@@ -54,7 +61,7 @@ public class JClassLoader extends ClassLoader {
 				
 				if (name.endsWith(".class")) {
 					name = name.substring(0, name.indexOf(".class"));
-					classData = patchClass(classData);
+					classData = JClassPatcher.getInstance().patch(classData);
 					m_classData.put(name, classData);
 				}
 			}
@@ -66,10 +73,6 @@ public class JClassLoader extends ClassLoader {
 		return true;
 	}
 	
-	private byte[] patchClass(byte data[]) {
-		return JClassPatcher.getInstance().patch(data);
-	}
-	
 	@Override
 	public final Class findClass(String name) {
 		byte data[] = m_classData.get(name);
@@ -79,5 +82,8 @@ public class JClassLoader extends ClassLoader {
 		return defineClass(data, 0, data.length);
 	}
 	
+	/**
+	 * Stores class names and the corresponding class byte data
+	 */
 	private Map<String, byte[]> m_classData = new HashMap<String, byte[]>();
 }

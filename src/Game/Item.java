@@ -32,6 +32,7 @@ import Client.Logger;
 import Client.Settings;
 
 public class Item {
+	
 	public Item(int x, int y, int width, int height, int id) {
 		this.x = x;
 		this.y = y;

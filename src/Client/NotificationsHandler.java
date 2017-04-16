@@ -57,6 +57,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import Game.Game;
 
+/**
+ * Handles system and psuedo-system notifications
+ */
 public class NotificationsHandler {
 	
 	static JFrame notificationFrame;
@@ -78,6 +81,7 @@ public class NotificationsHandler {
 		Logger.Info("Creating notification window");
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
+				
 				@Override
 				public void run() {
 					runInit();
@@ -151,6 +155,7 @@ public class NotificationsHandler {
 		// 7
 		JButton closeButton = new JButton("");
 		closeButton.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				setNotificationWindowVisible(false);
@@ -163,7 +168,7 @@ public class NotificationsHandler {
 		closeButton.setContentAreaFilled(false);
 		mainContentPanel.add(closeButton);
 		
-		// 8 (add the background image to the jpanel if on windows)
+		// 8 (add the background image to the JPanel if on windows)
 		
 		/*
 		 * So basically, if we're running windows, everything renders normally and looks great. If we aren't, we assume everything breaks and revert to a simpler but compatible
@@ -174,7 +179,7 @@ public class NotificationsHandler {
 			// Configure the frame to have rounded corners and to be transparent
 			notificationFrame.setShape(new RoundRectangle2D.Double(0, 0, notificationFrame.getWidth(), notificationFrame.getHeight(), 16, 16));
 			
-			notificationFrame.setBackground(new Color(0, 0, 0, 0)); // Make the jframe itself transparent.
+			notificationFrame.setBackground(new Color(0, 0, 0, 0)); // Make the JFrame itself transparent.
 			contentPanel.setBackground(new Color(0, 0, 0, 0));
 			notificationFrame.setBounds(width - 446, height - 154, 449, 104);
 			notificationFrame.setMaximumSize(new Dimension(449, 104));
@@ -267,8 +272,6 @@ public class NotificationsHandler {
 	
 	/**
 	 * Creates the notification timeout thread for closing the non-native notification after a few seconds
-	 * 
-	 * @return
 	 */
 	private static void createNotifTimerThread() {
 		setLastNotifTime(0);
@@ -284,7 +287,6 @@ public class NotificationsHandler {
 	
 	/**
 	 * Thread for the notification timeout thread
-	 *
 	 */
 	static class NotifTimeoutHandler implements Runnable {
 		@Override
@@ -305,13 +307,12 @@ public class NotificationsHandler {
 				Logger.Error("The notifications timeout thread was interrupted unexpectedly! Perhaps the game crashed or was killed?");
 				// End the thread
 			}
-			
 		}
 	}
 	
 	/**
 	 * 
-	 * @param time - Current system time, or -1 to terminate the timeout thread. If this has been set to -1, it cannot be reset; this should only be done on close.
+	 * @param time Current system time, or -1 to terminate the timeout thread. If this has been set to -1, it cannot be reset; this should only be done on close.
 	 */
 	public static synchronized void setLastNotifTime(long time) {
 		if (notifLastShownTime != -1)
@@ -320,7 +321,7 @@ public class NotificationsHandler {
 	
 	/**
 	 * 
-	 * @return - The last millis system time of a notification being shown.
+	 * @return The last millis system time of a notification being shown.
 	 */
 	public static synchronized long getLastNotifTime() {
 		return notifLastShownTime;
@@ -330,10 +331,10 @@ public class NotificationsHandler {
 	 * Displays/plays a notification popup or sound. This method checks whether each of the respective settings for that specific notification type.<br>
 	 * This method does <i>not</i> check for values such as low hp or fatigue amounts, as the code that does so is local to the Render method.
 	 * 
-	 * @param type - The NotifType to display. This can be one of SYSTEM, PM, TRADE, DUEL LOGOUT, LOWHP, or FATIGUE as of the writing of this documentation.
-	 * @param title - The title to use for the notification.
-	 * @param text - Text message of the notification.
-	 * @return - True if at least one type of notification (audio/popup) was attempted; false otherwise
+	 * @param type The NotifType to display. This can be one of SYSTEM, PM, TRADE, DUEL LOGOUT, LOWHP, or FATIGUE as of the writing of this documentation.
+	 * @param title The title to use for the notification.
+	 * @param text Text message of the notification.
+	 * @return True if at least one type of notification (audio/popup) was attempted; false otherwise
 	 */
 	public static boolean notify(NotifType type, String title, String text) {
 		boolean didNotify = false;
@@ -455,14 +456,13 @@ public class NotificationsHandler {
 		}
 		}
 		return didNotify;
-		
 	}
 	
 	/**
 	 * Displays a notification, playing sound if it is enabled
 	 * 
-	 * @param title - The title of the notification
-	 * @param text - Text message of the notification
+	 * @param title The title of the notification
+	 * @param text Text message of the notification
 	 */
 	public static void displayNotification(final String title, String text) {
 		// TODO: Add fade-in and fade-out or slide-in and slide-out animations
@@ -480,6 +480,7 @@ public class NotificationsHandler {
 			}
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
+				
 				@Override
 				public void run() {
 					if (Settings.USE_SYSTEM_NOTIFICATIONS && SystemTray.isSupported()) {
@@ -501,7 +502,7 @@ public class NotificationsHandler {
 	 * Sets visibility of the notification window. If this method is called from a thread other than the event dispatch thread, it will invokeLater() to hide the thread the next
 	 * time the EDT is not busy.
 	 * 
-	 * @param isVisible - Whether the window should be visible
+	 * @param isVisible Whether the window should be visible
 	 */
 	public static void setNotificationWindowVisible(final boolean isVisible) {
 		
@@ -509,6 +510,7 @@ public class NotificationsHandler {
 			notificationFrame.setVisible(isVisible);
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
+				
 				@Override
 				public void run() {
 					NotificationsHandler.notificationFrame.setVisible(isVisible);
@@ -556,6 +558,7 @@ public class NotificationsHandler {
 }
 
 class NotifsShowGameMouseListener implements MouseListener {
+	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		Game.getInstance().toFront();

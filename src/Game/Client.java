@@ -38,24 +38,18 @@ import Client.Logger;
 import Client.NotificationsHandler;
 import Client.NotificationsHandler.NotifType;
 import Client.Settings;
-import Client.TrayHandler;
 import Client.TwitchIRC;
 
 public class Client {
 	
+	/**
+	 * Iterates through {@link #strings} array and checks if various conditions are met. Used for patching client text.
+	 */
 	public static void adaptStrings() {
 		for (int i = 0; i < strings.length; i++) {
-			
-			/*
-			if (strings[i].contains("Oh dear! You are dead...")) {
-				strings[i] = "YOU DIED";
-			}
-			*/
-			
-			if (strings[i].startsWith("from:") && !Settings.SHOW_LOGINDETAILS) {
+			if (!Settings.SHOW_LOGINDETAILS && strings[i].startsWith("from:")) {
 				strings[i] = "@bla@from:";
-			}
-			if (strings[i].startsWith("@bla@from:") && Settings.SHOW_LOGINDETAILS) {
+			} else if (Settings.SHOW_LOGINDETAILS && strings[i].startsWith("@bla@from:")) {
 				strings[i] = "from:";
 			}
 		}
@@ -84,15 +78,20 @@ public class Client {
 		login_screen = 2;
 	}
 	
+	/**
+	 * An updater that runs frequently to update calculations for XP/fatigue drops, the XP bar, etc.<br><br>
+	 * 
+	 * This updater does not handle any rendering, for rendering see {@link Renderer#present}
+	 */
 	public static void update() {
 		// FIXME: This is a hack from a rsc client update (so we can skip updating the client this time)
 		version = 235;
 		
 		if (state == STATE_GAME) {
 			// Process XP drops
-			boolean dropXP = (xpdrop_state[SKILL_HP] > 0.0f);
+			boolean dropXP = (xpdrop_state[SKILL_HP] > 0.0f); // TODO: Declare dropXP outside of the update method
 			for (int i = 0; i < xpdrop_state.length; i++) {
-				float xpGain = getXP(i) - xpdrop_state[i];
+				float xpGain = getXP(i) - xpdrop_state[i]; // TODO: Declare xpGain outside of the update method
 				xpdrop_state[i] += xpGain;
 				
 				if (xpGain > 0.0f && dropXP) {
@@ -104,7 +103,7 @@ public class Client {
 					if ((System.currentTimeMillis() - lastXpGain[i][1]) <= 180000) {
 						// < 3 minutes since last XP drop
 						lastXpGain[i][0] = xpGain + lastXpGain[i][0];
-						XpPerHour[i] = 3600 * (lastXpGain[i][0]) / ((System.currentTimeMillis() - lastXpGain[i][2]) / 1000);
+						xpPerHour[i] = 3600 * (lastXpGain[i][0]) / ((System.currentTimeMillis() - lastXpGain[i][2]) / 1000);
 						lastXpGain[i][3]++;
 						showXpPerHour[i] = true;
 						lastXpGain[i][1] = System.currentTimeMillis();
@@ -160,7 +159,6 @@ public class Client {
 	}
 	
 	public static void getPlayerName() {
-		
 		try {
 			player_name = (String)Reflection.characterName.get(player_object);
 		} catch (IllegalArgumentException | IllegalAccessException e1) {
@@ -213,56 +211,80 @@ public class Client {
 	private static String processClientCommand(String line) {
 		if (line.startsWith("::")) {
 			String commandArray[] = line.substring(2, line.length()).toLowerCase().split(" ");
-			String command = commandArray[0];
 			
-			if (command.equals("toggleroofs"))
+			switch (commandArray[0]) {
+			case "toggleroofs":
 				Settings.toggleHideRoofs();
-			else if (command.equals("togglecombat"))
+				break;
+			case "togglecombat":
 				Settings.toggleCombatMenu();
-			else if (command.equals("togglecolor"))
+				break;
+			case "togglecolor":
 				Settings.toggleColorTerminal();
-			else if (command.equals("togglehitbox"))
+				break;
+			case "togglehitbox":
 				Settings.toggleShowHitbox();
-			else if (command.equals("togglefatigue"))
+				break;
+			case "togglefatigue":
 				Settings.toggleFatigueAlert();
-			else if (command.equals("toggletwitch"))
+				break;
+			case "toggletwitch":
 				Settings.toggleTwitchHide();
-			else if (command.equals("toggleplayerinfo"))
+				break;
+			case "toggleplayerinfo":
 				Settings.toggleShowPlayerInfo();
-			else if (command.equals("togglefriendinfo"))
+				break;
+			case "togglefriendinfo":
 				Settings.toggleShowFriendInfo();
-			else if (command.equals("togglenpcinfo"))
+				break;
+			case "togglenpcinfo":
 				Settings.toggleShowNPCInfo();
-			else if (command.equals("toggleiteminfo"))
+				break;
+			case "toggleiteminfo":
 				Settings.toggleShowItemInfo();
-			else if (command.equals("togglelogindetails"))
+				break;
+			case "togglelogindetails":
 				Settings.toggleShowLoginDetails();
-			else if (command.equals("screenshot"))
+				break;
+			case "screenshot":
 				Renderer.takeScreenshot();
-			else if (command.equals("debug"))
+				break;
+			case "debug":
 				Settings.toggleDebug();
-			else if (command.equals("togglexpdrops"))
+				break;
+			case "togglexpdrops":
 				Settings.toggleXpDrops();
-			else if (command.equals("togglefatiguedrops"))
+				break;
+			case "togglefatiguedrops":
 				Settings.toggleFatigueDrops();
-			else if (command.equals("fov") && commandArray.length > 1)
-				Settings.setClientFoV(commandArray[1]);
-			else if (command.equals("logout"))
+				break;
+			case "fov":
+				if (commandArray.length > 1) {
+					Settings.setClientFoV(commandArray[1]);
+				}
+				break;
+			case "logout":
 				Client.logout();
-			else if (command.equals("toggleinvcount"))
+				break;
+			case "toggleinvcount":
 				Settings.toggleInvCount();
-			else if (command.equals("togglestatusdisplay"))
+				break;
+			case "togglestatusdisplay":
 				Settings.toggleStatusDisplay();
-			else if (command.equals("help")) {
+				break;
+			case "help":
 				try {
 					Help.help(Integer.parseInt(commandArray[2]), commandArray[1]);
 				} catch (Exception e) {
 					Help.help(0, "help");
 				}
+				break;
+			default:
+				if (commandArray[0] != null) {
+					return "::";
+				}
+				break;
 			}
-			
-			if (commandArray[0] != null)
-				return "::";
 		}
 		
 		return line;
@@ -294,8 +316,7 @@ public class Client {
 						+ " @lre@R:@whi@ " + base_level[SKILL_RANGED]
 						+ " @lre@P:@whi@ " + base_level[SKILL_PRAYER]
 						+ " @lre@M:@whi@ " + base_level[SKILL_MAGIC];
-			}
-			else if (command.equals("cmbnocolor")) { // this command stays within character limits and is safe.
+			} else if (command.equals("cmbnocolor")) { // this command stays within character limits and is safe.
 				return "My Combat is Level "
 						// basic melee stats
 						+ ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH] + base_level[SKILL_DEFENSE] + base_level[SKILL_HP]) * 0.25
@@ -401,7 +422,11 @@ public class Client {
 		}
 	}
 	
-	public static Double fetchLatestVersionNumber() { // returns current version number
+	/**
+	 * 
+	 * @return the current version number
+	 */
+	public static Double fetchLatestVersionNumber() {
 		try {
 			Double currentVersion = 0.0;
 			URL updateURL = new URL("https://raw.githubusercontent.com/OrN/rscplus/master/src/Client/Settings.java");
@@ -779,6 +804,20 @@ public class Client {
 		}
 	}
 	
+	public static boolean[] getShowXpPerHour() {
+		return showXpPerHour;
+	}
+
+	public static double[] getXpPerHour() {
+		return xpPerHour;
+	}
+
+	public static double[][] getLastXpGain() {
+		return lastXpGain;
+	}
+
+
+
 	public static List<NPC> npc_list = new ArrayList<NPC>();
 	public static List<Item> item_list = new ArrayList<Item>();
 	
@@ -876,6 +915,9 @@ public class Client {
 	public static int regionX = -1;
 	public static int regionY = -1;
 	
+	/**
+	 * An array of Strings that stores text used in the client
+	 */
 	public static String strings[];
 	
 	public static XPDropHandler xpdrop_handler = new XPDropHandler();
@@ -889,14 +931,29 @@ public class Client {
 	private static KeyboardHandler handler_keyboard;
 	private static float xpdrop_state[] = new float[18];
 	
-	public static boolean showXpPerHour[] = new boolean[18];
-	public static double XpPerHour[] = new double[18];
+	/**
+	 * A boolean array that stores if the XP per hour should be shown for a given skill when hovering on the XP bar. This should only be false for a skill if there has been less
+	 * than 2 XP drops during the current tracking session, since there is not enough data to calculate the XP per hour.
+	 */
+	private static boolean[] showXpPerHour = new boolean[18];
+	/**
+	 * An array to store the XP per hour for a given skill
+	 */
+	private static double[] xpPerHour = new double[18];
+	
+	/**
+	 * A multi-dimensional array that stores the last time XP was gained for a given skill.<br>
+	 * <br>
+	 * 
+	 * The first dimension stores the skill index corresponding to the constants defined in the client class ({@link #SKILL_ATTACK}, etc.)<br>
+	 * The second dimension stores:<br>
+	 * - [0] the total XP gained in a given skill within the sample period,<br>
+	 * - [1] the time of the last XP drop in a given skill,<br>
+	 * - [2] the time of the first XP drop in a given skill within the sample period,<br>
+	 * - [3] and the total number of XP drops recorded within the sample period, plus 1.<br>
+	 */
+	private static double[][] lastXpGain = new double[18][4];
 	
 	// Client version
 	public static int version;
-	
-	// [[skill1, skill2, skill3, ...], [totalXpGainInSample,
-	// mostRecentXpDropTime, initialTimeInSample, sampleSize]]
-	// sampleSize + 1 is the actual sample size
-	public static double lastXpGain[][] = new double[18][4];
 }

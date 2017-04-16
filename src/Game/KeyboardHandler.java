@@ -30,6 +30,7 @@ import Client.KeybindSet.KeyModifier;
 import Client.Settings;
 
 public class KeyboardHandler implements KeyListener {
+	
 	// TODO: Make spacebar clear the login message screen
 	@Override
 	public void keyPressed(KeyEvent e) {

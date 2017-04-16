@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class XPDropHandler {
+	
 	public void add(String text, Color color) {
 		XPDrop xpdrop = new XPDrop(text, color);
 		m_list.add(xpdrop);
@@ -43,6 +44,7 @@ public class XPDropHandler {
 	}
 	
 	class XPDrop {
+		
 		XPDrop(String text, Color color) {
 			this.text = text;
 			this.color = color;

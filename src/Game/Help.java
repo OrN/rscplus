@@ -22,6 +22,7 @@
 package Game;
 
 public class Help {
+	
 	public static void help(int page, String commandType) // this is for users who want to read the readme in game
 	{
 		if (page == 0) {

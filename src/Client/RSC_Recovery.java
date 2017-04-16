@@ -30,6 +30,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
 public class RSC_Recovery {
+	
 	public static void main(String args[]) {
 		Settings.initDir();
 		

@@ -22,6 +22,7 @@
 package Client;
 
 public class Logger {
+	
 	public enum Type {
 		DEBUG(0), INFO(1), ERROR(2);
 		

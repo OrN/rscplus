@@ -22,6 +22,7 @@
 package Game;
 
 public class Menu {
+	
 	public static void resize() {
 		if (chat_menu != null && Reflection.menuX != null) {
 			try {

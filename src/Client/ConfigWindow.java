@@ -97,6 +97,7 @@ import Game.KeyboardHandler;
 
 public class ConfigWindow {
 	
+	
 	private JFrame frame;
 	
 	private JLabel generalPanelNamePatchModeDesc;
@@ -209,6 +210,7 @@ public class ConfigWindow {
 		Logger.Info("Creating configuration window");
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
+				
 				@Override
 				public void run() {
 					runInit();
@@ -288,6 +290,7 @@ public class ConfigWindow {
 		navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.X_AXIS));
 		
 		addButton("OK", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Launcher.getConfigWindow().saveSettings();
@@ -296,6 +299,7 @@ public class ConfigWindow {
 		});
 		
 		addButton("Cancel", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Launcher.getConfigWindow().applySettings();
@@ -304,6 +308,7 @@ public class ConfigWindow {
 		});
 		
 		addButton("Apply", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Launcher.getConfigWindow().applySettings();
@@ -312,6 +317,7 @@ public class ConfigWindow {
 		
 		navigationPanel.add(Box.createHorizontalGlue());
 		addButton("Restore Defaults", navigationPanel, Component.RIGHT_ALIGNMENT).addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int choice = JOptionPane.showConfirmDialog(
@@ -474,6 +480,7 @@ public class ConfigWindow {
 		generalPanelNamePatchModeTextPanel.add(generalPanelNamePatchModeDesc, BorderLayout.CENTER);
 		
 		generalPanelNamePatchModeSlider.addChangeListener(new ChangeListener() {
+			
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				switch (generalPanelNamePatchModeSlider.getValue()) {
@@ -812,11 +819,11 @@ public class ConfigWindow {
 	/**
 	 * Adds a new keybind to the GUI and settings and registers it to be checked when keypresses are sent to the applet.
 	 * 
-	 * @param panel - Panel to add the keybind label and button to
-	 * @param labelText - Text describing the keybind's function as shown to the user on the config window.
-	 * @param commandID - Unique String matching an entry in the processKeybindCommand switch statement.
-	 * @param defaultModifier - Default modifier value. This can be one of the enum values of KeybindSet.KeyModifier, eg KeyModifier.CTRL
-	 * @param defaultKeyValue - Default key value. This should match up with a KeyEvent.VK_ value. Set to -1 to set the default as NONE
+	 * @param panel Panel to add the keybind label and button to
+	 * @param labelText Text describing the keybind's function as shown to the user on the config window.
+	 * @param commandID Unique String matching an entry in the processKeybindCommand switch statement.
+	 * @param defaultModifier Default modifier value. This can be one of the enum values of KeybindSet.KeyModifier, eg KeyModifier.CTRL
+	 * @param defaultKeyValue Default key value. This should match up with a KeyEvent.VK_ value. Set to -1 to set the default as NONE
 	 */
 	private void addKeybindSet(JPanel panel, String labelText, String commandID, KeyModifier defaultModifier, int defaultKeyValue) {
 		addKeybindLabel(panel, labelText);
@@ -844,9 +851,9 @@ public class ConfigWindow {
 	/**
 	 * Adds a new label to the keybinds list. This should be used in conjunction with adding a button in a 1:1 ratio. The new label will be added below the existing ones.
 	 * 
-	 * @param panel - Panel to add the label to.
-	 * @param labelText - Text of the label to add.
-	 * @return - The label that was added.
+	 * @param panel Panel to add the label to.
+	 * @param labelText Text of the label to add.
+	 * @return The label that was added.
 	 */
 	private JLabel addKeybindLabel(JPanel panel, String labelText) {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -868,9 +875,9 @@ public class ConfigWindow {
 	/**
 	 * Adds a new button to the keybinds list. This should be used in conjunction with adding a label in a 1:1 ratio. The new button will be added below the existing ones.
 	 * 
-	 * @param panel - Panel to add the button to.
-	 * @param buttonText - Text of the label to add.
-	 * @return - The label that was added.
+	 * @param panel Panel to add the button to.
+	 * @param buttonText Text of the label to add.
+	 * @return The label that was added.
 	 */
 	private JButton addKeybindButton(JPanel panel, String buttonText) {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -887,8 +894,8 @@ public class ConfigWindow {
 	/**
 	 * Adds a new category title to the keybinds list.
 	 * 
-	 * @param panel - Panel to add the title to.
-	 * @param categoryName - Name of the category to add.
+	 * @param panel Panel to add the title to.
+	 * @param categoryName Name of the category to add.
 	 */
 	private void addKeybindCategory(JPanel panel, String categoryName) {
 		addKeybindCategoryLabel(panel, "<html><b>" + categoryName + "</b></html>");
@@ -900,7 +907,7 @@ public class ConfigWindow {
 	/**
 	 * Adds a new horizontal separator to the keybinds list. The JSeparator spans 2 columns.
 	 * 
-	 * @param panel - Panel to add the separator to.
+	 * @param panel Panel to add the separator to.
 	 */
 	private void addKeybindCategorySeparator(JPanel panel) {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -921,9 +928,9 @@ public class ConfigWindow {
 	/**
 	 * Adds a new category label to the keybinds list. The JLabel spans 2 columns.
 	 * 
-	 * @param panel - Panel to add the label to.
-	 * @param categoryName - Name of the category to add.
-	 * @return - The label that was added.
+	 * @param panel Panel to add the label to.
+	 * @param categoryName Name of the category to add.
+	 * @return The label that was added.
 	 */
 	private JLabel addKeybindCategoryLabel(JPanel panel, String categoryName) {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -946,8 +953,8 @@ public class ConfigWindow {
 	/**
 	 * Adds a new category title to the notifications list.
 	 * 
-	 * @param panel - Panel to add the title to.
-	 * @param categoryName - Name of the category to add.
+	 * @param panel Panel to add the title to.
+	 * @param categoryName Name of the category to add.
 	 */
 	private void addNotificationCategory(JPanel panel, String categoryName) {
 		addNotificationCategoryLabel(panel, "<html><b>" + categoryName + "</b></html>");
@@ -957,7 +964,7 @@ public class ConfigWindow {
 	/**
 	 * Adds a new horizontal separator to the notifications list.
 	 * 
-	 * @param panel - Panel to add the separator to.
+	 * @param panel Panel to add the separator to.
 	 */
 	private void addNotificationCategorySeparator(JPanel panel) {
 		JSeparator jsep = new JSeparator(SwingConstants.HORIZONTAL);
@@ -968,9 +975,9 @@ public class ConfigWindow {
 	/**
 	 * Adds a new category label to the notifications list.
 	 * 
-	 * @param panel - Panel to add the label to.
-	 * @param categoryName - Name of the category to add.
-	 * @return - The label that was added.
+	 * @param panel Panel to add the label to.
+	 * @param categoryName Name of the category to add.
+	 * @return The label that was added.
 	 */
 	private JLabel addNotificationCategoryLabel(JPanel panel, String categoryName) {
 		JLabel jlbl = new JLabel(categoryName);
@@ -981,8 +988,8 @@ public class ConfigWindow {
 	/**
 	 * Adds a preconfigured JCheckbox to the specified container, setting its alignment constraint to left and adding an empty padding border.
 	 * 
-	 * @param text - The text of the checkbox
-	 * @param container - The container to add the checkbox to.
+	 * @param text The text of the checkbox
+	 * @param container The container to add the checkbox to.
 	 * @return The newly created JCheckBox.
 	 */
 	private JCheckBox addCheckbox(String text, Container container) {
@@ -996,9 +1003,9 @@ public class ConfigWindow {
 	/**
 	 * Adds a preconfigured JButton to the specified container using the specified alignment constraint. Does not modify the button's border.
 	 * 
-	 * @param text - The text of the button
-	 * @param container - The container to add the button to
-	 * @param alignment - The alignment of the button.
+	 * @param text The text of the button
+	 * @param container The container to add the button to
+	 * @param alignment The alignment of the button.
 	 * @return The newly created JButton.
 	 */
 	private JButton addButton(String text, Container container, float alignment) {
@@ -1011,9 +1018,9 @@ public class ConfigWindow {
 	/**
 	 * Adds a preconfigured radio button to the specified container. Does not currently assign the radio button to a group.
 	 * 
-	 * @param text - The text of the radio button
-	 * @param container - The container to add the button to
-	 * @param leftIndent - The amount of padding to add to the left of the radio button as an empty border argument.
+	 * @param text The text of the radio button
+	 * @param container The container to add the button to
+	 * @param leftIndent The amount of padding to add to the left of the radio button as an empty border argument.
 	 * @return The newly created JRadioButton
 	 */
 	private JRadioButton addRadioButton(String text, Container container, int leftIndent) {
@@ -1027,9 +1034,9 @@ public class ConfigWindow {
 	/**
 	 * Sets the scroll speed of a JScrollPane
 	 * 
-	 * @param scrollPane - The JScrollPane to modify
-	 * @param horizontalInc - The horizontal increment value
-	 * @param verticalInc - The vertical increment value
+	 * @param scrollPane The JScrollPane to modify
+	 * @param horizontalInc The horizontal increment value
+	 * @param verticalInc The vertical increment value
 	 */
 	private void setScrollSpeed(JScrollPane scrollPane, int horizontalInc, int verticalInc) {
 		scrollPane.getVerticalScrollBar().setUnitIncrement(verticalInc);
@@ -1186,7 +1193,7 @@ public class ConfigWindow {
 	/**
 	 * Sets the text of the button to its keybind.
 	 * 
-	 * @param kbs - The KeybindSet object to set the button text of.
+	 * @param kbs The KeybindSet object to set the button text of.
 	 */
 	public static void setKeybindButtonText(KeybindSet kbs) {
 		kbs.button.setText(kbs.getFormattedKeybindText());
@@ -1213,6 +1220,7 @@ public class ConfigWindow {
  *
  */
 class ClickListener implements ActionListener {
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton button = (JButton)e.getSource();
@@ -1223,6 +1231,7 @@ class ClickListener implements ActionListener {
 }
 
 class ButtonFocusListener implements FocusListener {
+	
 	@Override
 	public void focusGained(FocusEvent arg0) {
 	}
@@ -1241,6 +1250,7 @@ class ButtonFocusListener implements FocusListener {
 }
 
 class RebindListener implements KeyListener {
+	
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		KeyModifier modifier = KeyModifier.NONE;

@@ -29,6 +29,7 @@ import java.net.Socket;
 import Game.Client;
 
 public class TwitchIRC implements Runnable {
+	
 	public static final String SERVER = "irc.twitch.tv";
 	public static final int PORT = 6667;
 	

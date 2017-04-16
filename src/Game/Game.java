@@ -39,7 +39,15 @@ import Client.NotificationsHandler;
 import Client.Settings;
 import Client.TrayHandler;
 
+/**
+ * Singleton class that handles packaging the client into a JFrame and starting the applet
+ */
 public class Game extends JFrame implements AppletStub, ComponentListener, WindowListener {
+	
+	private Game() {
+		// Empty private constructor to prevent extra instances from being created.
+	}
+	
 	public void setApplet(Applet applet) {
 		m_applet = applet;
 		m_applet.setStub(this);
@@ -49,6 +57,9 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 		return m_applet;
 	}
 	
+	/**
+	 * Builds the main game client window and adds the applet to it
+	 */
 	public void start() {
 		if (m_applet == null)
 			return;
@@ -92,6 +103,9 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 		return m_config;
 	}
 	
+	/**
+	 * Starts the game applet
+	 */
 	public void launchGame() {
 		m_config.changeWorld(Settings.WORLD);
 		m_applet.init();
@@ -107,6 +121,10 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 		
 		super.setTitle(t);
 	}
+	
+	/*
+	 * AppletStub methods
+	 */
 	
 	@Override
 	public final URL getCodeBase() {
@@ -132,6 +150,10 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 	public final void appletResize(int width, int height) {
 	}
 	
+	/*
+	 * WindowListener methods
+	 */
+	
 	@Override
 	public final void windowClosed(WindowEvent e) {
 		if (m_applet == null)
@@ -139,7 +161,6 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 		
 		m_applet.stop();
 		m_applet.destroy();
-		
 	}
 	
 	@Override
@@ -171,6 +192,10 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 	public final void windowIconified(WindowEvent e) {
 	}
 	
+	/*
+	 * ComponentListener methods
+	 */
+	
 	@Override
 	public final void componentHidden(ComponentEvent e) {
 	}
@@ -198,8 +223,18 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 	public final void componentShown(ComponentEvent e) {
 	}
 	
+	/**
+	 * Gets the game client instance. It makes one if one doesn't exist.
+	 * 
+	 * @return The game client instance
+	 */
 	public static Game getInstance() {
-		return (instance == null) ? (instance = new Game()) : instance;
+		if (instance == null) {
+			synchronized (Game.class) {
+				instance = new Game();
+			}
+		}
+		return instance;
 	}
 	
 	/**
