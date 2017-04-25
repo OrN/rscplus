@@ -121,6 +121,8 @@ public class ConfigWindow {
 	private JCheckBox generalPanelChatHistoryCheckbox;
 	private JCheckBox generalPanelCombatXPMenuCheckbox;
 	private JCheckBox generalPanelXPDropsCheckbox;
+		private JRadioButton generalPanelXPCenterAlignFocusButton;
+		private JRadioButton generalPanelXPRightAlignFocusButton;
 	private JCheckBox generalPanelFatigueDropsCheckbox;
 	private JSpinner generalPanelFatigueFigSpinner;
 	private JCheckBox generalPanelFatigueAlertCheckbox;
@@ -423,6 +425,12 @@ public class ConfigWindow {
 		generalPanelXPDropsCheckbox = addCheckbox("XP drops", generalPanel);
 		generalPanelXPDropsCheckbox.setToolTipText("Show the XP gained as an overlay each time XP is received");
 		
+			ButtonGroup XPAlignButtonGroup = new ButtonGroup();
+			generalPanelXPRightAlignFocusButton = addRadioButton("Display XP bar to the right", generalPanel, 20);
+			generalPanelXPCenterAlignFocusButton = addRadioButton("Display XP bar in the center", generalPanel, 20);
+			XPAlignButtonGroup.add(generalPanelXPRightAlignFocusButton);
+			XPAlignButtonGroup.add(generalPanelXPCenterAlignFocusButton);
+
 		generalPanelFatigueDropsCheckbox = addCheckbox("Fatigue drops", generalPanel);
 		generalPanelFatigueDropsCheckbox.setToolTipText("Show the fatigue gained as an overlay each time fatigue is received");
 		
@@ -1049,6 +1057,10 @@ public class ConfigWindow {
 		generalPanelChatHistoryCheckbox.setSelected(Settings.LOAD_CHAT_HISTORY); 			// TODO: Implement this feature
 		generalPanelCombatXPMenuCheckbox.setSelected(Settings.COMBAT_MENU);
 		generalPanelXPDropsCheckbox.setSelected(Settings.SHOW_XPDROPS);
+		generalPanelXPCenterAlignFocusButton.setSelected(Settings.CENTER_XPDROPS);
+		generalPanelXPRightAlignFocusButton.setSelected(!Settings.CENTER_XPDROPS);
+		notificationPanelTrayPopupClientFocusButton.setSelected(!Settings.TRAY_NOTIFS_ALWAYS);
+		notificationPanelTrayPopupAnyFocusButton.setSelected(Settings.TRAY_NOTIFS_ALWAYS);
 		generalPanelFatigueDropsCheckbox.setSelected(Settings.SHOW_FATIGUEDROPS);
 		generalPanelFatigueFigSpinner.setValue(new Integer(Settings.FATIGUE_FIGURES));
 		generalPanelFatigueAlertCheckbox.setSelected(Settings.FATIGUE_ALERT);
@@ -1131,6 +1143,7 @@ public class ConfigWindow {
 		Settings.LOAD_CHAT_HISTORY = generalPanelChatHistoryCheckbox.isSelected();
 		Settings.COMBAT_MENU = generalPanelCombatXPMenuCheckbox.isSelected();
 		Settings.SHOW_XPDROPS = generalPanelXPDropsCheckbox.isSelected();
+		Settings.CENTER_XPDROPS = generalPanelXPCenterAlignFocusButton.isSelected();
 		Settings.SHOW_FATIGUEDROPS = generalPanelFatigueDropsCheckbox.isSelected();
 		Settings.FATIGUE_FIGURES = ((SpinnerNumberModel)(generalPanelFatigueFigSpinner.getModel())).getNumber().intValue();
 		Settings.FATIGUE_ALERT = generalPanelFatigueAlertCheckbox.isSelected();
