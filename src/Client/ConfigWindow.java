@@ -429,7 +429,7 @@ public class ConfigWindow {
 			generalPanelXPRightAlignFocusButton = addRadioButton("Display on the right", generalPanel, 20);
 			generalPanelXPRightAlignFocusButton.setToolTipText("The XP bar and XP drops will be shown just left of the Settings menu.");
 			generalPanelXPCenterAlignFocusButton = addRadioButton("Display in the center", generalPanel, 20);
-			generalPanelXPCenterAlignFocusButton.setToolTipText("TThe XP bar and XP drops will be shown at the top-middle of the screen.");
+			generalPanelXPCenterAlignFocusButton.setToolTipText("The XP bar and XP drops will be shown at the top-middle of the screen.");
 			XPAlignButtonGroup.add(generalPanelXPRightAlignFocusButton);
 			XPAlignButtonGroup.add(generalPanelXPCenterAlignFocusButton);
 
