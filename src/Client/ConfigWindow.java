@@ -426,8 +426,10 @@ public class ConfigWindow {
 		generalPanelXPDropsCheckbox.setToolTipText("Show the XP gained as an overlay each time XP is received");
 		
 			ButtonGroup XPAlignButtonGroup = new ButtonGroup();
-			generalPanelXPRightAlignFocusButton = addRadioButton("Display XP bar to the right", generalPanel, 20);
-			generalPanelXPCenterAlignFocusButton = addRadioButton("Display XP bar in the center", generalPanel, 20);
+			generalPanelXPRightAlignFocusButton = addRadioButton("Display on the right", generalPanel, 20);
+			generalPanelXPRightAlignFocusButton.setToolTipText("The XP bar and XP drops will be shown just left of the Settings menu.");
+			generalPanelXPCenterAlignFocusButton = addRadioButton("Display in the center", generalPanel, 20);
+			generalPanelXPCenterAlignFocusButton.setToolTipText("TThe XP bar and XP drops will be shown at the top-middle of the screen.");
 			XPAlignButtonGroup.add(generalPanelXPRightAlignFocusButton);
 			XPAlignButtonGroup.add(generalPanelXPCenterAlignFocusButton);
 
