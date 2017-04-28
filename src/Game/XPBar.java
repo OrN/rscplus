@@ -25,6 +25,9 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.text.NumberFormat;
 
+/**
+ * Handles rendering the XP bar and hover information
+ */
 public class XPBar {
 	
 	public XPBar() {
@@ -125,7 +128,7 @@ public class XPBar {
 	/**
 	 * Rounds up a double to to the nearest integer and adds commas, periods, etc. according to the local of the user
 	 * 
-	 * @param number
+	 * @param number the number to round
 	 * @return a formatted version of the double as a String
 	 */
 	public static String formatXP(double number) {

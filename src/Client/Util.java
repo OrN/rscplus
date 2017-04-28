@@ -29,12 +29,19 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * A miscellaneous utility class
+ */
 public class Util {
+	
+	private Util() {
+		// Empty private constructor to prevent instantiation.
+	}
 	
 	/**
 	 * Gets the URL to the RSC jav_config.ws file for a given world.
 	 * 
-	 * @param world
+	 * @param world the world
 	 * @return the URL to the jav_config.ws file
 	 */
 	public static String makeWorldURL(int world) {
@@ -57,9 +64,9 @@ public class Util {
 	/**
 	 * Converts a byte array into a String of 2 digit hexadecimal numbers.
 	 * 
-	 * @param data
+	 * @param data a byte array to convert
 	 * @return a String of hexadecimal numbers
-	 * @see {@link #hexStringByte}
+	 * @see #hexStringByte
 	 */
 	public static String byteHexString(byte[] data) {
 		String ret = "";
@@ -71,9 +78,9 @@ public class Util {
 	/**
 	 * Converts a String of 2 digit hexadecimal numbers into a byte array.
 	 * 
-	 * @param data
+	 * @param data a String to convert
 	 * @return a byte array
-	 * @see {@link #byteHexString}
+	 * @see #byteHexString
 	 */
 	public static byte[] hexStringByte(String data) {
 		byte[] bytes = new byte[data.length() / 2];

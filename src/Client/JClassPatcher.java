@@ -811,6 +811,19 @@ public class JClassPatcher {
 		}
 	}
 	
+	/**
+	 * TODO: Complete JavaDoc
+	 * 
+	 * @param methodNode
+	 * @param owner The class of the variable to be hooked
+	 * @param var The variable to be hooked
+	 * @param desc
+	 * @param newClass The class the hooked variable will be stored in
+	 * @param newVar The variable name the hooked variable will be stored in
+	 * @param newDesc
+	 * @param canRead Specifies if the hooked variable should be readable
+	 * @param canWrite Specifies if the hooked variable should be writable
+	 */
 	private void hookClassVariable(MethodNode methodNode, String owner, String var, String desc, String newClass, String newVar, String newDesc, boolean canRead,
 			boolean canWrite) {
 		Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();

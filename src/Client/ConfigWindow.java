@@ -74,8 +74,8 @@ import Game.Game;
 import Game.KeyboardHandler;
 
 /**
- * GUI designed for the RSCPlus client that manages configuration options and keybind values from within an interface.<br>
- * <br>
+ * GUI designed for the RSCPlus client that manages configuration options and keybind values from within an interface.
+ * <p>
  * <b>To add a new configuration option to the GUI,</b> <br>
  * 1.) Declare an instance variable to hold the gui element (eg checkbox) and add it to the GUI from ConfigWindow.initialize() (see existing examples) <br>
  * 1.5.) If there is a helper method such as addCheckbox, use that method to create and store the element that is returned in the ConfigWindow.initialize() method. See existing
@@ -93,8 +93,8 @@ import Game.KeyboardHandler;
  * 1.) Add a call in the initialize method to addKeybind with appropriate parameters.<br>
  * 2.) Add an entry to the command switch statement in Settings to process the command when its keybind is pressed.<br>
  * 3.) Optional, recommended: Separate the command from its functionality by making a toggleBlah method and calling it from the switch statement.<br>
+ * </p>
  */
-
 public class ConfigWindow {
 	
 	
@@ -1183,7 +1183,7 @@ public class ConfigWindow {
 		Settings.SHOW_LOGINDETAILS = streamingPanelIPAtLoginCheckbox.isSelected();
 		Settings.SAVE_LOGININFO = streamingPanelSaveLoginCheckbox.isSelected();
 		
-		Settings.Save();
+		Settings.save();
 	}
 	
 	public void disposeJFrame() {

@@ -82,7 +82,7 @@ public class Launcher extends JFrame implements Runnable {
 	@Override
 	public void run() {
 		// Generates a config file if needed
-		Settings.Save();
+		Settings.save();
 		
 		setStatus("Loading JConfig...");
 		JConfig config = Game.getInstance().getJConfig();

@@ -29,6 +29,9 @@ import Client.KeybindSet;
 import Client.KeybindSet.KeyModifier;
 import Client.Settings;
 
+/**
+ * Listens to keyboard events to trigger specified operations
+ */
 public class KeyboardHandler implements KeyListener {
 	
 	// TODO: Make spacebar clear the login message screen

@@ -51,6 +51,9 @@ import Client.NotificationsHandler.NotifType;
 import Client.Settings;
 import Client.Util;
 
+/**
+ * Handles rendering overlays and client adjustments based on window size
+ */
 public class Renderer {
 	
 	public static void init() {
@@ -143,7 +146,7 @@ public class Renderer {
 				List<Point> entity_text_loc = new ArrayList<>();
 				
 				for (Iterator<NPC> iterator = Client.npc_list.iterator(); iterator.hasNext();) {
-					NPC npc = iterator.next();
+					NPC npc = iterator.next(); // TODO: Remove unnecessary allocations
 					Color color = color_low;
 					
 					boolean show = false;
@@ -169,7 +172,7 @@ public class Renderer {
 							hitbox = npc_hitbox;
 						
 						for (Iterator<Rectangle> boxIterator = hitbox.iterator(); boxIterator.hasNext();) {
-							Rectangle rect = boxIterator.next();
+							Rectangle rect = boxIterator.next(); // TODO: Remove unnecessary allocations
 							if (rect.x == npc.x && rect.y == npc.y && rect.width == npc.width && rect.height == npc.height) {
 								showHitbox = false;
 								break;
@@ -191,7 +194,7 @@ public class Renderer {
 						int x = npc.x + (npc.width / 2);
 						int y = npc.y - 20;
 						for (Iterator<Point> locIterator = entity_text_loc.iterator(); locIterator.hasNext();) {
-							Point loc = locIterator.next();
+							Point loc = locIterator.next(); // TODO: Remove unnecessary allocations
 							if (loc.x == x && loc.y == y)
 								y -= 12;
 						}
@@ -213,12 +216,12 @@ public class Renderer {
 				}
 				
 				for (Iterator<Item> iterator = Client.item_list.iterator(); iterator.hasNext();) {
-					Item item = iterator.next();
+					Item item = iterator.next(); // TODO: Remove unnecessary allocations
 					
 					if (Settings.SHOW_HITBOX) {
 						boolean show = true;
 						for (Iterator<Rectangle> boxIterator = item_hitbox.iterator(); boxIterator.hasNext();) {
-							Rectangle rect = boxIterator.next();
+							Rectangle rect = boxIterator.next(); // TODO: Remove unnecessary allocations
 							if (rect.x == item.x && rect.y == item.y && rect.width == item.width && rect.height == item.height) {
 								show = false;
 								break;
@@ -246,7 +249,7 @@ public class Renderer {
 						// compiler can stop early in conditional.
 						if (freq == 1 || !item.equals(last_item) || last_item == null) {
 							for (Iterator<Point> locIterator = item_text_loc.iterator(); locIterator.hasNext();) {
-								Point loc = locIterator.next();
+								Point loc = locIterator.next(); // TODO: Remove unnecessary allocations
 								if (loc.x == x && loc.y == y) {
 									y -= 12;
 								}
@@ -286,8 +289,8 @@ public class Renderer {
 			Color colorFatigue = color_fatigue;
 			
 			if (Client.getBaseLevel(Client.SKILL_HP) > 0) {
-				percentHP = Client.getLevel(Client.SKILL_HP) * 100 / Client.getBaseLevel(Client.SKILL_HP);
-				percentPrayer = Client.getLevel(Client.SKILL_PRAYER) * 100 / Client.getBaseLevel(Client.SKILL_PRAYER);
+				percentHP = Client.getCurrentLevel(Client.SKILL_HP) * 100 / Client.getBaseLevel(Client.SKILL_HP);
+				percentPrayer = Client.getCurrentLevel(Client.SKILL_PRAYER) * 100 / Client.getBaseLevel(Client.SKILL_PRAYER);
 			}
 			
 			if (percentHP < 30) {
@@ -604,7 +607,7 @@ public class Renderer {
 	public static int width;
 	public static int height;
 	public static int height_client;
-	public static int pixels[];
+	public static int[] pixels;
 	
 	public static int fps;
 	public static float alpha_time;
@@ -640,7 +643,7 @@ class ItemComparator implements Comparator<Item> {
 	
 	@Override
 	public int compare(Item a, Item b) {
-		int offset = (a.getName().compareToIgnoreCase(b.getName()) * -1); // this is reverse alphabetical order b/c we display them/in reverse order (y-=12 ea item)
+		int offset = a.getName().compareToIgnoreCase(b.getName()) * -1; // this is reverse alphabetical order b/c we display them/in reverse order (y-=12 ea item)
 		if (offset > 0) { // item a is alphabetically before item b
 			offset = 10;
 		} else if (offset < 0) { // item b is alphabetically before item a

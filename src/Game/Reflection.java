@@ -27,6 +27,9 @@ import Client.JClassLoader;
 import Client.Launcher;
 import Client.Logger;
 
+/**
+ * Loads and sets fields and methods found in the vanilla RSC jar's classes
+ */
 public class Reflection {
 	
 	public static void Load() {

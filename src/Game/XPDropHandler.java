@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Handles the rendering and behavior of XP drops
+ */
 public class XPDropHandler {
 	
 	public void add(String text, Color color) {
@@ -77,5 +80,5 @@ public class XPDropHandler {
 	}
 	
 	private long m_timer;
-	private List<XPDrop> m_list = new ArrayList<XPDrop>();
+	private List<XPDrop> m_list = new ArrayList<>();
 }

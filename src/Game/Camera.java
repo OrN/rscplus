@@ -23,6 +23,9 @@ package Game;
 
 import Client.Settings;
 
+/**
+ * Handles adjustments to the camera
+ */
 public class Camera {
 	
 	private Camera() {
@@ -49,7 +52,7 @@ public class Camera {
 	/**
 	 * Sets the view distance, to be updated on the next tick by the Renderer. Synchronization added to hopefully prevent thread-safety concerns.
 	 * 
-	 * @param distance
+	 * @param distance the view distance
 	 */
 	public static synchronized void setDistance(int distance) {
 		distance1 = distance + 100;

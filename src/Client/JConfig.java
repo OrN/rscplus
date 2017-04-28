@@ -126,7 +126,7 @@ public class JConfig {
 		
 		// Update settings
 		Settings.WORLD = world;
-		Settings.Save();
+		Settings.save();
 		
 		// TODO: This may not be the best way to handle this, but for now this works
 		// If we start setting other title info, it will be broken by this
@@ -212,14 +212,14 @@ public class JConfig {
 	/**
 	 * Stores the jav_config.ws 'param' value sets
 	 * 
-	 * @see {@link #m_data}
+	 * @see #m_data
 	 */
 	public Map<String, String> parameters = new HashMap<String, String>();
 	
 	/**
 	 * Stores the jav_config.ws value sets for everything but 'param' and 'msg'
 	 * 
-	 * @see {@link JConfig#parameters}
+	 * @see JConfig#parameters
 	 */
 	private Map<String, String> m_data = new HashMap<String, String>();
 }

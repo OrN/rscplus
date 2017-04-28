@@ -28,6 +28,9 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import Game.Client;
 
+/**
+ * Handles communication with a Twitch chat channel.
+ */
 public class TwitchIRC implements Runnable {
 	
 	public static final String SERVER = "irc.twitch.tv";

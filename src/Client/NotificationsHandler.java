@@ -75,7 +75,7 @@ public class NotificationsHandler {
 	}
 	
 	/**
-	 * @wbp.parser.entryPoint Initializes the Notification JFrame and prepares it to receive notifications
+	 * Initializes the Notification JFrame and prepares it to receive notifications
 	 */
 	public static void initialize() {
 		Logger.Info("Creating notification window");

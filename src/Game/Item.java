@@ -31,6 +31,9 @@ import java.sql.Statement;
 import Client.Logger;
 import Client.Settings;
 
+/**
+ * Handles patching and getting item names
+ */
 public class Item {
 	
 	public Item(int x, int y, int width, int height, int id) {

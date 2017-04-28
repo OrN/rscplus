@@ -21,6 +21,9 @@
 
 package Client;
 
+/**
+ * A simple logger 
+ */
 public class Logger {
 	
 	public enum Type {

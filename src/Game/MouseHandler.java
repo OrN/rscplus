@@ -28,6 +28,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+/**
+ * Listens to mouse events and stores relevant information about them
+ */
 public class MouseHandler implements MouseListener, MouseMotionListener, MouseWheelListener {
 	
 	@Override

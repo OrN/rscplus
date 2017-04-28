@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
+/**
+ * Deals with fetching, loading, and patching a modified RSC jar.
+ */
 public class JClassLoader extends ClassLoader {
 	
 	/**

@@ -24,6 +24,9 @@ package Client;
 import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 
+/**
+ * Manages the getting and setting of keybinds
+ */
 public class KeybindSet {
 	
 	public enum KeyModifier {

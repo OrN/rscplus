@@ -40,6 +40,9 @@ import Client.NotificationsHandler.NotifType;
 import Client.Settings;
 import Client.TwitchIRC;
 
+/**
+ * This class prepares the client for login, handles chat messages, and performs player related calculations.
+ */
 public class Client {
 	
 	/**
@@ -79,9 +82,10 @@ public class Client {
 	}
 	
 	/**
-	 * An updater that runs frequently to update calculations for XP/fatigue drops, the XP bar, etc.<br><br>
-	 * 
+	 * An updater that runs frequently to update calculations for XP/fatigue drops, the XP bar, etc.
+	 * <p>
 	 * This updater does not handle any rendering, for rendering see {@link Renderer#present}
+	 * </p>
 	 */
 	public static void update() {
 		// FIXME: This is a hack from a rsc client update (so we can skip updating the client this time)
@@ -89,7 +93,7 @@ public class Client {
 		
 		if (state == STATE_GAME) {
 			// Process XP drops
-			boolean dropXP = (xpdrop_state[SKILL_HP] > 0.0f); // TODO: Declare dropXP outside of the update method
+			boolean dropXP = xpdrop_state[SKILL_HP] > 0.0f; // TODO: Declare dropXP outside of the update method
 			for (int i = 0; i < xpdrop_state.length; i++) {
 				float xpGain = getXP(i) - xpdrop_state[i]; // TODO: Declare xpGain outside of the update method
 				xpdrop_state[i] += xpGain;
@@ -144,6 +148,7 @@ public class Client {
 		
 		twitch.disconnect();
 		
+		// After logging out, the login screen shows "Please wait... Connecting to server", so we'll overwrite this
 		setLoginMessage("Please enter your username and password", "");
 		adaptStrings();
 		player_name = null;
@@ -158,16 +163,21 @@ public class Client {
 			twitch.connect();
 	}
 	
+	/**
+	 * Stores the user's display name in {@link #player_name}.
+	 */
 	public static void getPlayerName() {
 		try {
 			player_name = (String)Reflection.characterName.get(player_object);
 		} catch (IllegalArgumentException | IllegalAccessException e1) {
 			e1.printStackTrace();
 		}
-		
 	}
 	
-	public static void getCoords() {
+	/**
+	 * Prints the coordinates of the player
+	 */
+	public static void getCoords() { // TODO: Use this method or remove it
 		try {
 			// int coordX = Reflection.characterPosX.getInt(player_object) / 128;
 			// int coordY = Reflection.characterPosY.getInt(player_object) / 128;
@@ -181,15 +191,21 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * Intercepts chat messages sent by the user and parses them for commands.
+	 * 
+	 * @param line a chat message sent by the user
+	 * @return a modified chat message
+	 */
 	public static String processChatCommand(String line) {
-		if (TwitchIRC.isUsing() && line.startsWith("/")) {
+		if (TwitchIRC.isUsing() && line.startsWith("/")) { // Move Twitch related checks to their own method to stay consistent
 			String message = line.substring(1, line.length());
-			String messageArray[] = message.split(" ");
+			String[] messageArray = message.split(" ");
 			
 			message = processClientChatCommand(message);
 			
-			if (messageArray[0] != null && messageArray[0].equals("me") && messageArray.length > 1) {
-				message = message.substring(3, message.length());
+			if (messageArray.length > 1 && "me".equals(messageArray[0])) {
+				message = message.substring(3);
 				twitch.sendEmote(message, true);
 			} else {
 				twitch.sendMessage(message, true);
@@ -203,14 +219,19 @@ public class Client {
 		return line;
 	}
 	
-	public static String processPrivateCommand(String line) {
-		line = processClientChatCommand(line);
-		return line;
+	public static String processPrivateCommand(String line) { // TODO: Use processClientChatCommand instead of this method
+		return processClientChatCommand(line);
 	}
 	
+	/**
+	 * Parses a chat message sent by the user for client related commands.
+	 * 
+	 * @param line a chat message sent by the user 
+	 * @return a modified chat message
+	 */
 	private static String processClientCommand(String line) {
 		if (line.startsWith("::")) {
-			String commandArray[] = line.substring(2, line.length()).toLowerCase().split(" ");
+			String[] commandArray = line.substring(2, line.length()).toLowerCase().split(" ");
 			
 			switch (commandArray[0]) {
 			case "toggleroofs":
@@ -290,17 +311,23 @@ public class Client {
 		return line;
 	}
 	
+	/**
+	 * Parses a chat message sent by the user for chat related commands.
+	 * 
+	 * @param line a chat message sent by the user 
+	 * @return a modified chat message
+	 */
 	private static String processClientChatCommand(String line) {
 		if (line.startsWith("::")) {
 			String command = line.substring(2, line.length()).toLowerCase();
 			
-			if (command.equals("total"))
+			if ("total".equals(command))
 				return "My Total Level is " + getTotalLevel() + " (" + getTotalXP() + " xp).";
-			else if (command.equals("fatigue")) {
+			else if ("fatigue".equals(command)) {
 				return "My Fatigue is at " + currentFatigue + "%.";
 			} else
 			
-			if (command.equals("cmb")) { // this command breaks character limits and might be bannable... would not recommend sending this command over PM to rs2/rs3
+			if ("cmb".equals(command)) { // this command breaks character limits and might be bannable... would not recommend sending this command over PM to rs2/rs3
 				return "@whi@My Combat is Level "
 						+ "@gre@" +
 						// basic melee stats
@@ -316,7 +343,7 @@ public class Client {
 						+ " @lre@R:@whi@ " + base_level[SKILL_RANGED]
 						+ " @lre@P:@whi@ " + base_level[SKILL_PRAYER]
 						+ " @lre@M:@whi@ " + base_level[SKILL_MAGIC];
-			} else if (command.equals("cmbnocolor")) { // this command stays within character limits and is safe.
+			} else if ("cmbnocolor".equals(command)) { // this command stays within character limits and is safe.
 				return "My Combat is Level "
 						// basic melee stats
 						+ ((base_level[SKILL_ATTACK] + base_level[SKILL_STRENGTH] + base_level[SKILL_DEFENSE] + base_level[SKILL_HP]) * 0.25
@@ -331,10 +358,10 @@ public class Client {
 						+ " R:" + base_level[SKILL_RANGED]
 						+ " P:" + base_level[SKILL_PRAYER]
 						+ " M:" + base_level[SKILL_MAGIC];
-			} else if (command.equals("bank")) {
+			} else if ("bank".equals(command)) {
 				return "Hey, everyone, I just tried to do something very silly!";
-			} else if (command.equals("update")) {
-				updateRSCP(true);
+			} else if ("update".equals(command)) {
+				checkForUpdate(true);
 			} else if (command.startsWith("xmas ")) {
 				int randomStart = (int)System.currentTimeMillis();
 				if (randomStart < 0) {
@@ -344,7 +371,7 @@ public class Client {
 				String[] colours = { "@red@", "@whi@", "@gre@", "@whi@" };
 				int spaceCounter = 0;
 				for (int i = 0; i < line.length() - 7; i++) {
-					if (line.substring(7 + i, 8 + i).equals(" ")) {
+					if (" ".equals(line.substring(7 + i, 8 + i))) {
 						spaceCounter += 1;
 					}
 					subline += colours[(i - spaceCounter + randomStart) % 4];
@@ -360,7 +387,7 @@ public class Client {
 				String[] colours = { "@red@", "@ora@", "@yel@", "@gre@", "@cya@", "@mag@" };
 				int spaceCounter = 0;
 				for (int i = 0; i < line.length() - 10; i++) {
-					if (line.substring(10 + i, 11 + i).equals(" ")) {
+					if (" ".equals(line.substring(10 + i, 11 + i))) {
 						spaceCounter += 1;
 					}
 					subline += colours[(i - spaceCounter + randomStart) % 6];
@@ -384,7 +411,7 @@ public class Client {
 			}
 			
 			for (int i = 0; i < 18; i++) {
-				if (command.equals(skill_name[i].toLowerCase()))
+				if (command.equalsIgnoreCase(skill_name[i]))
 					return "My " + skill_name[i] + " level is " + base_level[i] + " (" + getXP(i) + " xp).";
 			}
 		}
@@ -392,6 +419,12 @@ public class Client {
 		return line;
 	}
 	
+	/**
+	 * Prints a client-side message in chat.
+	 * 
+	 * @param message a message to print
+	 * @param chat_type the type of message to send
+	 */
 	public static void displayMessage(String message, int chat_type) {
 		if (Client.state != Client.STATE_GAME || Reflection.displayMessage == null)
 			return;
@@ -402,6 +435,12 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * Sets the client text above the login information on the login screen.
+	 * 
+	 * @param line1 the bottom line of text
+	 * @param line2 the top line of text
+	 */
 	public static void setLoginMessage(String line1, String line2) {
 		if (Reflection.setLoginText == null)
 			return;
@@ -412,6 +451,9 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * Logs the user out of the game.
+	 */
 	public static void logout() {
 		if (Reflection.logout == null)
 			return;
@@ -423,6 +465,8 @@ public class Client {
 	}
 	
 	/**
+	 * Fetches the value of {@link Settings#VERSION_NUMBER} in the master branch on GitHub.
+	 * <p>Used to check the newest version of the client.</p>
 	 * 
 	 * @return the current version number
 	 */
@@ -438,7 +482,7 @@ public class Client {
 			String line;
 			while ((line = in.readLine()) != null) {
 				if (line.contains("VERSION_NUMBER")) {
-					currentVersion = Double.parseDouble(line.substring(line.indexOf("=") + 1, line.indexOf(";")));
+					currentVersion = Double.parseDouble(line.substring(line.indexOf('=') + 1, line.indexOf(';')));
 					break;
 				}
 			}
@@ -448,23 +492,34 @@ public class Client {
 			return currentVersion;
 		} catch (Exception e) {
 			displayMessage("@dre@Error checking latest version", 0);
-			// System.out.println(e);
 			return Settings.VERSION_NUMBER;
 		}
 	}
 	
-	public static void updateRSCP(boolean loudAndProud) {
+	/**
+	 * Compares the local value of {@link Settings#VERSION_NUMBER} to the value on the GitHub master branch.
+	 * <p>Used to check if there is a newer version of the client available.</p>
+	 * 
+	 * @param announceIfUpToDate if a message should be displayed in chat if the client is up-to-date
+	 */
+	public static void checkForUpdate(boolean announceIfUpToDate) {
 		double latestVersion = fetchLatestVersionNumber();
 		if (latestVersion > Settings.VERSION_NUMBER) {
 			displayMessage("@gre@A new version of RSC+ is available!", CHAT_QUEST);
 			displayMessage("~034~ Your version is @red@" + String.format("%8.6f", Settings.VERSION_NUMBER), CHAT_QUEST); // TODO: before Y10K update this to %9.6f
 			displayMessage("The latest version is @gre@" + String.format("%8.6f", latestVersion), CHAT_QUEST);
-		} else if (loudAndProud) {
+		} else if (announceIfUpToDate) {
 			displayMessage("You're up to date: @gre@" + String.format("%8.6f", latestVersion), CHAT_QUEST);
 		}
 	}
 	
-	// All messages added to chat are routed here
+	/**
+	 * This method hooks all chat messages.
+	 * 
+	 * @param username the username that the message originated from
+	 * @param message the content of the message
+	 * @param type the type of message being displayed
+	 */
 	public static void messageHook(String username, String message, int type) {
 		if (username != null)
 			username = username.replace("\u00A0", " "); // Prevents non-breaking space in colored usernames appearing as an accented 'a' in console
@@ -474,9 +529,8 @@ public class Client {
 			if (username == null && message != null) {
 				if (message.contains("The spell fails! You may try again in 20 seconds"))
 					magic_timer = Renderer.time + 21000L;
-				else if (Settings.TRAY_NOTIFS) {
-					if (message.contains("You have been standing here for 5 mins! Please move to a new area"))
-						NotificationsHandler.notify(NotifType.LOGOUT, "Logout Notification", "You're about to log out");
+				else if (Settings.TRAY_NOTIFS && message.contains("You have been standing here for 5 mins! Please move to a new area")) {
+					NotificationsHandler.notify(NotifType.LOGOUT, "Logout Notification", "You're about to log out");
 				}
 			}
 		} else if (type == CHAT_PRIVATE) {
@@ -506,18 +560,18 @@ public class Client {
 			// because this section of code is triggered when the "Welcome to RuneScape!" message first appears, we can use it to do some first time set up
 			if (Settings.FIRST_TIME) {
 				Settings.FIRST_TIME = false;
-				Settings.Save();
+				Settings.save();
 			}
 			
 			// Get keybind to open the config window
 			String configWindowShortcut = "";
 			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
-				if (kbs.getCommandName().equals("show_config_window")) {
+				if ("show_config_window".equals(kbs.getCommandName())) {
 					configWindowShortcut = kbs.getFormattedKeybindText();
 					break;
 				}
 			}
-			if (configWindowShortcut.equals("")) {
+			if ("".equals(configWindowShortcut)) {
 				Logger.Error("Could not find the keybind for the config window!");
 				configWindowShortcut = "<Keybind error>";
 			}
@@ -526,14 +580,14 @@ public class Client {
 			displayMessage("@mag@Type @yel@::help@mag@ for a list of commands", CHAT_QUEST);
 			displayMessage("@mag@Open the settings with @yel@" + configWindowShortcut + "@mag@ or @yel@right-click the tray icon", CHAT_QUEST);
 			
-			// check to see if RSC+ is up to date
+			// Check to see if RSC+ is up to date
 			if (Settings.versionCheckRequired) {
 				Settings.versionCheckRequired = false;
-				updateRSCP(false);
+				checkForUpdate(false);
 			}
 		}
 		
-		if (Settings.COLORIZE) { // no nonsense for those who don't want it
+		if (Settings.COLORIZE) {
 			AnsiConsole.systemInstall();
 			System.out.println(ansi()
 					.render("@|white (" + type + ")|@ " + ((username == null) ? "" : colorizeUsername(formatUsername(username, type), type)) + colorizeMessage(message, type)));
@@ -543,6 +597,13 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * Formats the username clause preceding a chat message for use in the console.
+	 * 
+	 * @param username the username associated with the message
+	 * @param type the type of message being displayed
+	 * @return the formatted username clause
+	 */
 	private static String formatUsername(String username, int type) {
 		switch (type) {
 		case CHAT_PRIVATE:
@@ -573,6 +634,13 @@ public class Client {
 		return username;
 	}
 	
+	/**
+	 * Adds color to the username clause preceding a chat message for use in the console.
+	 * 
+	 * @param colorMessage the username clause to colorize
+	 * @param type the type of message being displayed
+	 * @return the colorized username clause
+	 */
 	public static String colorizeUsername(String colorMessage, int type) {
 		switch (type) {
 		case CHAT_PRIVATE:
@@ -603,12 +671,18 @@ public class Client {
 		return colorMessage;
 	}
 	
+	/**
+	 * Adds color to the contents of a chat message for use in the console.
+	 * 
+	 * @param colorMessage the message to colorize
+	 * @param type the type of message being displayed
+	 * @return the colorized message
+	 */
 	public static String colorizeMessage(String colorMessage, int type) {
-		
-		boolean whiteMessage = (colorMessage.contains("Welcome to RuneScape!")); // want this to be bold
-		boolean blueMessage = (colorMessage.contains("You have been standing here for 5 mins! Please move to a new area"));
+		boolean whiteMessage = colorMessage.contains("Welcome to RuneScape!"); // want this to be bold
+		boolean blueMessage = colorMessage.contains("You have been standing here for 5 mins! Please move to a new area");
 		// boolean yellowMessage = false;
-		boolean greenMessage = (colorMessage.contains("You just advanced "));
+		boolean greenMessage = colorMessage.contains("You just advanced ");
 		
 		if (blueMessage) { // this is one of the messages which we must overwrite expected color for
 			return "@|cyan,intensity_faint " + colorMessage + "|@";
@@ -653,7 +727,7 @@ public class Client {
 	}
 	
 	public static String colorReplace(String colorMessage) {
-		String[] colorDict = {
+		final String[] colorDict = { // TODO: Make this a class variable
 				"(?i)@cya@", "|@@|cyan ", // less common colors should go at the bottom b/c we can break search loop early
 				"(?i)@whi@", "|@@|white ",
 				"(?i)@red@", "|@@|red ",
@@ -701,22 +775,46 @@ public class Client {
 		item_list.add(new Item(x, y, width, height, id));
 	}
 	
-	public static float getXPforLevel(int level) {
+	/**
+	 * Returns the minimum XP required to reach a specified level, starting from 0 XP. 
+	 * 
+	 * @param level the level
+	 * @return the minimum XP required to reach the specified level, starting from 0 XP
+	 */
+	public static float getXPforLevel(int level) { // TODO: Consider using a final variable to store corresponding values since this is called a lot
 		float xp = 0.0f;
 		for (int x = 1; x < level; x++)
 			xp += Math.floor(x + 300 * Math.pow(2, x / 7.0f)) / 4.0f;
 		return xp;
 	}
 	
+	/**
+	 * Returns the minimum XP required until the user reaches the next level in a specified skill.
+	 * 
+	 * @param skill an integer corresponding to a skill
+	 * @return the minimum XP required until the user reaches the next level in the specified skill
+	 */
 	public static float getXPUntilLevel(int skill) {
 		float xpNextLevel = getXPforLevel(base_level[skill] + 1);
 		return xpNextLevel - getXP(skill);
 	}
 	
-	public static int getLevel(int i) {
-		return current_level[i];
+	/**
+	 * Returns the user's current level in a specified skill. This number is affected by skills boosts and debuffs. 
+	 * 
+	 * @param skill an integer corresponding to a skill
+	 * @return the user's current level in the specified skill
+	 * @see #getBaseLevel(int)
+	 */
+	public static int getCurrentLevel(int skill) {
+		return current_level[skill];
 	}
 	
+	/**
+	 * Returns the sum of the user's base skill levels.
+	 * 
+	 * @return the user's total level
+	 */
 	public static int getTotalLevel() {
 		int total = 0;
 		for (int i = 0; i < 18; i++)
@@ -724,6 +822,11 @@ public class Client {
 		return total;
 	}
 	
+	/**
+	 * Returns the sum of the XP of the user's skills.
+	 * 
+	 * @return the user's total XP
+	 */
 	public static float getTotalXP() {
 		float xp = 0;
 		for (int i = 0; i < 18; i++)
@@ -731,22 +834,54 @@ public class Client {
 		return xp;
 	}
 	
-	public static int getBaseLevel(int i) {
-		return base_level[i];
+	/**
+	 * Returns the user's base level in a specified skill. This number is <b>not</b> affected by skills boosts and debuffs. 
+	 * 
+	 * @param skill an integer corresponding to a skill
+	 * @return the user's base level in the specified skill
+	 * @see #getCurrentLevel(int)
+	 */
+	public static int getBaseLevel(int skill) {
+		return base_level[skill];
 	}
 	
-	public static float getXP(int i) {
-		return (float)xp[i] / 4.0f;
+	/**
+	 * Returns the user's XP in a specified skill.
+	 * 
+	 * @param skill an integer corresponding to a skill
+	 * @return the user's XP in the specified skill
+	 */
+	public static float getXP(int skill) {
+		return (float)xp[skill] / 4.0f;
 	}
 	
+	/**
+	 * Returns the user's fatigue as a percent, rounded down to the nearest percent.
+	 * 
+	 * @return the user's fatigue as a percent
+	 * @see #getActualFatigue()
+	 */
 	public static int getFatigue() {
 		return fatigue * 100 / 750;
 	}
 	
+	/**
+	 * Returns the user's fatigue as a float percentage.
+	 * 
+	 * @return the user's fatigue as a float percentage
+	 * @see #getFatigue()
+	 */
 	public static float getActualFatigue() {
 		return (float)(fatigue * 100.0 / 750);
 	}
 	
+	/**
+	 * Rounds a number to a specified decimal place
+	 * 
+	 * @param num the number to be rounded
+	 * @param figures the number of decimal places to round to
+	 * @return the rounded number
+	 */
 	public static Double trimNumber(double num, int figures) {
 		return Math.round(num * Math.pow(10, figures)) / Math.pow(10, figures);
 	}
@@ -758,6 +893,12 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * Checks if a specified player is on the user's friend list.
+	 * 
+	 * @param name the player's display name
+	 * @return if the player is the user's friend
+	 */
 	public static boolean isFriend(String name) {
 		for (int i = 0; i < friends_count; i++) {
 			if (friends[i] != null && friends[i].equals(name))
@@ -767,23 +908,46 @@ public class Client {
 		return false;
 	}
 	
+	/**
+	 * Returns if the user is currently in combat. Recently being in combat does not count as in combat.
+	 * 
+	 * @return if the user is in combat
+	 */
 	public static boolean isInCombat() {
-		return (combat_timer == 499);
+		return combat_timer == 499;
 	}
 	
+	/**
+	 * Returns if an in-game interface, window, menu, etc. is currently displayed.
+	 * 
+	 * @return if an interface is showing
+	 */
 	public static boolean isInterfaceOpen() {
-		return (show_bank || show_shop || show_welcome || show_trade || show_tradeconfirm || show_duel || show_duelconfirm || show_report != 0 || show_friends != 0
-				|| show_sleeping);
+		return show_bank || show_shop || show_welcome || show_trade || show_tradeconfirm || show_duel || show_duelconfirm || show_report != 0 || show_friends != 0
+				|| show_sleeping;
 	}
 	
+	/**
+	 * Returns if the user is sleeping.
+	 * 
+	 * @return if the user is sleeping
+	 */
 	public static boolean isSleeping() {
 		return show_sleeping;
 	}
 	
+	/**
+	 * Returns if the welcome screen is currently displayed.
+	 * 
+	 * @return if the welcome screen is currently displayed
+	 */
 	public static boolean isWelcomeScreen() {
 		return show_welcome;
 	}
 	
+	/**
+	 * Writes {@link #strings} to a file.
+	 */
 	private static void dumpStrings() {
 		BufferedWriter writer = null;
 		
@@ -807,19 +971,17 @@ public class Client {
 	public static boolean[] getShowXpPerHour() {
 		return showXpPerHour;
 	}
-
+	
 	public static double[] getXpPerHour() {
 		return xpPerHour;
 	}
-
+	
 	public static double[][] getLastXpGain() {
 		return lastXpGain;
 	}
-
-
-
-	public static List<NPC> npc_list = new ArrayList<NPC>();
-	public static List<Item> item_list = new ArrayList<Item>();
+	
+	public static List<NPC> npc_list = new ArrayList<>();
+	public static List<Item> item_list = new ArrayList<>();
 	
 	public static final int SKILL_ATTACK = 0;
 	public static final int SKILL_DEFENSE = 1;
@@ -886,18 +1048,18 @@ public class Client {
 	public static boolean show_tradeconfirm;
 	public static boolean show_welcome;
 	
-	public static int inventory_items[];
+	public static int[] inventory_items;
 	
 	public static int fatigue;
 	private static float currentFatigue;
-	public static int current_level[];
-	public static int base_level[];
-	public static int xp[];
-	public static String skill_name[];
+	public static int[] current_level;
+	public static int[] base_level;
+	public static int[] xp;
+	public static String[] skill_name;
 	public static int combat_style;
 	
 	public static int friends_count;
-	public static String friends[];
+	public static String[] friends;
 	
 	public static String pm_username;
 	public static String pm_text;
@@ -918,7 +1080,7 @@ public class Client {
 	/**
 	 * An array of Strings that stores text used in the client
 	 */
-	public static String strings[];
+	public static String[] strings;
 	
 	public static XPDropHandler xpdrop_handler = new XPDropHandler();
 	public static XPBar xpbar = new XPBar();
@@ -929,11 +1091,14 @@ public class Client {
 	private static TwitchIRC twitch = new TwitchIRC();
 	private static MouseHandler handler_mouse;
 	private static KeyboardHandler handler_keyboard;
-	private static float xpdrop_state[] = new float[18];
+	private static float[] xpdrop_state = new float[18];
 	
 	/**
-	 * A boolean array that stores if the XP per hour should be shown for a given skill when hovering on the XP bar. This should only be false for a skill if there has been less
-	 * than 2 XP drops during the current tracking session, since there is not enough data to calculate the XP per hour.
+	 * A boolean array that stores if the XP per hour should be shown for a given skill when hovering on the XP bar.
+	 * <p>
+	 * This should only be false for a skill if there has been less than 2 XP drops during the current tracking session, since there is not enough data to calculate the XP per
+	 * hour.
+	 * </p>
 	 */
 	private static boolean[] showXpPerHour = new boolean[18];
 	/**
@@ -942,18 +1107,20 @@ public class Client {
 	private static double[] xpPerHour = new double[18];
 	
 	/**
-	 * A multi-dimensional array that stores the last time XP was gained for a given skill.<br>
-	 * <br>
-	 * 
+	 * A multi-dimensional array that stores the last time XP was gained for a given skill.
+	 * <p>
 	 * The first dimension stores the skill index corresponding to the constants defined in the client class ({@link #SKILL_ATTACK}, etc.)<br>
 	 * The second dimension stores:<br>
 	 * - [0] the total XP gained in a given skill within the sample period,<br>
 	 * - [1] the time of the last XP drop in a given skill,<br>
 	 * - [2] the time of the first XP drop in a given skill within the sample period,<br>
-	 * - [3] and the total number of XP drops recorded within the sample period, plus 1.<br>
+	 * - [3] and the total number of XP drops recorded within the sample period, plus 1.
+	 * </p>
 	 */
 	private static double[][] lastXpGain = new double[18][4];
 	
-	// Client version
+	/**
+	 * The client version
+	 */
 	public static int version;
 }

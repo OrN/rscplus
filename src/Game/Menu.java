@@ -21,8 +21,14 @@
 
 package Game;
 
+/**
+ * Handles adjusting the position and behavior of the in-game menu
+ */
 public class Menu {
 	
+	/**
+	 * Adjusts the in-game menu position based on the window size
+	 */
 	public static void resize() {
 		if (chat_menu != null && Reflection.menuX != null) {
 			try {
@@ -77,7 +83,7 @@ public class Menu {
 	}
 	
 	private static int spell_swap_idx = 0;
-	private static int spell_swap_scroll[] = { 0, 0 };
+	private static int[] spell_swap_scroll = { 0, 0 };
 	
 	public static Object chat_menu;
 	public static int chat_type1;

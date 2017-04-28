@@ -36,23 +36,38 @@ import Game.Game;
 import Game.KeyboardHandler;
 import Game.Renderer;
 
+/**
+ * Manages storing, loading, and changing settings.
+ */
 public class Settings {
 	
 	// Internally used variables
 	public static boolean fovUpdateRequired;
 	public static boolean versionCheckRequired = true;
-	public static double VERSION_NUMBER = 20170402.075627;
-	// The version number ^^^^ follows ISO 8601 yyyyMMdd.HHmmss
-	// The version number will actually be read from this source file, so please don't change the name of this variable and keep the assignment near the top for scanning.
-	// This variable can be set automatically by ant by issuing `ant setversion` before you push your changes, so there's no need to update it manually.
+	/**
+	 * This version number follows ISO 8601 yyyyMMdd.HHmmss format<br><br>
+	 * The version number will actually be read from this source file, so please don't change the name of this variable and keep the assignment near the top for scanning.<br><br>
+	 * This variable can be set automatically by ant by issuing `ant setversion` before you push your changes, so there's no need to update it manually.
+	 */
+	public static final double VERSION_NUMBER = 20170402.075627;
 	
-	public static void initDir() {
+	private Settings() {
+		// Empty private constructor to prevent instantiation.
+	}
+	
+	/**
+	 * Creates necessary folders relative to the codebase, which is typically either the jar or location of the package folders
+	 * 
+	 * @see java.security.CodeSource
+	 */
+	public static void initDir() { // TODO: Consider moving to a more relevant place
 		// Find JAR directory
+		// TODO: Consider utilizing Util.makeDirectory()
 		Dir.JAR = ".";
 		try {
 			Dir.JAR = Settings.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-			int indexFileSep1 = Dir.JAR.lastIndexOf("/");
-			int indexFileSep2 = Dir.JAR.lastIndexOf("\\");
+			int indexFileSep1 = Dir.JAR.lastIndexOf('/');
+			int indexFileSep2 = Dir.JAR.lastIndexOf('\\');
 			int index = (indexFileSep1 > indexFileSep2) ? indexFileSep1 : indexFileSep2;
 			if (index != -1)
 				Dir.JAR = Dir.JAR.substring(0, index);
@@ -68,6 +83,9 @@ public class Settings {
 		Util.makeDirectory(Dir.SCREENSHOT);
 	}
 	
+	/**
+	 * Loads and sanitizes properties from config.ini into class variables
+	 */
 	public static void Load() {
 		// Load settings
 		try {
@@ -136,43 +154,56 @@ public class Settings {
 			DISASSEMBLE = getBoolean(props, "disassemble", false);
 			DISASSEMBLE_DIRECTORY = getString(props, "disassemble_directory", "dump");
 			
+			// Sanitize settings
+			
 			if (CUSTOM_CLIENT_SIZE_X < 512) {
 				CUSTOM_CLIENT_SIZE_X = 512;
+				save();
 			}
 			if (CUSTOM_CLIENT_SIZE_Y < 346) {
 				CUSTOM_CLIENT_SIZE_Y = 346;
+				save();
 			}
 			
-			if (WORLD < 1)
+			if (WORLD < 1) {
 				WORLD = 1;
-			else if (WORLD > 5)
+				save();
+			} else if (WORLD > 5) {
 				WORLD = 5;
+				save();
+			}
 			
 			if (VIEW_DISTANCE < 2300) {
 				VIEW_DISTANCE = 2300;
-				Save();
+				save();
 			} else if (VIEW_DISTANCE > 10000) {
 				VIEW_DISTANCE = 10000;
-				Save();
+				save();
 			}
 			
 			if (COMBAT_STYLE < Client.COMBAT_CONTROLLED) {
 				COMBAT_STYLE = Client.COMBAT_CONTROLLED;
-				Save();
+				save();
 			} else if (COMBAT_STYLE > Client.COMBAT_DEFENSIVE) {
 				COMBAT_STYLE = Client.COMBAT_DEFENSIVE;
-				Save();
+				save();
 			}
 			
-			if (NAME_PATCH_TYPE < 0)
+			if (NAME_PATCH_TYPE < 0) {
 				NAME_PATCH_TYPE = 0;
-			else if (NAME_PATCH_TYPE > 3)
+				save();
+			} else if (NAME_PATCH_TYPE > 3) {
 				NAME_PATCH_TYPE = 3;
+				save();
+			}
 			
-			if (FATIGUE_FIGURES < 1)
+			if (FATIGUE_FIGURES < 1) {
 				FATIGUE_FIGURES = 1;
-			else if (FATIGUE_FIGURES > 7)
+				save();
+			} else if (FATIGUE_FIGURES > 7) {
 				FATIGUE_FIGURES = 7;
+				save();
+			}
 			
 			// Keybinds
 			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
@@ -183,7 +214,7 @@ public class Settings {
 		} catch (Exception e) {
 		}
 		
-		if (DISASSEMBLE) {
+		if (DISASSEMBLE) { // TODO: Consider moving to a more relevant place
 			Dir.DUMP = Dir.JAR + "/" + DISASSEMBLE_DIRECTORY;
 			Util.makeDirectory(Dir.DUMP);
 		}
@@ -205,73 +236,73 @@ public class Settings {
 		}
 	}
 	
-	public static void Save() {
+	public static void save() {
 		try {
 			Properties props = new Properties();
 			
 			// General
-			props.setProperty("custom_client_size", "" + CUSTOM_CLIENT_SIZE);
-			props.setProperty("custom_client_size_x", "" + CUSTOM_CLIENT_SIZE_X);
-			props.setProperty("custom_client_size_y", "" + CUSTOM_CLIENT_SIZE_Y);
-			props.setProperty("load_chat_history", "" + LOAD_CHAT_HISTORY);
-			props.setProperty("combat_menu", "" + COMBAT_MENU);
-			props.setProperty("show_xpdrops", "" + SHOW_XPDROPS);
-			props.setProperty("show_fatiguedrops", "" + SHOW_FATIGUEDROPS);
-			props.setProperty("fatigue_figures", "" + FATIGUE_FIGURES);
-			props.setProperty("fatigue_alert", "" + FATIGUE_ALERT);
-			props.setProperty("inventory_full_alert", "" + INVENTORY_FULL_ALERT);
-			props.setProperty("name_patch_type", "" + NAME_PATCH_TYPE);
-			props.setProperty("hide_roofs", "" + HIDE_ROOFS);
-			props.setProperty("colorize", "" + COLORIZE);
-			props.setProperty("fov", "" + FOV);
-			props.setProperty("software_cursor", "" + SOFTWARE_CURSOR);
-			props.setProperty("view_distance", "" + VIEW_DISTANCE);
+			props.setProperty("custom_client_size", Boolean.toString(CUSTOM_CLIENT_SIZE));
+			props.setProperty("custom_client_size_x", Integer.toString(CUSTOM_CLIENT_SIZE_X));
+			props.setProperty("custom_client_size_y", Integer.toString(CUSTOM_CLIENT_SIZE_Y));
+			props.setProperty("load_chat_history", Boolean.toString(LOAD_CHAT_HISTORY));
+			props.setProperty("combat_menu", Boolean.toString(COMBAT_MENU));
+			props.setProperty("show_xpdrops", Boolean.toString(SHOW_XPDROPS));
+			props.setProperty("show_fatiguedrops", Boolean.toString(SHOW_FATIGUEDROPS));
+			props.setProperty("fatigue_figures", Integer.toString(FATIGUE_FIGURES));
+			props.setProperty("fatigue_alert", Boolean.toString(FATIGUE_ALERT));
+			props.setProperty("inventory_full_alert", Boolean.toString(INVENTORY_FULL_ALERT));
+			props.setProperty("name_patch_type", Integer.toString(NAME_PATCH_TYPE));
+			props.setProperty("hide_roofs", Boolean.toString(HIDE_ROOFS));
+			props.setProperty("colorize", Boolean.toString(COLORIZE));
+			props.setProperty("fov", Integer.toString(FOV));
+			props.setProperty("software_cursor", Boolean.toString(SOFTWARE_CURSOR));
+			props.setProperty("view_distance", Integer.toString(VIEW_DISTANCE));
 			
 			// Overlays
-			props.setProperty("show_statusdisplay", "" + SHOW_STATUSDISPLAY);
-			props.setProperty("show_invcount", "" + SHOW_INVCOUNT);
-			props.setProperty("show_iteminfo", "" + SHOW_ITEMINFO);
-			props.setProperty("show_playerinfo", "" + SHOW_PLAYERINFO);
-			props.setProperty("show_friendinfo", "" + SHOW_FRIENDINFO);
-			props.setProperty("show_npcinfo", "" + SHOW_NPCINFO);
-			props.setProperty("show_hitbox", "" + SHOW_HITBOX);
-			props.setProperty("show_food_heal_overlay", "" + SHOW_FOOD_HEAL_OVERLAY);
-			props.setProperty("show_time_until_hp_regen", "" + SHOW_TIME_UNTIL_HP_REGEN);
-			props.setProperty("debug", "" + DEBUG);
+			props.setProperty("show_statusdisplay", Boolean.toString(SHOW_STATUSDISPLAY));
+			props.setProperty("show_invcount", Boolean.toString(SHOW_INVCOUNT));
+			props.setProperty("show_iteminfo", Boolean.toString(SHOW_ITEMINFO));
+			props.setProperty("show_playerinfo", Boolean.toString(SHOW_PLAYERINFO));
+			props.setProperty("show_friendinfo", Boolean.toString(SHOW_FRIENDINFO));
+			props.setProperty("show_npcinfo", Boolean.toString(SHOW_NPCINFO));
+			props.setProperty("show_hitbox", Boolean.toString(SHOW_HITBOX));
+			props.setProperty("show_food_heal_overlay", Boolean.toString(SHOW_FOOD_HEAL_OVERLAY));
+			props.setProperty("show_time_until_hp_regen", Boolean.toString(SHOW_TIME_UNTIL_HP_REGEN));
+			props.setProperty("debug", Boolean.toString(DEBUG));
 			
 			// Notifications
-			props.setProperty("tray_notifs", "" + TRAY_NOTIFS);
-			props.setProperty("tray_notifs_always", "" + TRAY_NOTIFS_ALWAYS);
-			props.setProperty("notification_sounds", "" + NOTIFICATION_SOUNDS);
-			props.setProperty("sound_notifs_always", "" + SOUND_NOTIFS_ALWAYS);
-			props.setProperty("use_system_notifications", "" + USE_SYSTEM_NOTIFICATIONS);
-			props.setProperty("pm_notifications", "" + PM_NOTIFICATIONS);
-			props.setProperty("trade_notifications", "" + TRADE_NOTIFICATIONS);
-			props.setProperty("duel_notifications", "" + DUEL_NOTIFICATIONS);
-			props.setProperty("logout_notifications", "" + LOGOUT_NOTIFICATIONS);
-			props.setProperty("low_hp_notifications", "" + LOW_HP_NOTIFICATIONS);
-			props.setProperty("low_hp_notif_value", "" + LOW_HP_NOTIF_VALUE);
-			props.setProperty("fatigue_notifications", "" + FATIGUE_NOTIFICATIONS);
-			props.setProperty("fatigue_notif_value", "" + FATIGUE_NOTIF_VALUE);
+			props.setProperty("tray_notifs", Boolean.toString(TRAY_NOTIFS));
+			props.setProperty("tray_notifs_always", Boolean.toString(TRAY_NOTIFS_ALWAYS));
+			props.setProperty("notification_sounds", Boolean.toString(NOTIFICATION_SOUNDS));
+			props.setProperty("sound_notifs_always", Boolean.toString(SOUND_NOTIFS_ALWAYS));
+			props.setProperty("use_system_notifications", Boolean.toString(USE_SYSTEM_NOTIFICATIONS));
+			props.setProperty("pm_notifications", Boolean.toString(PM_NOTIFICATIONS));
+			props.setProperty("trade_notifications", Boolean.toString(TRADE_NOTIFICATIONS));
+			props.setProperty("duel_notifications", Boolean.toString(DUEL_NOTIFICATIONS));
+			props.setProperty("logout_notifications", Boolean.toString(LOGOUT_NOTIFICATIONS));
+			props.setProperty("low_hp_notifications", Boolean.toString(LOW_HP_NOTIFICATIONS));
+			props.setProperty("low_hp_notif_value", Integer.toString(LOW_HP_NOTIF_VALUE));
+			props.setProperty("fatigue_notifications", Boolean.toString(FATIGUE_NOTIFICATIONS));
+			props.setProperty("fatigue_notif_value", Integer.toString(FATIGUE_NOTIF_VALUE));
 			
 			// Streaming & Privacy
-			props.setProperty("twitch_hide", "" + TWITCH_HIDE);
+			props.setProperty("twitch_hide", Boolean.toString(TWITCH_HIDE));
 			props.setProperty("twitch_channel", "" + TWITCH_CHANNEL);
 			props.setProperty("twitch_oauth", "" + TWITCH_OAUTH);
 			props.setProperty("twitch_username", "" + TWITCH_USERNAME);
-			props.setProperty("show_logindetails", "" + SHOW_LOGINDETAILS);
-			props.setProperty("save_logininfo", "" + SAVE_LOGININFO);
+			props.setProperty("show_logindetails", Boolean.toString(SHOW_LOGINDETAILS));
+			props.setProperty("save_logininfo", Boolean.toString(SAVE_LOGININFO));
 			
 			// Miscellaneous settings (No GUI);
-			props.setProperty("world", "" + WORLD);
-			props.setProperty("combat_style", "" + COMBAT_STYLE);
-			props.setProperty("first_time", "" + false); // This is set to false, as logically, saving the config would imply this is not a first-run.
-			props.setProperty("disassemble", "" + DISASSEMBLE);
+			props.setProperty("world", Integer.toString(WORLD));
+			props.setProperty("combat_style", Integer.toString(COMBAT_STYLE));
+			props.setProperty("first_time", Boolean.toString(false)); // This is set to false, as logically, saving the config would imply this is not a first-run.
+			props.setProperty("disassemble", Boolean.toString(DISASSEMBLE));
 			props.setProperty("disassemble_directory", "" + DISASSEMBLE_DIRECTORY);
 			
 			// Keybinds
 			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
-				props.setProperty("key_" + kbs.commandName, "" + getIntForKeyModifier(kbs) + "*" + kbs.key);
+				props.setProperty("key_" + kbs.commandName, Integer.toString(getIntForKeyModifier(kbs)) + "*" + kbs.key);
 			}
 			
 			FileOutputStream out = new FileOutputStream(Dir.JAR + "/config.ini");
@@ -298,7 +329,7 @@ public class Settings {
 		}
 	}
 	
-	public static URL getResource(String fname) {
+	public static URL getResource(String fname) { // TODO: Consider moving to a more relevant place
 		URL url = null;
 		try {
 			url = Game.getInstance().getClass().getResource(fname);
@@ -318,7 +349,7 @@ public class Settings {
 		return url;
 	}
 	
-	public static InputStream getResourceAsStream(String fname) {
+	public static InputStream getResourceAsStream(String fname) { // TODO: Consider moving to a more relevant place
 		InputStream stream = null;
 		try {
 			stream = Game.getInstance().getClass().getResourceAsStream(fname);
@@ -338,13 +369,17 @@ public class Settings {
 		return stream;
 	}
 	
+	/*
+	 * Setting toggle methods
+	 */
+	
 	public static void toggleHideRoofs() {
 		HIDE_ROOFS = !HIDE_ROOFS;
 		if (HIDE_ROOFS)
 			Client.displayMessage("@cya@Roofs are now hidden", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Roofs are now shown", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleCombatMenu() {
@@ -353,7 +388,7 @@ public class Settings {
 			Client.displayMessage("@cya@Combat style is now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Combat style is now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleShowFriendInfo() {
@@ -362,7 +397,7 @@ public class Settings {
 			Client.displayMessage("@cya@Friend info is now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Friend info is now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleInvCount() {
@@ -371,7 +406,7 @@ public class Settings {
 			Client.displayMessage("@cya@Inventory count is now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Inventory count is now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleStatusDisplay() {
@@ -380,7 +415,7 @@ public class Settings {
 			Client.displayMessage("@cya@Status display is now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Status display is now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleShowHitbox() {
@@ -389,7 +424,7 @@ public class Settings {
 			Client.displayMessage("@cya@Hitboxes are now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Hitboxes are now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleShowItemInfo() {
@@ -398,7 +433,7 @@ public class Settings {
 			Client.displayMessage("@cya@Item info is now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Item info is now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleShowNPCInfo() {
@@ -407,7 +442,7 @@ public class Settings {
 			Client.displayMessage("@cya@NPC info is now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@NPC info is now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleShowPlayerInfo() {
@@ -416,7 +451,7 @@ public class Settings {
 			Client.displayMessage("@cya@Player info is now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Player info is now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleShowLoginDetails() {
@@ -425,7 +460,7 @@ public class Settings {
 			Client.displayMessage("@cya@Login details will appear next time", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Login details will not appear next time", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleDebug() {
@@ -434,7 +469,7 @@ public class Settings {
 			Client.displayMessage("@cya@Debug mode is on", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Debug mode is off", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleFatigueAlert() {
@@ -443,7 +478,7 @@ public class Settings {
 			Client.displayMessage("@cya@Fatigue alert is now on", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Fatigue alert is now off", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleInventoryFullAlert() {
@@ -452,7 +487,7 @@ public class Settings {
 			Client.displayMessage("@cya@Inventory full alert is now on", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Inventory full alert is now off", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleTwitchHide() {
@@ -461,7 +496,7 @@ public class Settings {
 			Client.displayMessage("@cya@Twitch chat is now hidden", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Twitch chat is now shown", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleXpDrops() {
@@ -470,7 +505,7 @@ public class Settings {
 			Client.displayMessage("@cya@XP drops are now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@XP drops are now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleFatigueDrops() {
@@ -479,7 +514,7 @@ public class Settings {
 			Client.displayMessage("@cya@Fatigue drops are now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Fatigue drops are now hidden", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void toggleColorTerminal() {
@@ -488,7 +523,7 @@ public class Settings {
 			Client.displayMessage("@cya@Colors are now shown in terminal", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Colors are now ignored in terminal", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void checkSoftwareCursor() {
@@ -500,13 +535,13 @@ public class Settings {
 	}
 	
 	private static void toggleFoodOverlay() {
-		// TODO: this toggles the variable but does nothing yet
+		// TODO: This toggles the variable but does nothing yet
 		SHOW_FOOD_HEAL_OVERLAY = !SHOW_FOOD_HEAL_OVERLAY;
 		if (SHOW_FOOD_HEAL_OVERLAY)
 			Client.displayMessage("@cya@Not yet implemented, sorry!", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Not yet implemented, sorry!", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	private static void toggleSaveLoginInfo() {
@@ -515,69 +550,94 @@ public class Settings {
 			Client.displayMessage("@cya@Saving login info enabled.", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Saving login info disabled.", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	private static void toggleHealthRegenTimer() {
-		// TODO: this toggles the variable but does nothing yet
+		// TODO: This toggles the variable but does nothing yet
 		SHOW_TIME_UNTIL_HP_REGEN = !SHOW_TIME_UNTIL_HP_REGEN;
 		if (SHOW_TIME_UNTIL_HP_REGEN)
 			Client.displayMessage("@cya@Not yet implemented, sorry!", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Not yet implemented, sorry!", Client.CHAT_NONE);
-		Save();
+		save();
 	}
 	
 	public static void setClientFoV(String fovValue) {
 		try {
 			FOV = Integer.parseInt(fovValue);
 			Camera.setFoV(FOV);
-			// if stupid fov, warn user how to get back
+			// If stupid FoV, warn user how to get back
 			if (FOV > 10 || FOV < 8) {
 				Client.displayMessage("@whi@This is fun, but if you want to go back to normal, use @yel@::fov 9", Client.CHAT_QUEST);
 			}
 		} catch (Exception e) {
-			// more sane limitation would be 8 to 10, but it's fun to play with
+			// More sane limitation would be 8 to 10, but it's fun to play with
 			Client.displayMessage("@whi@Please use an @lre@integer@whi@ between 7 and 16 (default = 9)", Client.CHAT_QUEST);
 		}
-		Save();
+		save();
 	}
 	
-	private static String getString(Properties props, String key, String def) {
+	/**
+	 * Gets the String value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value. 
+	 * 
+	 * @param props the Properties object to read
+	 * @param key the name of the property to lookup
+	 * @param defaultProp the default String value of the specified property
+	 * @return a String value corresponding to the specified property
+	 */
+	private static String getString(Properties props, String key, String defaultProp) {
 		String value = props.getProperty(key);
 		if (value == null) {
-			return def;
+			return defaultProp;
 		}
 		
 		return value;
 	}
 	
-	private static int getInt(Properties props, String key, int def) {
+	/**
+	 * Gets the Integer value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value. 
+	 * 
+	 * @param props the Properties object to read
+	 * @param key the name of the property to lookup
+	 * @param defaultProp the default Integer value of the specified property
+	 * @return a Integer value corresponding to the specified property
+	 */
+	private static int getInt(Properties props, String key, int defaultProp) {
 		String value = props.getProperty(key);
 		if (value == null)
-			return def;
+			return defaultProp;
 		
 		try {
-			int intValue = Integer.parseInt(value);
-			return intValue;
+			return Integer.parseInt(value);
 		} catch (Exception e) {
-			return def;
+			return defaultProp;
 		}
 	}
 	
-	private static boolean getBoolean(Properties props, String key, boolean def) {
+	/**
+	 * Gets the Boolean value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value. 
+	 * 
+	 * @param props the Properties object to read
+	 * @param key the name of the property to lookup
+	 * @param defaultProp the default Boolean value of the specified property
+	 * @return a Boolean value corresponding to the specified property
+	 */
+	private static boolean getBoolean(Properties props, String key, boolean defaultProp) {
 		String value = props.getProperty(key);
 		if (value == null)
-			return def;
+			return defaultProp;
 		
 		try {
-			boolean boolValue = Boolean.parseBoolean(value);
-			return boolValue;
+			return Boolean.parseBoolean(value);
 		} catch (Exception e) {
-			return def;
+			return defaultProp;
 		}
 	}
 	
+	/**
+	 * Contains variables which store folder paths.
+	 */
 	public static class Dir {
 		
 		public static String JAR;
@@ -586,8 +646,13 @@ public class Settings {
 		public static String SCREENSHOT;
 	}
 	
-	public static String WORLD_LIST[] = { "1", "2", "3", "4", "5" };
+	public static String[] WORLD_LIST = { "1", "2", "3", "4", "5" };
 	
+	/**
+	 * Processes the commands triggered by pressing keybinds
+	 * 
+	 * @param commandName the name of a keybind command as defined by {@link ConfigWindow#addKeybindSet}
+	 */
 	public static void processKeybindCommand(String commandName) {
 		switch (commandName) {
 		case "logout":
@@ -753,6 +818,9 @@ public class Settings {
 	public static boolean DISASSEMBLE = false;
 	public static String DISASSEMBLE_DIRECTORY = "dump";
 	
+	/**
+	 * Restores all settings on the 'General' tab to default values
+	 */
 	public static void restoreDefaultGeneral() {
 		CUSTOM_CLIENT_SIZE = false;
 		CUSTOM_CLIENT_SIZE_X = 512;
@@ -773,6 +841,9 @@ public class Settings {
 		Launcher.getConfigWindow().synchronizeGuiValues();
 	}
 	
+	/**
+	 * Restores all settings on the 'Overlays' tab to default values
+	 */
 	public static void restoreDefaultOverlays() {
 		SHOW_STATUSDISPLAY = true;
 		SHOW_INVCOUNT = true;
@@ -787,6 +858,9 @@ public class Settings {
 		Launcher.getConfigWindow().synchronizeGuiValues();
 	}
 	
+	/**
+	 * Restores all settings on the 'Notifications' tab to default values
+	 */
 	public static void restoreDefaultNotifications() {
 		PM_NOTIFICATIONS = true;
 		TRADE_NOTIFICATIONS = true;
@@ -803,6 +877,9 @@ public class Settings {
 		Launcher.getConfigWindow().synchronizeGuiValues();
 	}
 	
+	/**
+	 * Restores all settings on the 'Streaming &#38; Privacy' tab to default values
+	 */
 	public static void restoreDefaultPrivacy() {
 		TWITCH_HIDE = false;
 		TWITCH_CHANNEL = "";
@@ -813,6 +890,9 @@ public class Settings {
 		Launcher.getConfigWindow().synchronizeGuiValues();
 	}
 	
+	/**
+	 * Restores all keybinds to the default values
+	 */
 	public static void restoreDefaultKeybinds() {
 		try {
 			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
@@ -826,8 +906,13 @@ public class Settings {
 		Launcher.getConfigWindow().synchronizeGuiValues();
 	}
 	
+	/**
+	 * Returns if it is recommended for the OS to use system notifications.
+	 * 
+	 * @return if it is recommended to use system notifications
+	 */
 	public static boolean isRecommendedToUseSystemNotifs() {
 		// Users on Windows 8.1 or 10 are recommend to set USE_SYSTEM_NOTIFICATIONS = true
-		return (System.getProperty("os.name").equals("Windows 10") || System.getProperty("os.name").equals("Windows 8.1"));
+		return System.getProperty("os.name").equals("Windows 10") || System.getProperty("os.name").equals("Windows 8.1");
 	}
 }
