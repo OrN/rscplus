@@ -124,7 +124,7 @@ public class Client {
 					xpbar.setSkill(i);
 				}
 			}
-			// + Fatigue drops
+			// Process fatigue drops
 			if (Settings.SHOW_FATIGUEDROPS) {
 				final float actualFatigue = getActualFatigue();
 				final float fatigueGain = actualFatigue - currentFatigue;
@@ -226,7 +226,7 @@ public class Client {
 	/**
 	 * Parses a chat message sent by the user for client related commands.
 	 * 
-	 * @param line a chat message sent by the user 
+	 * @param line a chat message sent by the user
 	 * @return a modified chat message
 	 */
 	private static String processClientCommand(String line) {
@@ -314,7 +314,7 @@ public class Client {
 	/**
 	 * Parses a chat message sent by the user for chat related commands.
 	 * 
-	 * @param line a chat message sent by the user 
+	 * @param line a chat message sent by the user
 	 * @return a modified chat message
 	 */
 	private static String processClientChatCommand(String line) {
@@ -466,7 +466,9 @@ public class Client {
 	
 	/**
 	 * Fetches the value of {@link Settings#VERSION_NUMBER} in the master branch on GitHub.
-	 * <p>Used to check the newest version of the client.</p>
+	 * <p>
+	 * Used to check the newest version of the client.
+	 * </p>
 	 * 
 	 * @return the current version number
 	 */
@@ -498,7 +500,9 @@ public class Client {
 	
 	/**
 	 * Compares the local value of {@link Settings#VERSION_NUMBER} to the value on the GitHub master branch.
-	 * <p>Used to check if there is a newer version of the client available.</p>
+	 * <p>
+	 * Used to check if there is a newer version of the client available.
+	 * </p>
 	 * 
 	 * @param announceIfUpToDate if a message should be displayed in chat if the client is up-to-date
 	 */
@@ -776,7 +780,7 @@ public class Client {
 	}
 	
 	/**
-	 * Returns the minimum XP required to reach a specified level, starting from 0 XP. 
+	 * Returns the minimum XP required to reach a specified level, starting from 0 XP.
 	 * 
 	 * @param level the level
 	 * @return the minimum XP required to reach the specified level, starting from 0 XP
@@ -800,7 +804,7 @@ public class Client {
 	}
 	
 	/**
-	 * Returns the user's current level in a specified skill. This number is affected by skills boosts and debuffs. 
+	 * Returns the user's current level in a specified skill. This number is affected by skills boosts and debuffs.
 	 * 
 	 * @param skill an integer corresponding to a skill
 	 * @return the user's current level in the specified skill
@@ -835,7 +839,7 @@ public class Client {
 	}
 	
 	/**
-	 * Returns the user's base level in a specified skill. This number is <b>not</b> affected by skills boosts and debuffs. 
+	 * Returns the user's base level in a specified skill. This number is <b>not</b> affected by skills boosts and debuffs.
 	 * 
 	 * @param skill an integer corresponding to a skill
 	 * @return the user's base level in the specified skill
@@ -1101,6 +1105,7 @@ public class Client {
 	 * </p>
 	 */
 	private static boolean[] showXpPerHour = new boolean[18];
+	
 	/**
 	 * An array to store the XP per hour for a given skill
 	 */

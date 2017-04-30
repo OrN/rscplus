@@ -31,7 +31,7 @@ public class Camera {
 	private Camera() {
 		// Empty private constructor to prevent instantiation.
 	}
-
+	
 	public static void init() {
 		zoom = 750; // TODO: Preserve zoom on relog, but not necessarily between sessions
 		rotation = 126;
@@ -62,9 +62,9 @@ public class Camera {
 	}
 	
 	public static void setFoV(int fov) {
-		if (fov < 7) // lower than 7 crashes (fov 4, 5, 6 all crash)
+		if (fov < 7) // lower than 7 crashes (FoV 4, 5, 6 all crash)
 			fov = 7;
-		if (fov > 16) // higher than 16 doesn't crash, but above 16 isn't impressive (screen just turns 1 color) and does crash eventually (e.g. fov 100)
+		if (fov > 16) // higher than 16 doesn't crash, but above 16 isn't impressive (screen just turns 1 color) and does crash eventually (e.g. FoV 100)
 			fov = 16;
 		Camera.fov = fov;
 		resize();

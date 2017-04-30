@@ -522,9 +522,7 @@ public class JClassPatcher {
 				
 				// Check if dialogue option is pressed
 				methodNode.instructions.insert(lastNode, new JumpInsnNode(Opcodes.IF_ICMPGE, label));
-				methodNode.instructions.insert(lastNode, new FieldInsnNode(Opcodes.GETFIELD, "client", "Id", "I")); // Menu
-																													// option
-																													// count
+				methodNode.instructions.insert(lastNode, new FieldInsnNode(Opcodes.GETFIELD, "client", "Id", "I")); // Menu option count
 				methodNode.instructions.insert(lastNode, new VarInsnNode(Opcodes.ALOAD, 0));
 				methodNode.instructions.insert(lastNode, new FieldInsnNode(Opcodes.GETSTATIC, "Game/KeyboardHandler", "dialogue_option", "I"));
 				methodNode.instructions.insert(lastNode, new JumpInsnNode(Opcodes.IFLT, label));
@@ -846,6 +844,17 @@ public class JClassPatcher {
 		}
 	}
 	
+	/**
+	 * TODO: Complete JavaDoc
+	 * 
+	 * @param methodNode
+	 * @param owner The class of the variable to be hooked
+	 * @param var The variable to be hooked
+	 * @param desc
+	 * @param newClass The class the hooked variable will be stored in
+	 * @param newVar The variable name the hooked variable will be stored in
+	 * @param newDesc
+	 */
 	private void hookStaticVariable(MethodNode methodNode, String owner, String var, String desc, String newClass, String newVar, String newDesc) {
 		Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
 		while (insnNodeList.hasNext()) {
@@ -952,4 +961,5 @@ public class JClassPatcher {
 	
 	// Singleton
 	private static JClassPatcher instance = null;
+	
 }

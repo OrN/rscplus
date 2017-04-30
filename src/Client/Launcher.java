@@ -32,7 +32,7 @@ import javax.swing.SwingUtilities;
 import Game.Game;
 
 /**
- * Singleton main class which renders a loading window, followed by the game client window.
+ * Singleton main class which renders a loading window and the game client window.
  */
 public class Launcher extends JFrame implements Runnable {
 	
@@ -119,7 +119,7 @@ public class Launcher extends JFrame implements Runnable {
 	/**
 	 * Changes the launcher progress bar text and pauses the thread for 5 seconds.
 	 * 
-	 * @param text Text to change the progress bar text to
+	 * @param text the text to change the progress bar text to
 	 */
 	public void error(String text) {
 		setStatus("Error: " + text);
@@ -132,7 +132,7 @@ public class Launcher extends JFrame implements Runnable {
 	/**
 	 * Changes the launcher progress bar text.
 	 * 
-	 * @param text Text to change the progress bar text to
+	 * @param text the text to change the progress bar text to
 	 */
 	public void setStatus(final String text) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -146,8 +146,8 @@ public class Launcher extends JFrame implements Runnable {
 	/**
 	 * Sets the progress value of the launcher progress bar.
 	 * 
-	 * @param value The number of tasks that have been completed
-	 * @param total The total number of tasks to complete 
+	 * @param value the number of tasks that have been completed
+	 * @param total the total number of tasks to complete
 	 */
 	public void setProgress(final int value, final int total) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -206,4 +206,5 @@ public class Launcher extends JFrame implements Runnable {
 	
 	// Singleton
 	private static Launcher instance;
+	
 }

@@ -162,6 +162,9 @@ public class Util {
 		return worldPopArray;
 	}
 	
+	/**
+	 * Stores the world populations in the array indices corresponding to the world numbers
+	 */
 	static int[] worldPopArray;
 	
 	/**

@@ -22,7 +22,7 @@
 package Client;
 
 /**
- * A simple logger 
+ * A simple logger
  */
 public class Logger {
 	
@@ -34,7 +34,7 @@ public class Logger {
 		}
 		
 		public int id;
-	};
+	}
 	
 	public static void Log(Type type, String message) {
 		if (!Settings.DEBUG && type == Type.DEBUG)
@@ -60,5 +60,6 @@ public class Logger {
 		Log(Type.ERROR, message);
 	}
 	
-	private static final String m_logTypeName[] = { "DEBUG", " INFO", "ERROR" };
+	private static final String[] m_logTypeName = { "DEBUG", " INFO", "ERROR" };
+	
 }

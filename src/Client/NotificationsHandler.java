@@ -58,7 +58,7 @@ import javax.swing.SwingUtilities;
 import Game.Game;
 
 /**
- * Handles system and psuedo-system notifications
+ * Handles system and pseudo-system notifications
  */
 public class NotificationsHandler {
 	
@@ -113,7 +113,7 @@ public class NotificationsHandler {
 		notificationFrame.setUndecorated(true);
 		notificationFrame.setAutoRequestFocus(false);
 		notificationFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		notificationFrame.setType(Window.Type.UTILITY); // TODO: Will changing this for linux affect whether it has a "taskbar" icon?
+		notificationFrame.setType(Window.Type.UTILITY); // TODO: Will changing this for Linux affect whether it has a "taskbar" icon?
 		notificationFrame.setAlwaysOnTop(true);
 		contentPanel.setLayout(null);
 		
@@ -311,7 +311,6 @@ public class NotificationsHandler {
 	}
 	
 	/**
-	 * 
 	 * @param time Current system time, or -1 to terminate the timeout thread. If this has been set to -1, it cannot be reset; this should only be done on close.
 	 */
 	public static synchronized void setLastNotifTime(long time) {
@@ -320,7 +319,6 @@ public class NotificationsHandler {
 	}
 	
 	/**
-	 * 
 	 * @return The last millis system time of a notification being shown.
 	 */
 	public static synchronized long getLastNotifTime() {
@@ -329,7 +327,7 @@ public class NotificationsHandler {
 	
 	/**
 	 * Displays/plays a notification popup or sound. This method checks whether each of the respective settings for that specific notification type.<br>
-	 * This method does <i>not</i> check for values such as low hp or fatigue amounts, as the code that does so is local to the Render method.
+	 * This method does <i>not</i> check for values such as low HP or fatigue amounts, as the code that does so is local to the Render method.
 	 * 
 	 * @param type The NotifType to display. This can be one of SYSTEM, PM, TRADE, DUEL LOGOUT, LOWHP, or FATIGUE as of the writing of this documentation.
 	 * @param title The title to use for the notification.

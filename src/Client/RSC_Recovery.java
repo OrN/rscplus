@@ -31,7 +31,7 @@ import org.objectweb.asm.tree.ClassNode;
 
 public class RSC_Recovery {
 	
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Settings.initDir();
 		
 		File folder = new File(Settings.Dir.CACHE);

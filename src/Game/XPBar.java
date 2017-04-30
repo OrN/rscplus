@@ -61,7 +61,7 @@ public class XPBar {
 			alpha = (float)(timer_length - delta) / 250.0f; // Fade in over 1/4th second
 		else if (delta < timer_fadeout) // Less than timer_fadeout milliseconds left to display the XP bar
 			alpha = (float)delta / timer_fadeout;
-
+		
 		int skill_current_xp = (int)Client.getXPforLevel(Client.getBaseLevel(current_skill));
 		int skill_next_xp = (int)Client.getXPforLevel(Client.getBaseLevel(current_skill) + 1);
 		int xp_until_level = (int)Client.getXPUntilLevel(current_skill); // TODO: Use this variable or remove it

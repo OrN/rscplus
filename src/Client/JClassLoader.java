@@ -52,11 +52,11 @@ public class JClassLoader extends ClassLoader {
 				
 				// Read class to byte array
 				ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-				byte data[] = new byte[1024];
+				byte[] data = new byte[1024];
 				int readSize;
 				while ((readSize = in.read(data, 0, data.length)) != -1)
 					bOut.write(data, 0, readSize);
-				byte classData[] = bOut.toByteArray();
+				byte[] classData = bOut.toByteArray();
 				bOut.close();
 				
 				Logger.Info("Loading file: " + name);
@@ -78,7 +78,7 @@ public class JClassLoader extends ClassLoader {
 	
 	@Override
 	public final Class findClass(String name) {
-		byte data[] = m_classData.get(name);
+		byte[] data = m_classData.get(name);
 		if (data == null)
 			return null;
 		
@@ -88,5 +88,6 @@ public class JClassLoader extends ClassLoader {
 	/**
 	 * Stores class names and the corresponding class byte data
 	 */
-	private Map<String, byte[]> m_classData = new HashMap<String, byte[]>();
+	private Map<String, byte[]> m_classData = new HashMap<>();
+	
 }

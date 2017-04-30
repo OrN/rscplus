@@ -97,7 +97,6 @@ import Game.KeyboardHandler;
  */
 public class ConfigWindow {
 	
-	
 	private JFrame frame;
 	
 	private JLabel generalPanelNamePatchModeDesc;
@@ -170,7 +169,6 @@ public class ConfigWindow {
 	private JCheckBox streamingPanelSaveLoginCheckbox;
 	
 	public ConfigWindow() {
-		
 		try {
 			// Set System L&F as a fall-back option.
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -1127,7 +1125,7 @@ public class ConfigWindow {
 	}
 	
 	/**
-	 * Saves the settings from the gui values to the settings class variables
+	 * Saves the settings from the GUI values to the settings class variables
 	 */
 	public void saveSettings() {
 		// General options
@@ -1217,7 +1215,6 @@ public class ConfigWindow {
 
 /**
  * Implements ActionListener; to be used for the buttons in the keybinds tab.
- *
  */
 class ClickListener implements ActionListener {
 	

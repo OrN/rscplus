@@ -55,17 +55,17 @@ public class JConfig {
 				if (line.length() <= 0)
 					continue;
 				
-				String key = line.substring(0, line.indexOf("="));
+				String key = line.substring(0, line.indexOf('='));
 				
 				// Skip official client locale messages
-				if (key.equals("msg"))
+				if ("msg".equals(key))
 					continue;
 				
 				String value = line.substring(key.length() + 1);
 				
 				switch (key) {
 				case "param":
-					String paramKey = value.substring(0, value.indexOf("="));
+					String paramKey = value.substring(0, value.indexOf('='));
 					String paramValue = value.substring(paramKey.length() + 1);
 					parameters.put(paramKey, paramValue);
 					Logger.Debug("parameters[" + paramKey + "]: " + paramValue);
@@ -214,12 +214,12 @@ public class JConfig {
 	 * 
 	 * @see #m_data
 	 */
-	public Map<String, String> parameters = new HashMap<String, String>();
+	public Map<String, String> parameters = new HashMap<>();
 	
 	/**
 	 * Stores the jav_config.ws value sets for everything but 'param' and 'msg'
 	 * 
 	 * @see JConfig#parameters
 	 */
-	private Map<String, String> m_data = new HashMap<String, String>();
+	private Map<String, String> m_data = new HashMap<>();
 }

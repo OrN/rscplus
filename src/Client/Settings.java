@@ -44,12 +44,17 @@ public class Settings {
 	// Internally used variables
 	public static boolean fovUpdateRequired;
 	public static boolean versionCheckRequired = true;
+	
 	/**
-	 * This version number follows ISO 8601 yyyyMMdd.HHmmss format<br><br>
-	 * The version number will actually be read from this source file, so please don't change the name of this variable and keep the assignment near the top for scanning.<br><br>
+	 * A time stamp corresponding to the current version of this source code. Used as a crude versioning system.
+	 * <p>
+	 * This variable follows ISO 8601 yyyyMMdd.HHmmss format. The version number will actually be read from this source file, so please don't change the name of this variable and
+	 * keep the assignment near the top for scanning.<br>
+	 * <br>
 	 * This variable can be set automatically by ant by issuing `ant setversion` before you push your changes, so there's no need to update it manually.
+	 * </p>
 	 */
-	public static final double VERSION_NUMBER = 20170402.075627;
+	public static final double VERSION_NUMBER = 20170402.075627; // TODO: Separate the "version" into its own file
 	
 	private Settings() {
 		// Empty private constructor to prevent instantiation.
@@ -236,6 +241,9 @@ public class Settings {
 		}
 	}
 	
+	/**
+	 * Stores all setting variables into {@link #props} and writes it to config.ini.
+	 */
 	public static void save() {
 		try {
 			Properties props = new Properties();
@@ -293,7 +301,7 @@ public class Settings {
 			props.setProperty("show_logindetails", Boolean.toString(SHOW_LOGINDETAILS));
 			props.setProperty("save_logininfo", Boolean.toString(SAVE_LOGININFO));
 			
-			// Miscellaneous settings (No GUI);
+			// Miscellaneous settings (No GUI)
 			props.setProperty("world", Integer.toString(WORLD));
 			props.setProperty("combat_style", Integer.toString(COMBAT_STYLE));
 			props.setProperty("first_time", Boolean.toString(false)); // This is set to false, as logically, saving the config would imply this is not a first-run.
@@ -329,42 +337,54 @@ public class Settings {
 		}
 	}
 	
-	public static URL getResource(String fname) { // TODO: Consider moving to a more relevant place
+	/**
+	 * Creates a URL object that points to a specified file relative to the codebase, which is typically either the jar or location of the package folders.
+	 * 
+	 * @param fileName the file to parse as a URL
+	 * @return a URL that points to the specified file
+	 */
+	public static URL getResource(String fileName) { // TODO: Consider moving to a more relevant place
 		URL url = null;
 		try {
-			url = Game.getInstance().getClass().getResource(fname);
+			url = Game.getInstance().getClass().getResource(fileName);
 		} catch (Exception e) {
 		}
 		
 		if (url == null) {
 			try {
-				url = new URL("file://" + Dir.JAR + "/.." + fname);
+				url = new URL("file://" + Dir.JAR + "/.." + fileName);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		
-		Logger.Info("Loading resource: " + fname);
+		Logger.Info("Loading resource: " + fileName);
 		
 		return url;
 	}
 	
-	public static InputStream getResourceAsStream(String fname) { // TODO: Consider moving to a more relevant place
+	/**
+	 * Creates an InputStream object that streams the contents of a specified file relative to the codebase, which is typically either the jar or location of the package folders.
+	 * 
+	 * @param fileName the file to open as an InputStream
+	 * @return an InputStream that streams the contents of the specified file
+	 */
+	public static InputStream getResourceAsStream(String fileName) { // TODO: Consider moving to a more relevant place
 		InputStream stream = null;
 		try {
-			stream = Game.getInstance().getClass().getResourceAsStream(fname);
+			stream = Game.getInstance().getClass().getResourceAsStream(fileName);
 		} catch (Exception e) {
 		}
 		
 		if (stream == null) {
 			try {
-				stream = new FileInputStream(Dir.JAR + "/.." + fname);
+				stream = new FileInputStream(Dir.JAR + "/.." + fileName);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		
-		Logger.Info("Loading resource as stream: " + fname);
+		Logger.Info("Loading resource as stream: " + fileName);
 		
 		return stream;
 	}
@@ -579,7 +599,7 @@ public class Settings {
 	}
 	
 	/**
-	 * Gets the String value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value. 
+	 * Gets the String value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value.
 	 * 
 	 * @param props the Properties object to read
 	 * @param key the name of the property to lookup
@@ -596,7 +616,7 @@ public class Settings {
 	}
 	
 	/**
-	 * Gets the Integer value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value. 
+	 * Gets the Integer value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value.
 	 * 
 	 * @param props the Properties object to read
 	 * @param key the name of the property to lookup
@@ -616,7 +636,7 @@ public class Settings {
 	}
 	
 	/**
-	 * Gets the Boolean value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value. 
+	 * Gets the Boolean value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value.
 	 * 
 	 * @param props the Properties object to read
 	 * @param key the name of the property to lookup
@@ -915,4 +935,5 @@ public class Settings {
 		// Users on Windows 8.1 or 10 are recommend to set USE_SYSTEM_NOTIFICATIONS = true
 		return System.getProperty("os.name").equals("Windows 10") || System.getProperty("os.name").equals("Windows 8.1");
 	}
+	
 }

@@ -88,7 +88,7 @@ public class TwitchIRC implements Runnable {
 	}
 	
 	public static boolean isUsing() {
-		return (Settings.TWITCH_CHANNEL.length() > 0);
+		return Settings.TWITCH_CHANNEL.length() > 0;
 	}
 	
 	@Override
@@ -105,8 +105,8 @@ public class TwitchIRC implements Runnable {
 					Client.displayMessage("@lre@Messages starting with @whi@/@lre@ are sent to Twitch.", Client.CHAT_CHAT);
 					break;
 				} else if (line.contains("NOTICE")) {
-					String message = line.substring(line.indexOf(":", 2) + 1, line.length());
-					if (message.equals("Error logging in")) {
+					String message = line.substring(line.indexOf(':', 2) + 1, line.length());
+					if ("Error logging in".equals(message)) {
 						active = false;
 						Client.displayMessage("@red@Unable to login to Twitch (username/oauth incorrect)", Client.CHAT_CHAT);
 						break;
@@ -117,16 +117,16 @@ public class TwitchIRC implements Runnable {
 			}
 			
 			while (active && (line = m_reader.readLine()) != null) {
-				String lineArray[] = line.split(" ");
+				String[] lineArray = line.split(" ");
 				
-				if (lineArray[0] != null && lineArray[0].equals("PING")) {
+				if ("PING".equals(lineArray[0])) {
 					m_writer.write("PONG " + lineArray[1] + "\r\n");
 					m_writer.flush();
-				} else if (lineArray[1] != null && lineArray[1].equals("PRIVMSG") && !Settings.TWITCH_HIDE) {
-					String username = line.substring(1, line.indexOf("!"));
-					String message = line.substring(line.indexOf(":", 2) + 1, line.length());
+				} else if ("PRIVMSG".equals(lineArray[1]) && !Settings.TWITCH_HIDE) {
+					String username = line.substring(1, line.indexOf('!'));
+					String message = line.substring(line.indexOf(':', 2) + 1, line.length());
 					
-					if (username.equals(Settings.TWITCH_CHANNEL.toLowerCase()))
+					if (username.equalsIgnoreCase(Settings.TWITCH_CHANNEL))
 						username = "@cya@" + username;
 					else
 						username = "@yel@" + username;
@@ -141,8 +141,8 @@ public class TwitchIRC implements Runnable {
 					} else {
 						Client.displayMessage("@red@[" + Settings.TWITCH_CHANNEL + "] " + username + "@yel@: " + msgColor + message, Client.CHAT_CHAT);
 					}
-				} else if (lineArray[1] != null && lineArray[1].equals("NOTICE") && !Settings.TWITCH_HIDE) {
-					String message = line.substring(line.indexOf(":", 2) + 1, line.length());
+				} else if ("NOTICE".equals(lineArray[1]) && !Settings.TWITCH_HIDE) {
+					String message = line.substring(line.indexOf(':', 2) + 1, line.length());
 					Client.displayMessage("@red@[" + Settings.TWITCH_CHANNEL + "] " + message, Client.CHAT_CHAT);
 				}
 				
@@ -187,7 +187,7 @@ public class TwitchIRC implements Runnable {
 			m_writer.flush();
 			if (show) {
 				String username = Settings.TWITCH_USERNAME.toLowerCase();
-				if (username.equals(Settings.TWITCH_CHANNEL.toLowerCase()))
+				if (username.equalsIgnoreCase(Settings.TWITCH_CHANNEL))
 					username = "@cya@" + username;
 				else
 					username = "@yel@" + username;
@@ -203,7 +203,7 @@ public class TwitchIRC implements Runnable {
 			m_writer.flush();
 			if (show) {
 				String username = Settings.TWITCH_USERNAME.toLowerCase();
-				if (username.equals(Settings.TWITCH_CHANNEL.toLowerCase()))
+				if (username.equalsIgnoreCase(Settings.TWITCH_CHANNEL))
 					username = "@cya@" + username;
 				else
 					username = "@yel@" + username;
@@ -218,4 +218,5 @@ public class TwitchIRC implements Runnable {
 	private BufferedWriter m_writer = null;
 	private Socket m_socket = null;
 	private Thread m_thread = null;
+	
 }

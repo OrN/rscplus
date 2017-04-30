@@ -49,6 +49,9 @@ public class TrayHandler implements MouseListener {
 	private static TrayIcon trayIcon;
 	private static SystemTray tray;
 	
+	/**
+	 * Creates the tray icon.
+	 */
 	public static void initTrayIcon() {
 		
 		// Load images
@@ -142,4 +145,5 @@ public class TrayHandler implements MouseListener {
 	public static TrayIcon getTrayIcon() {
 		return trayIcon;
 	}
+	
 }
