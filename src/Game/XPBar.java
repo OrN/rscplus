@@ -24,6 +24,7 @@ package Game;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.text.NumberFormat;
+import Client.Settings;
 
 /**
  * Handles rendering the XP bar and hover information
@@ -70,8 +71,13 @@ public class XPBar {
 		int xp_needed = skill_next_xp - skill_current_xp;
 		
 		// Draw bar
-		
-		xp_bar_x = Renderer.width - 210 - bounds.width; // Position to the left of the Settings wrench
+
+		// Check and set the appropriate display position
+		if (Settings.CENTER_XPDROPS)
+			xp_bar_x = (Renderer.width - bounds.width) / 2; // Position in the center
+		else
+			xp_bar_x = Renderer.width - 210 - bounds.width; // Position to the left of the Settings wrench
+
 		int percent = xp * (bounds.width - 2) / xp_needed;
 		
 		int x = xp_bar_x;
