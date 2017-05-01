@@ -25,10 +25,13 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 
 /**
- * Manages the getting and setting of keybinds
+ * Data structure that stores Keybind entries for the client that link to the Config GUI
  */
 public class KeybindSet {
 	
+	/**
+	 * Enum denoting a modifier key that can be applied to a KeybindSet, such as the control key (CTRL).
+	 */
 	public enum KeyModifier {
 		NONE, CTRL, ALT, SHIFT
 	}
@@ -53,36 +56,78 @@ public class KeybindSet {
 		this.key = key;
 	}
 	
+	/**
+	 * Returns the KeyModifier associated with this KeybindSet.
+	 * 
+	 * @return The KeyModifier for this KeybindSet.
+	 * @see KeyModifier
+	 */
 	public KeyModifier getModifier() {
 		return modifier;
 	}
 	
+	/**
+	 * Sets the KeyModifier associated with this KeybindSet.
+	 * 
+	 * @param modifier The new modifier for the KeybindSet.
+	 * @see KeyModifier
+	 */
 	public void setModifier(KeyModifier modifier) {
 		this.modifier = modifier;
 	}
 	
+	/**
+	 * Returns the key for the KeybindSet, such as 'a', defined as a KeyEvent keyCode int
+	 * 
+	 * @return The keyCode key for the KeybindSet
+	 */
 	public int getKey() {
 		return key;
 	}
 	
+	/**
+	 * Sets the key for the KeybindSet, such as 'a', defined as a KeyEvent keyCode int
+	 * This method is primarily used with keyboard input.
+	 * 
+	 * @param key The keyCode key to set
+	 */
 	public void setKey(int key) {
 		this.key = key;
 	}
 	
+	/**
+	 * Returns the JButton on the Config GUI associated with this KeybindSet.
+	 * 
+	 * @return The JButton on the Config GUI associated with this KeybindSet.
+	 */
 	public JButton getButton() {
 		return button;
 	}
 	
+	/**
+	 * Returns the command string associated with this KeybindSet.
+	 * This value is passed to the {@link Settings#processKeybindCommand(String)} method when a matching KeybindSet is
+	 * pressed.
+	 * 
+	 * @return This KeybindSet's command name string.
+	 */
 	public String getCommandName() {
 		return commandName;
 	}
 	
+	/**
+	 * Returns if the given modifier <b>and</b> key combination are the same as this KeybindSet's values.
+	 * 
+	 * @param modifier The KeyModifier to check
+	 * @param key The key to check
+	 * @return If the given modifier and key are the same as this KeybindSet.
+	 */
 	public boolean isDuplicateKeybindSet(KeybindSet.KeyModifier modifier, int key) {
 		return this.modifier == modifier && this.key == key;
 	}
 	
 	/**
-	 * Returns a human-friendly format of this KeybindSet's keybind, for use in buttons and printing.
+	 * Returns a human-friendly format of this KeybindSet's keybind (modifier + key), for use in buttons and printing.
 	 * 
 	 * @return A string representing the keybind.
 	 */
@@ -96,13 +141,13 @@ public class KeybindSet {
 		if (modifier == KeyModifier.NONE)
 			modifierText = "";
 		
-		if (keyText.equals("Open Bracket")) {
+		if ("Open Bracket".equals(keyText)) {
 			keyText = "[";
 		}
-		if (keyText.equals("Close Bracket")) {
+		if ("Close Bracket".equals(keyText)) {
 			keyText = "]";
 		}
-		if (keyText.equals("Unknown keyCode: 0x0")) {
+		if ("Unknown keyCode: 0x0".equals(keyText)) {
 			keyText = "???";
 		}
 		return modifierText + keyText;
