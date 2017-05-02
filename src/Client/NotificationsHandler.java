@@ -40,6 +40,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.UnsatisfiedLinkError;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -57,10 +58,14 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import org.gnome.gtk.Gtk;
+import org.gnome.notify.Notify;
+import org.gnome.notify.Notification;
+
 import Game.Game;
 
 public class NotificationsHandler {
-		
+
 	static JFrame notificationFrame;
 	static JLabel iconLabel;
 	static JLabel notificationTitle;
@@ -68,11 +73,12 @@ public class NotificationsHandler {
 	static JPanel mainContentPanel;
 	static Thread notifTimeoutThread;
 	static long notifLastShownTime;
-	
+	static boolean libnotifyInitalized = false;
+
 	public enum NotifType {
 		PM, TRADE, DUEL, LOGOUT, LOWHP, FATIGUE
 	}
-	
+
 	/**
 	 * @wbp.parser.entryPoint
 	 * Initializes the Notification JFrame and prepares it to receive notifications
@@ -94,39 +100,39 @@ public class NotificationsHandler {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void runInit() {
-		
+
 		NotifsShowGameMouseListener mouseManager = new NotifsShowGameMouseListener();
-		
+
 		//Get Monitor size for GUI.
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		int width = gd.getDisplayMode().getWidth();
 		int height = gd.getDisplayMode().getHeight();
-		
+
 		//1
 		notificationFrame = new JFrame();
 		JPanel contentPanel = new JPanel();
 		notificationFrame.setContentPane(contentPanel);
-		
+
 		notificationFrame.setUndecorated(true);
 		notificationFrame.setAutoRequestFocus(false);
 		notificationFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		notificationFrame.setType(Window.Type.UTILITY); //TODO: Will changing this for linux affect whether it has a "taskbar" icon?
 		notificationFrame.setAlwaysOnTop(true);	
 		contentPanel.setLayout(null);
-		
+
 		//2
 		mainContentPanel = new JPanel();
 		mainContentPanel.setLayout(null);
 
 		mainContentPanel.addMouseListener(mouseManager);
-		
+
 		//3
 		JPanel iconPanel = new JPanel();
 		iconPanel.setBounds(0, 0, 79, 79);
 		iconPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		//4
 		iconLabel = new JLabel();
 		iconLabel.setIcon(new ImageIcon(Settings.getResource("/assets/icon.png")));
@@ -139,7 +145,7 @@ public class NotificationsHandler {
 		notificationTitle.setBounds(91, 3, 326, 26);
 		notificationTitle.setForeground(new Color(0x1d, 0x1d, 0x1d));
 		mainContentPanel.add(notificationTitle);
-		
+
 		//6
 		notificationTextArea = new JTextArea();
 		notificationTextArea.setDisabledTextColor(new Color(0x3f, 0x3f, 0x3f));
@@ -150,7 +156,7 @@ public class NotificationsHandler {
 		notificationTextArea.setLineWrap(true);
 		notificationTextArea.setBounds(91, 30, 326, 43);
 		notificationTextArea.addMouseListener(mouseManager);
-		
+
 		//7
 		JButton closeButton = new JButton("");
 		closeButton.addActionListener(new ActionListener() {
@@ -164,11 +170,10 @@ public class NotificationsHandler {
 		closeButton.setBorder(BorderFactory.createEmptyBorder());
 		closeButton.setContentAreaFilled(false);
 		mainContentPanel.add(closeButton);
-		
+
 		//8 (add the background image to the jpanel if on windows)
-		
-		
-		/* So basically, if we're running windows, everything renders normally and looks great. 
+
+		/* So basically, if we're running windows, everything renders normally and looks great.
 		 * If we aren't, we assume everything breaks and revert to a simpler but compatible look
 		 */
 		if (System.getProperty("os.name").contains("Windows")) {
@@ -180,7 +185,7 @@ public class NotificationsHandler {
 			notificationFrame.setBounds(width-446, height-154, 449, 104);	
 			notificationFrame.setMaximumSize(new Dimension(449,104));
 			notificationFrame.setMaximizedBounds(new Rectangle(width-446, height-154, 449, 104));
-			
+
 			//2
 			mainContentPanel.setBounds(13, 13, 423, 79);
 			mainContentPanel.setBackground(new Color(249,249,247,0));
@@ -190,22 +195,22 @@ public class NotificationsHandler {
 			//3
 			iconPanel.setBackground(new Color(232,232,230,0));
 			mainContentPanel.add(iconPanel);
-			
+
 			//4 (nothing to do)
-			
+
 			//5 (nothing to do)
 
 			//6
 			notificationTextArea.setBackground(new Color(0,0,0,0));
 			notificationTextArea.setOpaque(false);
 			mainContentPanel.add(notificationTextArea);
-			
+
 			//7 (button, nothing to do yet)
-			
+
 			//8 (Add the background image
 			JLabel backgroundImage = new JLabel("");
 			ImageIcon img = null;
-			
+
 
 			img = new ImageIcon(Settings.getResource("/assets/notification_background.png"));
 			backgroundImage.setBounds(0, 0, 442, 104);
@@ -215,9 +220,19 @@ public class NotificationsHandler {
 			backgroundImage.setForeground(new Color(0,0,0,0));
 			backgroundImage.setOpaque(false);
 			contentPanel.add(backgroundImage);
-			
 
-		} else {
+		} else if (Settings.USE_SYSTEM_NOTIFICATIONS && System.getProperty("os.name").contains("Linux")) {
+			try {
+				String[] arbitrary = {"arbitrary"}; //Gtk.init demands a String[], but it doesn't need to do anything.
+				Gtk.init(arbitrary); //required to use libnotify
+				Notify.init("also arbitrary");
+				libnotifyInitalized = true;
+				System.out.println("Initialized libnotify requirements");
+			} catch (UnsatisfiedLinkError e) {
+				e.printStackTrace();
+				explainJavaGnome();
+			}
+		} else { //macOS, possibly others (BSD?)
 			//TODO: Consider OS-dependent locations for the notification window
 			//1
 			notificationFrame.setBounds(width-446, height-154, 425, 81);
@@ -228,7 +243,7 @@ public class NotificationsHandler {
 			//2
 			mainContentPanel.setBounds(1, 1, 423, 79);
 			mainContentPanel.setBackground(new Color(249,249,247));
-			
+
 
 			contentPanel.add(mainContentPanel); //To make sure it's added at a reasonable time
 
@@ -238,37 +253,37 @@ public class NotificationsHandler {
 			mainContentPanel.add(iconPanel);
 
 			//4 (nothing to do)
-			
+
 			//5 (nothing to do)
-			
+
 			//6
 			notificationTextArea.setBackground(new Color(249,249,247,0));
 			notificationTextArea.setOpaque(false);
 			mainContentPanel.add(notificationTextArea);
-			
+
 			//7 (button, nothing to do yet)
-			
+
 			//8 (Add background image if windows for the shadow effect)
-			
+
 		}
 
 		try {
 			Font font = Font.createFont(Font.TRUETYPE_FONT, Settings.getResourceAsStream("/assets/OpenSans-Regular.ttf"));
 			Font boldFont = Font.createFont(Font.TRUETYPE_FONT, Settings.getResourceAsStream("/assets/OpenSans-Bold.ttf"));
-			
+
 			notificationTitle.setFont(boldFont.deriveFont(Font.BOLD, 18f));
 			notificationTextArea.setFont(font.deriveFont(Font.PLAIN, 16f));
 		} catch (FontFormatException | IOException e) {
 			Logger.Error("Error while setting up notifications font:" + e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		loadNotificationSound();
 		notificationFrame.repaint();
 		createNotifTimerThread();
-		
+
 	}
-	
+
 	/**
 	 * Creates the notification timeout thread for closing the non-native notification after a few seconds
 	 * @return
@@ -284,7 +299,7 @@ public class NotificationsHandler {
 		notifTimeoutThread.setDaemon(true); //Make sure this thread doesn't keep the program alive if something breaks horribly
 		notifTimeoutThread.start();
 	}
-	
+
 	/**
 	 * Thread for the notification timeout thread
 	 *
@@ -308,27 +323,27 @@ public class NotificationsHandler {
 				Logger.Error("The notifications timeout thread was interrupted unexpectedly! Perhaps the game crashed or was killed?");
 				//End the thread
 			}
-			
+
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param time - Current system time, or -1 to terminate the timeout thread. If this has been set to -1, it cannot be reset; this should only be done on close.
 	 */
 	public static synchronized void setLastNotifTime(long time) {
 		if (notifLastShownTime != -1)
 		notifLastShownTime = time;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return - The last millis system time of a notification being shown.
 	 */
 	public static synchronized long getLastNotifTime() {
 		return notifLastShownTime;
 	}
-	
+
 	/**
 	 * Displays/plays a notification popup or sound. This method checks whether each of the respective settings for that specific notification type.<br>
 	 * This method does <i>not</i> check for values such as low hp or fatigue amounts, as the code that does so is local to the Render method.
@@ -339,7 +354,7 @@ public class NotificationsHandler {
 	 */
 	public static boolean notify(NotifType type, String title, String text) {
 		boolean didNotify = false;
-		
+
 		switch (type) {
 		case PM: {
 			if (Settings.PM_NOTIFICATIONS) {
@@ -351,7 +366,7 @@ public class NotificationsHandler {
 						playNotificationSound();
 						didNotify = true;
 					}
-				} 
+				}
 				if (Settings.TRAY_NOTIFS) { //If tray popups enabled
 					if (Settings.TRAY_NOTIFS_ALWAYS) { //If tray popups regardless enabled
 						displayNotification(title, text);
@@ -374,7 +389,7 @@ public class NotificationsHandler {
 						playNotificationSound();
 						didNotify = true;
 					}
-				} 
+				}
 				if (Settings.TRAY_NOTIFS) { //If tray popups enabled
 					if (Settings.TRAY_NOTIFS_ALWAYS) { //If tray popups regardless enabled
 						displayNotification(title, text);
@@ -420,7 +435,7 @@ public class NotificationsHandler {
 						playNotificationSound();
 						didNotify = true;
 					}
-				} 
+				}
 				if (Settings.TRAY_NOTIFS) { //If tray popups enabled
 					if (Settings.TRAY_NOTIFS_ALWAYS) { //If tray popups regardless enabled
 						displayNotification(title, text);
@@ -443,7 +458,7 @@ public class NotificationsHandler {
 						playNotificationSound();
 						didNotify = true;
 					}
-				} 
+				}
 				if (Settings.TRAY_NOTIFS) { //If tray popups enabled
 					if (Settings.TRAY_NOTIFS_ALWAYS) { //If tray popups regardless enabled
 						displayNotification(title, text);
@@ -466,7 +481,7 @@ public class NotificationsHandler {
 						playNotificationSound();
 						didNotify = true;
 					}
-				} 
+				}
 				if (Settings.TRAY_NOTIFS) { //If tray popups enabled
 					if (Settings.TRAY_NOTIFS_ALWAYS) { //If tray popups regardless enabled
 						displayNotification(title, text);
@@ -479,12 +494,12 @@ public class NotificationsHandler {
 			}
 			break;
 		}
-		
+
 		}
 		return didNotify;
-		
+
 	}
-	
+
 	/**
 	 * Displays a notification, playing sound if it is enabled
 	 * @param title - The title of the notification
@@ -493,9 +508,11 @@ public class NotificationsHandler {
 	public static void displayNotification(final String title, String text) {
 		// TODO: Add fade-in and fade-out or slide-in and slide-out animations
 		final String sanitizedText = text.replaceAll("@...@", "").replaceAll("~...~", ""); // Remove color/formatting codes
-		
 		if (SwingUtilities.isEventDispatchThread()) {
-			if(Settings.USE_SYSTEM_NOTIFICATIONS && SystemTray.isSupported()) {
+			if (Settings.USE_SYSTEM_NOTIFICATIONS && System.getProperty("os.name").contains("Linux")) { //use libnotify
+				Notification libnotifyMe = new Notification(title, sanitizedText, "dialog-information");
+				libnotifyMe.show();
+			} else if (Settings.USE_SYSTEM_NOTIFICATIONS && SystemTray.isSupported()) {
 				// TODO: When you click the system notification, it should focus the game client
 				TrayHandler.getTrayIcon().displayMessage(title, sanitizedText, MessageType.NONE);
 			} else {
@@ -508,7 +525,10 @@ public class NotificationsHandler {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					if(Settings.USE_SYSTEM_NOTIFICATIONS && SystemTray.isSupported()) {
+					if (Settings.USE_SYSTEM_NOTIFICATIONS && System.getProperty("os.name").contains("Linux")) { //use libnotify
+						Notification libnotifyMe = new Notification(title, sanitizedText, "dialog-information");
+						libnotifyMe.show();
+					} else if (Settings.USE_SYSTEM_NOTIFICATIONS && SystemTray.isSupported()) {
 						// TODO: When you click the system notification, it should focus the game client
 						TrayHandler.getTrayIcon().displayMessage(title, sanitizedText, MessageType.NONE);
 					} else {
@@ -523,13 +543,26 @@ public class NotificationsHandler {
 		setLastNotifTime(System.currentTimeMillis());
 	}
 	
+	public static void explainJavaGnome() {
+		System.out.println("\nYou need to install java-gnome from your repository in order to use native notifications");
+		System.out.println("in GNU/Linux. (see http://java-gnome.sourceforge.net/get/)\n");
+		
+		System.out.println("If the version in the stacktrace above isn't in your repository, you'll need to replace");
+		System.out.println("lib/gtk-4.1.jar with the version from your package maintainer and recompile rscplus.\n");
+		
+		System.out.println("Let us know about this at https://github.com/OrN/rscplus and we can see about updating");
+		System.out.println("the java-gnome library in our precompiled jar.\n");
+		
+		System.out.println("Alternatively, you can just disable native notifications in Settings.");
+	}
+	
 	/**
 	 * Sets visibility of the notification window. If this method is called from a thread other than the event dispatch thread, 
 	 * it will invokeLater() to hide the thread the next time the EDT is not busy.
 	 * @param isVisible - Whether the window should be visible
 	 */
 	public static void setNotificationWindowVisible(final boolean isVisible) {
-		
+
 		if (SwingUtilities.isEventDispatchThread()) {
 			notificationFrame.setVisible(isVisible);
 		} else {
@@ -540,45 +573,49 @@ public class NotificationsHandler {
 				}
 			});
 		}
-		
+
 	}
-	
-    private static AudioInputStream notificationAudioIn;
-    private static Clip notificationSoundClip;
-    
-    public static void loadNotificationSound() {
-        try {
-            notificationAudioIn = AudioSystem.getAudioInputStream(new BufferedInputStream(Settings.getResourceAsStream("/assets/notification.wav")));
-            notificationSoundClip = (Clip)AudioSystem.getLine(new DataLine.Info(Clip.class, notificationAudioIn.getFormat()));
-            notificationSoundClip.open(notificationAudioIn);
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        }
-    }
-	
+
+	private static AudioInputStream notificationAudioIn;
+	private static Clip notificationSoundClip;
+
+	public static void loadNotificationSound() {
+		try {
+			notificationAudioIn = AudioSystem.getAudioInputStream(new BufferedInputStream(Settings.getResourceAsStream("/assets/notification.wav")));
+			notificationSoundClip = (Clip)AudioSystem.getLine(new DataLine.Info(Clip.class, notificationAudioIn.getFormat()));
+			notificationSoundClip.open(notificationAudioIn);
+		} catch (UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void playNotificationSound() {
 		if (notificationSoundClip == null)
 			return;
-		notificationSoundClip.stop();
-		notificationSoundClip.flush();
-		notificationSoundClip.setFramePosition(0);
-		notificationSoundClip.start();
+		try {
+			notificationSoundClip.stop();
+			notificationSoundClip.flush();
+			notificationSoundClip.setFramePosition(0);
+			notificationSoundClip.start();
+		} catch (IllegalStateException e) {
+			//"java.lang.IllegalStateException: line already closed" may happen if user has no audio
+		}
 	}
-	
+
 	public static void closeNotificationSoundClip() {
 		if (notificationSoundClip != null)
 			notificationSoundClip.close();
 	}
-	
+
 	public static void disposeNotificationHandler() {
 		notificationFrame.dispose();
 		setLastNotifTime(-1);
 	}
-	
+
 }
 
 class NotifsShowGameMouseListener implements MouseListener {
@@ -587,27 +624,27 @@ class NotifsShowGameMouseListener implements MouseListener {
 	public void mouseClicked(MouseEvent arg0) {
 		Game.getInstance().toFront();
 		NotificationsHandler.setNotificationWindowVisible(false);
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		
+
 	}
-	
+
 }

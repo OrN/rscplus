@@ -70,6 +70,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
+import org.gnome.gtk.Gtk;
+import org.gnome.notify.Notify;
+import org.gnome.notify.Notification; //even though this isn't used, importing it stops some "DANGER: invalid cast" messages from appearing in the console
+
 import Client.KeybindSet.KeyModifier;
 import Game.Camera;
 import Game.Game;
@@ -104,10 +108,15 @@ public class ConfigWindow {
 	private JLabel notificationPanelLowHPNotifsEndLabel;
 	private JLabel notificationPanelFatigueNotifsEndLabel;
 	
-	ClickListener clickListener = new ClickListener();
+	ButtonListener buttonListener = new ButtonListener();
 	RebindListener rebindListener = new RebindListener();
-	
+	CheckBoxListener checkboxListener = new CheckBoxListener();
+	RadioButtonListener radiobuttonListener = new RadioButtonListener();
+	SpinnerListener spinnerListener = new SpinnerListener();
+	SliderListener sliderListener = new SliderListener();
 	ButtonFocusListener focusListener = new ButtonFocusListener();
+	TextFieldFocusListener textfocusListener = new TextFieldFocusListener();
+	
 	JTabbedPane tabbedPane;
 	
 	/*
@@ -299,7 +308,7 @@ public class ConfigWindow {
 				Launcher.getConfigWindow().hideConfigWindow();
 			}
 		});
-        
+        /* Automatically apply and save all settings now, don't need these buttons.
         addButton("Cancel", navigationPanel, Component.LEFT_ALIGNMENT).addActionListener(new ActionListener() {
         	
 			@Override
@@ -317,7 +326,7 @@ public class ConfigWindow {
 				Launcher.getConfigWindow().applySettings();
 			}
 		});
-        
+        */
         navigationPanel.add(Box.createHorizontalGlue());
         addButton("Restore Defaults", navigationPanel, Component.RIGHT_ALIGNMENT).addActionListener(new ActionListener() {
 			
@@ -387,6 +396,7 @@ public class ConfigWindow {
 			generalPanelClientSizeXSpinner.setAlignmentY((float) 0.75);
 			generalPanelClientSizeXSpinner.setToolTipText("Default client width (512 minimum)");
 			generalPanelClientSizeXSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+			generalPanelClientSizeXSpinner.addChangeListener(spinnerListener);
 
 			
 			JLabel generalPanelClientSizeByLabel = new JLabel("x");
@@ -401,6 +411,7 @@ public class ConfigWindow {
 			generalPanelClientSizeYSpinner.setAlignmentY((float) 0.75);
 			generalPanelClientSizeYSpinner.setToolTipText("Default client height (346 minimum)");
 			generalPanelClientSizeYSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+			generalPanelClientSizeYSpinner.addChangeListener(spinnerListener);
 
 			
 			//Sanitize JSpinner values
@@ -454,6 +465,7 @@ public class ConfigWindow {
 			generalPanelFatigueFigSpinner.setAlignmentY((float) 0.7);
 			generalPanelFatigueFigsPanel.setBorder(new EmptyBorder(0,0,7,0));
 			generalPanelFatigueFigSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+			generalPanelFatigueFigSpinner.addChangeListener(spinnerListener);
 
 			
 			//Sanitize JSpinner values
@@ -521,6 +533,7 @@ public class ConfigWindow {
 					Logger.Error("Invalid name patch mode value");
 					break;
 				}
+				Launcher.getConfigWindow().applySettings();
 			}
 		});
 		
@@ -549,6 +562,8 @@ public class ConfigWindow {
 		generalPanelFoVSlider.setMajorTickSpacing(1);
 		generalPanelFoVSlider.setPaintTicks(true);
 		generalPanelFoVSlider.setPaintLabels(true);
+		generalPanelFoVSlider.addChangeListener(sliderListener);
+		
 		
 		JLabel generalPanelViewDistanceLabel = new JLabel("View distance");
 		generalPanelViewDistanceLabel.setToolTipText("Sets the max render distance of structures and landscape");
@@ -566,6 +581,7 @@ public class ConfigWindow {
 		generalPanelViewDistanceSlider.setMinimum(2300);
 		generalPanelViewDistanceSlider.setMaximum(10000);
 		generalPanelViewDistanceSlider.setPaintTicks(true);
+		generalPanelViewDistanceSlider.addChangeListener(sliderListener);
 		
 		Hashtable<Integer, JLabel> generalPanelViewDistanceLabelTable = new Hashtable<Integer, JLabel>();
 		generalPanelViewDistanceLabelTable.put(new Integer(2300), new JLabel("2,300"));
@@ -677,6 +693,7 @@ public class ConfigWindow {
 			notificationPanelLowHPNotifsSpinner.setAlignmentY((float) 0.75);
 			notificationPanelLowHPNotifsPanel.add(notificationPanelLowHPNotifsSpinner);
 			notificationPanelLowHPNotifsSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+			notificationPanelLowHPNotifsSpinner.addChangeListener(spinnerListener);
 			
 			notificationPanelLowHPNotifsEndLabel = new JLabel("% HP");
 			notificationPanelLowHPNotifsPanel.add(notificationPanelLowHPNotifsEndLabel);
@@ -705,6 +722,7 @@ public class ConfigWindow {
 			notificationPanelFatigueNotifsSpinner.setAlignmentY((float) 0.75);
 			notificationPanelFatigueNotifsPanel.add(notificationPanelFatigueNotifsSpinner);
 			notificationPanelFatigueNotifsSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+			notificationPanelFatigueNotifsSpinner.addChangeListener(spinnerListener);
 
 			
 			notificationPanelFatigueNotifsEndLabel = new JLabel("% fatigue");
@@ -745,6 +763,8 @@ public class ConfigWindow {
 			streamingPanelTwitchChannelNameTextField.setMinimumSize(new Dimension(100,28));
 			streamingPanelTwitchChannelNameTextField.setMaximumSize(new Dimension(Short.MAX_VALUE,28));
 			streamingPanelTwitchChannelNameTextField.setAlignmentY((float) 0.75);
+			streamingPanelTwitchChannelNameTextField.addFocusListener(textfocusListener);
+			
 			
 		JPanel streamingPanelTwitchUserPanel = new JPanel();
 		streamingPanel.add(streamingPanelTwitchUserPanel);
@@ -763,6 +783,7 @@ public class ConfigWindow {
 			streamingPanelTwitchUserTextField.setMinimumSize(new Dimension(100,28));
 			streamingPanelTwitchUserTextField.setMaximumSize(new Dimension(Short.MAX_VALUE,28));
 			streamingPanelTwitchUserTextField.setAlignmentY((float) 0.75);
+			streamingPanelTwitchUserTextField.addFocusListener(textfocusListener);
 		
 		JPanel streamingPanelTwitchOAuthPanel = new JPanel();
 		streamingPanel.add(streamingPanelTwitchOAuthPanel);
@@ -781,6 +802,7 @@ public class ConfigWindow {
 			streamingPanelTwitchOAuthTextField.setMinimumSize(new Dimension(100,28));
 			streamingPanelTwitchOAuthTextField.setMaximumSize(new Dimension(Short.MAX_VALUE,28));
 			streamingPanelTwitchOAuthTextField.setAlignmentY((float) 0.75);
+			streamingPanelTwitchOAuthTextField.addFocusListener(textfocusListener);
 		
 		streamingPanelIPAtLoginCheckbox = addCheckbox("Enable IP/DNS details at login welcome screen", streamingPanel);
 		streamingPanelIPAtLoginCheckbox.setToolTipText("Shows the last IP/DNS you last logged in from when you log in (Disable this if you're streaming)");
@@ -853,7 +875,7 @@ public class ConfigWindow {
 		KeybindSet kbs = new KeybindSet(b, commandID, defaultModifier, defaultKeyValue);
 		KeyboardHandler.keybindSetList.add(kbs);
 		setKeybindButtonText(kbs); //Set the text of the keybind button now that it has been initialized properly
-		b.addActionListener(this.clickListener);
+		b.addActionListener(this.buttonListener);
 		b.addKeyListener(this.rebindListener);
 		b.addFocusListener(focusListener);
 		b.setFocusable(false);
@@ -1005,6 +1027,7 @@ public class ConfigWindow {
         checkbox.setAlignmentX(Component.LEFT_ALIGNMENT);
         checkbox.setBorder(BorderFactory.createEmptyBorder(0,0,10,5));
         container.add(checkbox);
+        checkbox.addActionListener(checkboxListener);
 		return checkbox;
     }
 	
@@ -1034,6 +1057,7 @@ public class ConfigWindow {
         radioButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         radioButton.setBorder(BorderFactory.createEmptyBorder(0,leftIndent,7,5));
         container.add(radioButton);
+        radioButton.addActionListener(radiobuttonListener);
 		return radioButton;
     }
     
@@ -1220,7 +1244,6 @@ public class ConfigWindow {
 		Settings.fovUpdateRequired = true; //Tell the Renderer to update the FoV from its thread to avoid thread-safety issues.
 		Settings.checkSoftwareCursor();
 		Camera.setDistance(Settings.VIEW_DISTANCE);
-		
 	}
 }
 
@@ -1228,14 +1251,57 @@ public class ConfigWindow {
  * Implements ActionListener; to be used for the buttons in the keybinds tab.
  *
  */
-class ClickListener implements ActionListener {
+
+class CheckBoxListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		JCheckBox checkers = (JCheckBox) e.getSource();
+		if (checkers.getText().contains("system notifications")) {
+			if (checkers.isSelected() && System.getProperty("os.name").contains("Linux") && !NotificationsHandler.libnotifyInitalized) {
+				String[] arbitrary = {"arbitrary"}; //Gtk.init demands a String[], but it doesn't need to do anything.
+				Gtk.init(arbitrary); //required to use libnotify
+				Notify.init("also arbitrary");
+				NotificationsHandler.libnotifyInitalized = true;
+				System.out.println("Initialized libnotify requirements");
+			}
+		}
+		Launcher.getConfigWindow().applySettings();
+	}
+}
+
+class RadioButtonListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Launcher.getConfigWindow().applySettings();
+	}
+}
+
+class SpinnerListener implements ChangeListener {
+
+	@Override
+	public void stateChanged(ChangeEvent arg0) {
+		Launcher.getConfigWindow().applySettings();
+	}
+}
+
+class SliderListener implements ChangeListener {
+
+	@Override
+	public void stateChanged(ChangeEvent arg0) {
+		Launcher.getConfigWindow().applySettings();
+	}
+}
+
+class ButtonListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton button = (JButton) e.getSource();
 		button.setText("...");
 		button.setFocusable(true);
-		button.requestFocusInWindow();		
+		button.requestFocusInWindow();
 	}
 }
 
@@ -1254,6 +1320,18 @@ class ButtonFocusListener implements FocusListener {
 				kbs.button.setFocusable(false);
 			}
 		}
+		Launcher.getConfigWindow().applySettings();
+	}
+}
+
+class TextFieldFocusListener implements FocusListener {
+
+	@Override
+	public void focusGained(FocusEvent arg0) {}
+
+	@Override
+	public void focusLost(FocusEvent arg0) {
+		Launcher.getConfigWindow().applySettings();
 	}
 }
 
