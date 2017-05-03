@@ -22,10 +22,16 @@
 package Game;
 
 /**
- * Generates a version of the README in a format suitable for displaying through in-game chat
+ * Generates a version of the README in a format suitable for displaying through in-game chat.
  */
 public class Help {
 	
+	/**
+	 * Generates a version of the README in a format suitable for displaying through in-game chat.
+	 * 
+	 * @param page the page of the help menu to display
+	 * @param commandType the type of commands to be displayed
+	 */
 	public static void help(int page, String commandType) // this is for users who want to read the readme in game
 	{
 		if (page == 0) {

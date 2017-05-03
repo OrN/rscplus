@@ -38,7 +38,7 @@ public class XPBar {
 	void setSkill(int skill) {
 		current_skill = skill;
 		last_timer_finished = m_timer - Renderer.time <= 0;
-		m_timer = Renderer.time + timer_length;
+		m_timer = Renderer.time + TIMER_LENGTH;
 	}
 	
 	/**
@@ -58,10 +58,10 @@ public class XPBar {
 		long delta = m_timer - Renderer.time;
 		
 		float alpha = 1.0f;
-		if (delta >= timer_length - 250 && last_timer_finished)
-			alpha = (float)(timer_length - delta) / 250.0f; // Fade in over 1/4th second
-		else if (delta < timer_fadeout) // Less than timer_fadeout milliseconds left to display the XP bar
-			alpha = (float)delta / timer_fadeout;
+		if (delta >= TIMER_LENGTH - 250 && last_timer_finished) // Don't fade in if XP bar is already displayed
+			alpha = (float)(TIMER_LENGTH - delta) / 250.0f; // Fade in over 1/4th second
+		else if (delta < TIMER_FADEOUT) // Less than TIMER_FADEOUT milliseconds left to display the XP bar
+			alpha = (float)delta / TIMER_FADEOUT;
 		
 		int skill_current_xp = (int)Client.getXPforLevel(Client.getBaseLevel(current_skill));
 		int skill_next_xp = (int)Client.getXPforLevel(Client.getBaseLevel(current_skill) + 1);
@@ -122,8 +122,8 @@ public class XPBar {
 				y += 12;
 			}
 			
-			if (delta < timer_fadeout + 100) { // Don't allow XP bar to disappear while user is still interacting with it.
-				m_timer += timer_fadeout + 1500;
+			if (delta < TIMER_FADEOUT + 100) { // Don't allow XP bar to disappear while user is still interacting with it.
+				m_timer += TIMER_FADEOUT + 1500;
 				last_timer_finished = false;
 			}
 		}
@@ -144,12 +144,15 @@ public class XPBar {
 	public static Dimension bounds = new Dimension(110, 16);
 	public static int xp_bar_x;
 	// Don't need to set this more than once; we are always positioning the xp_bar to be vertically center aligned with the Settings wrench.
-	public static int xp_bar_y = 20 - (bounds.height / 2);
+	public static final int xp_bar_y = 20 - (bounds.height / 2);
 	
 	public int current_skill;
-	public int timer_length = 5000;
-	public long timer_fadeout = 2000;
+	public static final int TIMER_LENGTH = 5000;
+	public static final long TIMER_FADEOUT = 2000;
 	
-	private boolean last_timer_finished = false; // Don't fade in if XP bar is already displayed
+	/**
+	 * Keeps track of whether the XP bar from the last XP drop is still showing.
+	 */
+	private boolean last_timer_finished = false;
 	private long m_timer;
 }

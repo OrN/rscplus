@@ -637,6 +637,7 @@ public class Renderer {
 	private static BufferedImage game_image;
 	
 	private static Item last_item;
+	
 }
 
 class ItemComparator implements Comparator<Item> {

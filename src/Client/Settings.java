@@ -242,7 +242,7 @@ public class Settings {
 	}
 	
 	/**
-	 * Stores all setting variables into {@link #props} and writes it to config.ini.
+	 * Writes all setting variables to config.ini.
 	 */
 	public static void save() {
 		try {
@@ -790,6 +790,15 @@ public class Settings {
 	public static int FATIGUE_FIGURES = 2;
 	public static boolean FATIGUE_ALERT = true;
 	public static boolean INVENTORY_FULL_ALERT = false;
+	/**
+	 * Defines to what extent the item names should be patched.
+	 * <p>
+	 * 0 - No item name patching<br>
+	 * 1 - Purely practical name changes (potion dosages, unidentified herbs, unfinished potions)<br>
+	 * 2 - Capitalizations and fixed spellings on top of type 1 changes<br>
+	 * 3 - Reworded vague stuff to be more descriptive on top of type 1 &#38; 2 changes
+	 * </p>
+	 */
 	public static int NAME_PATCH_TYPE = 3;
 	public static boolean HIDE_ROOFS = true;
 	public static boolean COLORIZE = true; // TODO: Vague, consider refactoring for clarity
@@ -934,7 +943,7 @@ public class Settings {
 	 */
 	public static boolean isRecommendedToUseSystemNotifs() {
 		// Users on Windows 8.1 or 10 are recommend to set USE_SYSTEM_NOTIFICATIONS = true
-		return System.getProperty("os.name").equals("Windows 10") || System.getProperty("os.name").equals("Windows 8.1");
+		return "Windows 10".equals(System.getProperty("os.name")) || "Windows 8.1".equals(System.getProperty("os.name"));
 	}
 	
 }

@@ -96,8 +96,10 @@ public class NotificationsHandler {
 		}
 	}
 	
+	/**
+	 * Sets up pseudo-system notifications.
+	 */
 	private static void runInit() {
-		
 		NotifsShowGameMouseListener mouseManager = new NotifsShowGameMouseListener();
 		
 		// Get Monitor size for GUI.

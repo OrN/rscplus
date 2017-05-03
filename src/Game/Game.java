@@ -40,7 +40,7 @@ import Client.Settings;
 import Client.TrayHandler;
 
 /**
- * Singleton class that handles packaging the client into a JFrame and starting the applet
+ * Singleton class that handles packaging the client into a JFrame and starting the applet.
  */
 public class Game extends JFrame implements AppletStub, ComponentListener, WindowListener {
 	
@@ -58,7 +58,7 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 	}
 	
 	/**
-	 * Builds the main game client window and adds the applet to it
+	 * Builds the main game client window and adds the applet to it.
 	 */
 	public void start() {
 		if (m_applet == null)
@@ -104,7 +104,7 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 	}
 	
 	/**
-	 * Starts the game applet
+	 * Starts the game applet.
 	 */
 	public void launchGame() {
 		m_config.changeWorld(Settings.WORLD);
@@ -251,4 +251,5 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 	
 	// Singleton
 	private static Game instance = null;
+	
 }

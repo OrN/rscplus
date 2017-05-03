@@ -81,4 +81,5 @@ public class XPDropHandler {
 	
 	private long m_timer;
 	private List<XPDrop> m_list = new ArrayList<>();
+	
 }

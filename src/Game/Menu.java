@@ -62,8 +62,13 @@ public class Menu {
 		}
 	}
 	
+	/**
+	 * Preserves the scroll bar values for the Magic and Prayer spell menus when switching between them.
+	 * 
+	 * @param menu the menu object
+	 * @return if the menu is not the spell menu
+	 */
 	public static boolean switchList(Object menu) {
-		// Spell menu scroll persistence
 		if (menu == spell_menu) {
 			try {
 				int[] scroll = (int[])Reflection.menuScroll.get(spell_menu);
@@ -82,6 +87,9 @@ public class Menu {
 		return true;
 	}
 	
+	/**
+	 * Keeps track of the last spell book used. 0 for the Magic tab, 1 for the Prayer tab.
+	 */
 	private static int spell_swap_idx = 0;
 	private static int[] spell_swap_scroll = { 0, 0 };
 	

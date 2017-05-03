@@ -147,8 +147,14 @@ public class KeyboardHandler implements KeyListener {
 	public static int dialogue_option = -1;
 	public static KeyListener listener_key;
 	
-	// ArrayList containing all registered KeybindSet values
+	/**
+	 * ArrayList containing all registered KeybindSet values
+	 */
 	public static ArrayList<KeybindSet> keybindSetList = new ArrayList<KeybindSet>();
-	// Hashmap containing all default KeybindSet values. This is used in the ConfigWindow restore default keybinds method.
+	
+	/**
+	 * Hashmap containing all default KeybindSet values. This is used in the ConfigWindow restore default keybinds
+	 * method.
+	 */
 	public static HashMap<String, KeybindSet> defaultKeybindSetList = new HashMap<String, KeybindSet>();
 }

@@ -32,7 +32,8 @@ import Client.Logger;
 import Client.Settings;
 
 /**
- * Handles patching and getting item names
+ * This class defines items and provides a static method to patch item names as needed according to
+ * {@link Settings#NAME_PATCH_TYPE}.
  */
 public class Item {
 	
@@ -44,12 +45,11 @@ public class Item {
 		this.id = id;
 	}
 	
+	/**
+	 * Patches item names as specified by {@link Settings#NAME_PATCH_TYPE}.
+	 */
 	public static void patchItemNames() {
-		patchItemNames(Settings.NAME_PATCH_TYPE);
-	}
-	
-	public static void patchItemNames(int namePatchType) {
-		
+		int namePatchType = Settings.NAME_PATCH_TYPE;
 		Connection c = null;
 		
 		try {
@@ -66,25 +66,20 @@ public class Item {
 			Logger.Info("Opened item name database successfully");
 			
 			switch (namePatchType) {
-			/*
-			 * 0 No item name patching
-			 * 1 Purely practical name changes (potion dosages, unidentified herbs, unfinished potions)
-			 * 2 Capitalizations and fixed spellings on top of type 1 changes
-			 * 3 Reworded vague stuff to be more descriptive on top of type 1 & 2 changes
-			 */
-			
 			case 1:
-				queryDatabase(c, "SELECT item_id, patched_name FROM patched_names_type" + namePatchType + ";");
+				queryDatabaseAndPatchItem(c, "SELECT item_id, patched_name FROM patched_names_type" + namePatchType + ";");
 				break;
 			case 2:
-				queryDatabase(c, "SELECT item_id, patched_name FROM patched_names_type" + namePatchType + ";");
-				queryDatabase(c, "SELECT item_id, patched_name FROM patched_names_type1 WHERE patched_names_type1.item_id NOT IN (SELECT item_id FROM patched_names_type2);");
+				queryDatabaseAndPatchItem(c, "SELECT item_id, patched_name FROM patched_names_type" + namePatchType + ";");
+				queryDatabaseAndPatchItem(c,
+						"SELECT item_id, patched_name FROM patched_names_type1 WHERE patched_names_type1.item_id NOT IN (SELECT item_id FROM patched_names_type2);");
 				break;
 			case 3:
-				queryDatabase(c, "SELECT item_id, patched_name FROM patched_names_type" + namePatchType + ";");
-				queryDatabase(c,
+				queryDatabaseAndPatchItem(c, "SELECT item_id, patched_name FROM patched_names_type" + namePatchType + ";");
+				queryDatabaseAndPatchItem(c,
 						"SELECT item_id, patched_name FROM patched_names_type1 WHERE patched_names_type1.item_id NOT IN (SELECT item_id FROM patched_names_type2) AND patched_names_type1.item_id NOT IN (SELECT item_id FROM patched_names_type3);");
-				queryDatabase(c, "SELECT item_id, patched_name FROM patched_names_type2 WHERE patched_names_type2.item_id NOT IN (SELECT item_id FROM patched_names_type3);");
+				queryDatabaseAndPatchItem(c,
+						"SELECT item_id, patched_name FROM patched_names_type2 WHERE patched_names_type2.item_id NOT IN (SELECT item_id FROM patched_names_type3);");
 				break;
 			case 0:
 			default:
@@ -101,7 +96,13 @@ public class Item {
 		}
 	}
 	
-	public static void queryDatabase(Connection c, String query) {
+	/**
+	 * Queries an opened database and patches the items and names it returns.
+	 * 
+	 * @param c the connection with a specific database
+	 * @param query a SQLite query statement
+	 */
+	public static void queryDatabaseAndPatchItem(Connection c, String query) {
 		try {
 			Statement stmt = null;
 			
@@ -127,8 +128,8 @@ public class Item {
 		return item_name[id];
 	}
 	
-	// need to override this for Collections.frequency over in Renderer.java -> SHOW_ITEMINFO to count duplicate-looking items on ground correctly. without this, I believe it
-	// checks if location in memory is the same for both objects.
+	// need to override this for Collections.frequency over in Renderer.java -> SHOW_ITEMINFO to count duplicate-looking
+	// items on ground correctly. without this, I believe it checks if location in memory is the same for both objects.
 	@Override
 	public boolean equals(Object b) {
 		if (b != null) {
@@ -144,7 +145,8 @@ public class Item {
 	
 	@Override
 	public int hashCode() {
-		return this.x + this.y + this.width + this.height + this.id; // this is an acceptable hash since it's fine if two unequal objects have the same hash according to docs
+		// This is an acceptable hash since it's fine if two unequal objects have the same hash according to docs
+		return this.x + this.y + this.width + this.height + this.id;
 	}
 	
 	public int x;
@@ -153,5 +155,6 @@ public class Item {
 	public int height;
 	public int id;
 	
-	public static String item_name[];
+	public static String[] item_name;
+	
 }

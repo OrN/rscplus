@@ -48,7 +48,7 @@ import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 
 /**
- * Singleton class which hooks variables and patches classes
+ * Singleton class which hooks variables and patches classes.
  */
 public class JClassPatcher {
 	

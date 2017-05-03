@@ -37,8 +37,8 @@ public class JConfig {
 	/**
 	 * Opens and parses a jav_config.ws file.
 	 * 
-	 * @param url The URL to a jav_config.ws file
-	 * @return If no exceptions occurred
+	 * @param url the URL to a jav_config.ws file
+	 * @return if no exceptions occurred
 	 */
 	public boolean fetch(String url) {
 		try {
@@ -90,7 +90,7 @@ public class JConfig {
 	 * An attempt to check if the version and subversion listed in jav_config.ws are compatible.<br>
 	 * However, as of 4/6/2017, 'viewerversion' and 'other_sub_version' do not appear in jav_config.ws
 	 * 
-	 * @return If the official version of the client is compatible with the RSC+ client
+	 * @return if the official version of the client is compatible with the RSC+ client
 	 */
 	public boolean isSupported() {
 		// TODO: Since 'viewerversion' and 'other_sub_version' do not appear in jav_config.ws, this method doesn't do anything meaningful

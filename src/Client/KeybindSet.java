@@ -96,13 +96,13 @@ public class KeybindSet {
 		if (modifier == KeyModifier.NONE)
 			modifierText = "";
 		
-		if (keyText.equals("Open Bracket")) {
+		if ("Open Bracket".equals(keyText)) {
 			keyText = "[";
 		}
-		if (keyText.equals("Close Bracket")) {
+		if ("Close Bracket".equals(keyText)) {
 			keyText = "]";
 		}
-		if (keyText.equals("Unknown keyCode: 0x0")) {
+		if ("Unknown keyCode: 0x0".equals(keyText)) {
 			keyText = "???";
 		}
 		return modifierText + keyText;

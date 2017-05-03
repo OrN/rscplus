@@ -49,9 +49,9 @@ public class Util {
 	}
 	
 	/**
-	 * Creates a directory relative to the jar location.
+	 * Creates a directory relative to codebase, which is typically either the jar or location of the package folders.
 	 * 
-	 * @param name The name of the folder to create
+	 * @param name the name of the folder to create
 	 */
 	public static void makeDirectory(String name) {
 		File dir = new File(name);
