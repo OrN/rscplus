@@ -36,6 +36,11 @@ public class TwitchIRC implements Runnable {
 	public static final String SERVER = "irc.twitch.tv";
 	public static final int PORT = 6667;
 	
+	/**
+	 * Creates a socket and buffered reader/writer to irc.twitch.tv on port 6667 and attempts to log in using the OAUTH
+	 * and name specified in {@link Settings} which can be configured via the config GUI.
+	 * It then creates a new thread to run this instance's {@link TwitchIRC#run} method and starts it.
+	 */
 	public void connect() {
 		try {
 			m_socket = new Socket(SERVER, PORT);
@@ -46,21 +51,7 @@ public class TwitchIRC implements Runnable {
 			m_writer.write("NICK " + Settings.TWITCH_USERNAME.toLowerCase() + "\r\n");
 			m_writer.flush();
 		} catch (Exception e) {
-			try {
-				m_writer.close();
-				m_writer = null;
-			} catch (Exception e2) {
-			}
-			try {
-				m_reader.close();
-				m_reader = null;
-			} catch (Exception e2) {
-			}
-			try {
-				m_socket.close();
-				m_socket = null;
-			} catch (Exception e2) {
-			}
+			disconnect(); // Clean up if the connection fails
 		}
 		
 		m_thread = new Thread(this);
@@ -68,6 +59,10 @@ public class TwitchIRC implements Runnable {
 		active = true;
 	}
 	
+	/**
+	 * Attempts to close the instance's BufferedWriter, BufferedReader, and Socket and sets the instance's
+	 * {@link TwitchIRC#active} status to false.
+	 */
 	public void disconnect() {
 		try {
 			m_writer.close();
@@ -87,10 +82,24 @@ public class TwitchIRC implements Runnable {
 		active = false;
 	}
 	
+	/**
+	 * Returns true if the client is currently configured to use Twitch.
+	 * 
+	 * <p>
+	 * This check is performed by determining if a Twitch channel is currently specified in the {@link Settings}
+	 * which can be configured via the config GUI.
+	 * </p>
+	 * 
+	 * @return If the client is currently configured to use Twitch
+	 */
 	public static boolean isUsing() {
-		return Settings.TWITCH_CHANNEL.length() > 0;
+		return Settings.TWITCH_CHANNEL.length() > 0; // TODO maybe check for an OAUTH/password also?
 	}
 	
+	/**
+	 * Handles the Twitch login response parsing and IRC BufferedReader reading.
+	 * Passes messages received from twitch to the client's chat display.
+	 */
 	@Override
 	public void run() {
 		try {
@@ -101,7 +110,9 @@ public class TwitchIRC implements Runnable {
 					m_writer.write("CAP REQ :twitch.tv/commands\r\n");
 					m_writer.write("JOIN #" + Settings.TWITCH_CHANNEL.toLowerCase() + "\r\n");
 					m_writer.flush();
-					Client.displayMessage("@yel@Connected to @red@[" + Settings.TWITCH_CHANNEL + "]@yel@ Twitch chat", Client.CHAT_CHAT);
+					Client.displayMessage("@yel@Connected to @red@[" + Settings.TWITCH_CHANNEL + "]@yel@ Twitch chat", Client.CHAT_CHAT); // FIXME: Consider thread safety for
+																																			// applet GUI updates outside of its
+																																			// thread?
 					Client.displayMessage("@lre@Messages starting with @whi@/@lre@ are sent to Twitch.", Client.CHAT_CHAT);
 					break;
 				} else if (line.contains("NOTICE")) {
@@ -181,6 +192,14 @@ public class TwitchIRC implements Runnable {
 		return false;
 	}*/
 	
+	/**
+	 * Sends a Twitch message to the server via the instance's BufferedWriter.
+	 * This method is called when the message to be sent is <b>not</b> an emote (designated with /me).
+	 * 
+	 * @param message The message to be sent to the server
+	 * @param show Whether or not to show the message to the client.
+	 * @see TwitchIRC#sendEmote
+	 */
 	public void sendMessage(String message, boolean show) {
 		try {
 			m_writer.write("PRIVMSG #" + Settings.TWITCH_CHANNEL.toLowerCase() + " :" + message + "\r\n");
@@ -197,6 +216,14 @@ public class TwitchIRC implements Runnable {
 		}
 	}
 	
+	/**
+	 * Sends a Twitch message to the server via the instance's BufferedWriter.
+	 * This method is called when the message to be sent is an emote (designated with /me).
+	 * 
+	 * @param message The message to be sent to the server
+	 * @param show Whether or not to show the message to the client.
+	 * @see TwitchIRC#sendMessage
+	 */
 	public void sendEmote(String message, boolean show) {
 		try {
 			m_writer.write("PRIVMSG #" + Settings.TWITCH_CHANNEL.toLowerCase() + " :" + Character.toString((char)1) + "ACTION " + message + Character.toString((char)1) + "\r\n");
@@ -213,6 +240,10 @@ public class TwitchIRC implements Runnable {
 		}
 	}
 	
+	/**
+	 * Boolean that dictates whether or not the twitch connection is initialized and active.
+	 * @see TwitchIRC#connect
+	 */
 	private boolean active = false;
 	private BufferedReader m_reader = null;
 	private BufferedWriter m_writer = null;
