@@ -111,7 +111,8 @@ public class JConfig {
 	 * @return if the official version of the client is compatible with the RSC+ client
 	 */
 	public boolean isSupported() {
-		// TODO: Since 'viewerversion' and 'other_sub_version' do not appear in jav_config.ws, this method doesn't do anything meaningful
+		// TODO: Since 'viewerversion' and 'other_sub_version' do not appear in jav_config.ws, this method doesn't do
+		// anything meaningful
 		String version = m_data.get("viewerversion");
 		if (version == null)
 			version = "0";

@@ -35,7 +35,7 @@ import Game.Game;
  * Singleton main class which renders a loading window and the game client window.
  */
 public class Launcher extends JFrame implements Runnable {
-
+	
 	// Singleton
 	private static Launcher instance;
 	private static ConfigWindow window;

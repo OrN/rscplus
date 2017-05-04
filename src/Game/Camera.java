@@ -60,7 +60,8 @@ public class Camera {
 	}
 	
 	/**
-	 * Sets the view distance, to be updated on the next tick by the Renderer. Synchronization added to hopefully prevent thread-safety concerns.
+	 * Sets the view distance, to be updated on the next tick by the Renderer. Synchronization added to hopefully
+	 * prevent thread-safety concerns.
 	 * 
 	 * @param distance the view distance
 	 */
@@ -72,9 +73,12 @@ public class Camera {
 	}
 	
 	public static void setFoV(int fov) {
-		if (fov < 7) // lower than 7 crashes (FoV 4, 5, 6 all crash)
+		// lower than 7 crashes (FoV 4, 5, 6 all crash)
+		if (fov < 7)
 			fov = 7;
-		if (fov > 16) // higher than 16 doesn't crash, but above 16 isn't impressive (screen just turns 1 color) and does crash eventually (e.g. FoV 100)
+		// higher than 16 doesn't crash, but above 16 isn't impressive (screen just turns 1 color) and does crash
+		// eventually (e.g. FoV 100)
+		if (fov > 16)
 			fov = 16;
 		Camera.fov = fov;
 		resize();

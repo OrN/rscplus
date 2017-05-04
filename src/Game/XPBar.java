@@ -88,13 +88,13 @@ public class XPBar {
 		int xp_needed = skill_next_xp - skill_current_xp;
 		
 		// Draw bar
-
+		
 		// Check and set the appropriate display position
 		if (Settings.CENTER_XPDROPS)
 			xp_bar_x = (Renderer.width - bounds.width) / 2; // Position in the center
 		else
 			xp_bar_x = Renderer.width - 210 - bounds.width; // Position to the left of the Settings wrench
-
+			
 		int percent = xp * (bounds.width - 2) / xp_needed;
 		
 		int x = xp_bar_x;
@@ -139,7 +139,8 @@ public class XPBar {
 				y += 12;
 			}
 			
-			if (delta < TIMER_FADEOUT + 100) { // Don't allow XP bar to disappear while user is still interacting with it.
+			// Don't allow XP bar to disappear while user is still interacting with it.
+			if (delta < TIMER_FADEOUT + 100) {
 				m_timer += TIMER_FADEOUT + 1500;
 				last_timer_finished = false;
 			}

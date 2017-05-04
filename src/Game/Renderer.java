@@ -246,9 +246,11 @@ public class Renderer {
 				
 				if (Settings.SHOW_ITEMINFO) { // Don't sort if we aren't displaying any item names anyway
 					try {
-						// Keep items in (technically reverse) alphabetical order for SHOW_ITEMINFO instead of randomly changing places each frame
+						// Keep items in (technically reverse) alphabetical order for SHOW_ITEMINFO instead of randomly
+						// changing places each frame
 						Collections.sort(Client.item_list, new ItemComparator());
-					} catch (Exception e) { // Sometimes Java helpfully complains that the sorting method violates its general contract.
+					} catch (Exception e) {
+						// Sometimes Java helpfully complains that the sorting method violates its general contract.
 						e.printStackTrace();
 					}
 				}
@@ -282,9 +284,10 @@ public class Renderer {
 						int y = item.y - 20;
 						int freq = Collections.frequency(Client.item_list, item);
 						
-						// We've sorted item list in such a way that it is possible to not draw the ITEMINFO unless it's the first time we've tried to for this itemid at that
-						// location by just using last_item. last_item == null necessary in case only one item on screen is being rendered. slight speed increase from freq == 1 if
-						// compiler can stop early in conditional.
+						// We've sorted item list in such a way that it is possible to not draw the ITEMINFO unless it's
+						// the first time we've tried to for this itemid at that location by just using last_item.
+						// last_item == null necessary in case only one item on screen is being rendered. slight speed
+						// increase from freq == 1 if compiler can stop early in conditional.
 						if (freq == 1 || !item.equals(last_item) || last_item == null) {
 							for (Iterator<Point> locIterator = item_text_loc.iterator(); locIterator.hasNext();) {
 								Point loc = locIterator.next(); // TODO: Remove unnecessary allocations
@@ -293,8 +296,9 @@ public class Renderer {
 								}
 							}
 							item_text_loc.add(new Point(x, y));
-							// TODO: it would be nice if for items like Coins or Runes, we showed how many of the item were on the ground instead of how many times you have to
-							// click to pick them all up. Currently will just show "Coins (2)" if there are two stacks of coins on the ground.
+							// TODO: it would be nice if for items like Coins or Runes, we showed how many of the item
+							// were on the ground instead of how many times you have to click to pick them all up.
+							// Currently will just show "Coins (2)" if there are two stacks of coins on the ground.
 							drawShadowText(g2, item.getName() + ((freq == 1) ? "" : " (" + freq + ")"), x, y, color_prayer, true);
 						}
 						last_item = item; // Done with item this loop, can save it as last_item
@@ -644,13 +648,14 @@ class ItemComparator implements Comparator<Item> {
 	
 	@Override
 	public int compare(Item a, Item b) {
-		int offset = a.getName().compareToIgnoreCase(b.getName()) * -1; // this is reverse alphabetical order b/c we display them/in reverse order (y-=12 ea item)
+		// this is reverse alphabetical order b/c we display them/in reverse order (y-=12 ea item)
+		int offset = a.getName().compareToIgnoreCase(b.getName()) * -1;
 		if (offset > 0) { // item a is alphabetically before item b
 			offset = 10;
 		} else if (offset < 0) { // item b is alphabetically before item a
 			offset = -10;
-			// items have the same name we would like to group items that are on the same tile as well, not just having the same name,
-			// so that we can use "last_item" in a useful way
+			// items have the same name we would like to group items that are on the same tile as well, not just having
+			// the same name, so that we can use "last_item" in a useful way
 		} else {
 			if (a.x == b.x && a.y == b.y) {
 				offset = 0; // name is the same and so is location, items are considered equal

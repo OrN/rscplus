@@ -250,7 +250,8 @@ public class Client {
 						xpdrop_handler.add("+" + xpGain + " (" + skill_name[i] + ")", Renderer.color_text);
 					
 					// XP/hr calculations
-					// TODO: After 5-10 minutes of tracking XP, make it display a rolling average instead of a session average
+					// TODO: After 5-10 minutes of tracking XP, make it display a rolling average instead of a session
+					// average
 					if ((System.currentTimeMillis() - lastXpGain[i][1]) <= 180000) {
 						// < 3 minutes since last XP drop
 						lastXpGain[i][0] = xpGain + lastXpGain[i][0];
@@ -345,7 +346,8 @@ public class Client {
 	 * @return a modified chat message
 	 */
 	public static String processChatCommand(String line) {
-		if (TwitchIRC.isUsing() && line.startsWith("/")) { // Move Twitch related checks to their own method to stay consistent
+		// TODO: Move Twitch related checks to their own method to stay consistent
+		if (TwitchIRC.isUsing() && line.startsWith("/")) {
 			String message = line.substring(1, line.length());
 			String[] messageArray = message.split(" ");
 			
@@ -366,7 +368,8 @@ public class Client {
 		return line;
 	}
 	
-	public static String processPrivateCommand(String line) { // TODO: Use processClientChatCommand instead of this method
+	// TODO: Use processClientChatCommand instead of this method
+	public static String processPrivateCommand(String line) {
 		return processClientChatCommand(line);
 	}
 	
@@ -468,13 +471,13 @@ public class Client {
 		if (line.startsWith("::")) {
 			String command = line.substring(2, line.length()).toLowerCase();
 			
-			if ("total".equals(command))
+			if ("total".equals(command)) {
 				return "My Total Level is " + getTotalLevel() + " (" + getTotalXP() + " xp).";
-			else if ("fatigue".equals(command)) {
+			} else if ("fatigue".equals(command)) {
 				return "My Fatigue is at " + currentFatigue + "%.";
-			} else
-			
-			if ("cmb".equals(command)) { // this command breaks character limits and might be bannable... would not recommend sending this command over PM to rs2/rs3
+			} else if ("cmb".equals(command)) {
+				// this command breaks character limits and might be bannable... would not recommend sending this
+				// command over PM to rs2/rs3
 				return "@whi@My Combat is Level "
 						+ "@gre@" +
 						// basic melee stats
@@ -627,7 +630,8 @@ public class Client {
 			// Open connection
 			URLConnection connection = updateURL.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			// in our current client version, we are looking at the source file of Settings.java in the main repository in order to parse what the current version number is.
+			// in our current client version, we are looking at the source file of Settings.java in the main repository
+			// in order to parse what the current version number is.
 			String line;
 			while ((line = in.readLine()) != null) {
 				if (line.contains("VERSION_NUMBER")) {
@@ -657,7 +661,8 @@ public class Client {
 		double latestVersion = fetchLatestVersionNumber();
 		if (latestVersion > Settings.VERSION_NUMBER) {
 			displayMessage("@gre@A new version of RSC+ is available!", CHAT_QUEST);
-			displayMessage("~034~ Your version is @red@" + String.format("%8.6f", Settings.VERSION_NUMBER), CHAT_QUEST); // TODO: before Y10K update this to %9.6f
+			// TODO: before Y10K update this to %9.6f
+			displayMessage("~034~ Your version is @red@" + String.format("%8.6f", Settings.VERSION_NUMBER), CHAT_QUEST);
 			displayMessage("The latest version is @gre@" + String.format("%8.6f", latestVersion), CHAT_QUEST);
 		} else if (announceIfUpToDate) {
 			displayMessage("You're up to date: @gre@" + String.format("%8.6f", latestVersion), CHAT_QUEST);
@@ -673,9 +678,11 @@ public class Client {
 	 */
 	public static void messageHook(String username, String message, int type) {
 		if (username != null)
-			username = username.replace("\u00A0", " "); // Prevents non-breaking space in colored usernames appearing as an accented 'a' in console
+			// Prevents non-breaking space in colored usernames appearing as an accented 'a' in console
+			username = username.replace("\u00A0", " ");
 		if (message != null)
-			message = message.replace("\u00A0", " "); // Prevents non-breaking space in colored usernames appearing as an accented 'a' in console
+			// Prevents non-breaking space in colored usernames appearing as an accented 'a' in console
+			message = message.replace("\u00A0", " ");
 		if (type == CHAT_NONE) {
 			if (username == null && message != null) {
 				if (message.contains("The spell fails! You may try again in 20 seconds"))
@@ -688,7 +695,8 @@ public class Client {
 			NotificationsHandler.notify(NotifType.PM, "PM from " + username, message);
 		}
 		
-		// TODO: For some reason, message = "" for trade notifications, unlike duel requests, which equals the game chat message.
+		// TODO: For some reason, message = "" for trade notifications, unlike duel requests, which equals the game chat
+		// message.
 		// Something else needs to be detected to see if it's a trade request.
 		/*
 		else if (type == CHAT_PLAYER_INTERACT_IN) {
@@ -708,7 +716,8 @@ public class Client {
 		}
 		
 		if (message.startsWith("Welcome to RuneScape!")) {
-			// because this section of code is triggered when the "Welcome to RuneScape!" message first appears, we can use it to do some first time set up
+			// because this section of code is triggered when the "Welcome to RuneScape!" message first appears, we can
+			// use it to do some first time set up
 			if (Settings.FIRST_TIME) {
 				Settings.FIRST_TIME = false;
 				Settings.save();
@@ -758,13 +767,16 @@ public class Client {
 	private static String formatUsername(String username, int type) {
 		switch (type) {
 		case CHAT_PRIVATE:
-			username = username + " tells you: "; // Username tells you:
+			// Username tells you:
+			username = username + " tells you: ";
 			break;
 		case CHAT_PRIVATE_OUTGOING:
-			username = "You tell " + username + ": "; // You tell Username:
+			// You tell Username:
+			username = "You tell " + username + ": ";
 			break;
 		case CHAT_QUEST:
-			username = username + ": "; // If username != null during CHAT_QUEST, then this is your player name
+			// If username != null during CHAT_QUEST, then this is your player name
+			username = username + ": ";
 			break;
 		case CHAT_CHAT:
 			username = username + ": ";
@@ -795,16 +807,20 @@ public class Client {
 	public static String colorizeUsername(String colorMessage, int type) {
 		switch (type) {
 		case CHAT_PRIVATE:
-			colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@"; // Username tells you:
+			// Username tells you:
+			colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@";
 			break;
 		case CHAT_PRIVATE_OUTGOING:
-			colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@"; // You tell Username:
+			// You tell Username:
+			colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@";
 			break;
 		case CHAT_QUEST:
-			colorMessage = "@|white,intensity_faint " + colorMessage + "|@"; // If username != null during CHAT_QUEST, then this is your player name, which is usually white
+			// If username != null during CHAT_QUEST, then this is your player name, which is usually white
+			colorMessage = "@|white,intensity_faint " + colorMessage + "|@";
 			break;
 		case CHAT_CHAT:
-			colorMessage = "@|yellow,intensity_bold " + colorMessage + "|@"; // just bold username for chat
+			// just bold username for chat
+			colorMessage = "@|yellow,intensity_bold " + colorMessage + "|@";
 			break;
 		case CHAT_PLAYER_INTERACT_IN: // happens when player trades you
 			colorMessage = "@|white " + colorMessage + "|@";
@@ -840,7 +856,8 @@ public class Client {
 		} else if (greenMessage) {
 			return "@|green,intensity_bold " + colorMessage + "|@";
 		} else if (whiteMessage) {
-			// if (colorMessage.contains("Welcome to RuneScape!")) { // this would be necessary if whiteMessage had more than one .contains()
+			// if (colorMessage.contains("Welcome to RuneScape!")) {
+			// this would be necessary if whiteMessage had more than one .contains()
 			// }
 			
 			return "@|white,intensity_bold " + colorMessage + "|@";
@@ -849,21 +866,24 @@ public class Client {
 		switch (type) {
 		case CHAT_PRIVATE:
 		case CHAT_PRIVATE_OUTGOING:
-			colorMessage = "@|cyan,intensity_faint " + colorReplace(colorMessage) + "|@"; // message to/from PMs
+			// message to/from PMs
+			colorMessage = "@|cyan,intensity_faint " + colorReplace(colorMessage) + "|@";
 			break;
 		case CHAT_QUEST:
 			if (colorMessage.contains(":")) {
 				// this will be like "banker: would you like to access your bank account?" which should be yellow
 				colorMessage = "@|yellow,intensity_faint " + colorReplace(colorMessage) + "|@";
 			} else {
-				colorMessage = "@|white,intensity_faint " + colorReplace(colorMessage) + "|@"; // this is usually skilling
+				// this is usually skilling
+				colorMessage = "@|white,intensity_faint " + colorReplace(colorMessage) + "|@";
 			}
 			break;
 		case CHAT_CHAT:
 			colorMessage = "@|yellow,intensity_faint " + colorReplace(colorMessage) + "|@";
 			break;
 		case CHAT_PRIVATE_LOG_IN_OUT:
-			colorMessage = "@|cyan,intensity_faint " + colorMessage + "|@"; // don't need to colorReplace, this is just "username has logged in/out"
+			// don't need to colorReplace, this is just "username has logged in/out"
+			colorMessage = "@|cyan,intensity_faint " + colorMessage + "|@";
 			break;
 		case CHAT_NONE: // have to replace b/c @cya@Screenshot saved...
 		case CHAT_PLAYER_INTERACT_IN:
@@ -879,7 +899,8 @@ public class Client {
 	
 	public static String colorReplace(String colorMessage) {
 		final String[] colorDict = { // TODO: Make this a class variable
-				"(?i)@cya@", "|@@|cyan ", // less common colors should go at the bottom b/c we can break search loop early
+				// less common colors should go at the bottom b/c we can break search loop early
+				"(?i)@cya@", "|@@|cyan ",
 				"(?i)@whi@", "|@@|white ",
 				"(?i)@red@", "|@@|red ",
 				"(?i)@gre@", "|@@|green ",
@@ -905,8 +926,8 @@ public class Client {
 			colorMessage = colorMessage.replaceAll(colorDict[i], colorDict[i + 1]);
 		}
 		
-		// we could replace @.{3}@ with "" to remove "@@@@@" or "@dne@" (i.e. color code which does not exist) just like in chat box,
-		// but I think it's more interesting to leave the misspelled stuff in terminal
+		// we could replace @.{3}@ with "" to remove "@@@@@" or "@dne@" (i.e. color code which does not exist) just like
+		// in chat box, but I think it's more interesting to leave the misspelled stuff in terminal
 		
 		// could also respect ~xxx~ but not really useful.
 		
@@ -932,7 +953,8 @@ public class Client {
 	 * @param level the level
 	 * @return the minimum XP required to reach the specified level, starting from 0 XP
 	 */
-	public static float getXPforLevel(int level) { // TODO: Consider using a final variable to store corresponding values since this is called a lot
+	public static float getXPforLevel(int level) {
+		// TODO: Consider using a final variable to store corresponding values since this is called a lot
 		float xp = 0.0f;
 		for (int x = 1; x < level; x++)
 			xp += Math.floor(x + 300 * Math.pow(2, x / 7.0f)) / 4.0f;
@@ -986,7 +1008,8 @@ public class Client {
 	}
 	
 	/**
-	 * Returns the user's base level in a specified skill. This number is <b>not</b> affected by skills boosts and debuffs.
+	 * Returns the user's base level in a specified skill. This number is <b>not</b> affected by skills boosts and
+	 * debuffs.
 	 * 
 	 * @param skill an integer corresponding to a skill
 	 * @return the user's base level in the specified skill

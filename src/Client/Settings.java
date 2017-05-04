@@ -48,10 +48,12 @@ public class Settings {
 	/**
 	 * A time stamp corresponding to the current version of this source code. Used as a crude versioning system.
 	 * <p>
-	 * This variable follows ISO 8601 yyyyMMdd.HHmmss format. The version number will actually be read from this source file, so please don't change the name of this variable and
+	 * This variable follows ISO 8601 yyyyMMdd.HHmmss format. The version number will actually be read from this source
+	 * file, so please don't change the name of this variable and
 	 * keep the assignment near the top for scanning.<br>
 	 * <br>
-	 * This variable can be set automatically by ant by issuing `ant setversion` before you push your changes, so there's no need to update it manually.
+	 * This variable can be set automatically by ant by issuing `ant setversion` before you push your changes, so
+	 * there's no need to update it manually.
 	 * </p>
 	 */
 	public static final double VERSION_NUMBER = 20170402.075627; // TODO: Separate the "version" into its own file
@@ -142,7 +144,8 @@ public class Settings {
 	}
 	
 	/**
-	 * Creates necessary folders relative to the codebase, which is typically either the jar or location of the package folders
+	 * Creates necessary folders relative to the codebase, which is typically either the jar or location of the package
+	 * folders
 	 * 
 	 * @see java.security.CodeSource
 	 */
@@ -385,7 +388,8 @@ public class Settings {
 			// Miscellaneous settings (No GUI)
 			props.setProperty("world", Integer.toString(WORLD));
 			props.setProperty("combat_style", Integer.toString(COMBAT_STYLE));
-			props.setProperty("first_time", Boolean.toString(false)); // This is set to false, as logically, saving the config would imply this is not a first-run.
+			// This is set to false, as logically, saving the config would imply this is not a first-run.
+			props.setProperty("first_time", Boolean.toString(false));
 			props.setProperty("disassemble", Boolean.toString(DISASSEMBLE));
 			props.setProperty("disassemble_directory", "" + DISASSEMBLE_DIRECTORY);
 			
@@ -419,7 +423,8 @@ public class Settings {
 	}
 	
 	/**
-	 * Creates a URL object that points to a specified file relative to the codebase, which is typically either the jar or location of the package folders.
+	 * Creates a URL object that points to a specified file relative to the codebase, which is typically either the jar
+	 * or location of the package folders.
 	 * 
 	 * @param fileName the file to parse as a URL
 	 * @return a URL that points to the specified file
@@ -445,7 +450,8 @@ public class Settings {
 	}
 	
 	/**
-	 * Creates an InputStream object that streams the contents of a specified file relative to the codebase, which is typically either the jar or location of the package folders.
+	 * Creates an InputStream object that streams the contents of a specified file relative to the codebase, which is
+	 * typically either the jar or location of the package folders.
 	 * 
 	 * @param fileName the file to open as an InputStream
 	 * @return an InputStream that streams the contents of the specified file
@@ -680,7 +686,8 @@ public class Settings {
 	}
 	
 	/**
-	 * Gets the String value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value.
+	 * Gets the String value of a Properties object for the specified key. If no value is defined for that key, it
+	 * returns the specified default value.
 	 * 
 	 * @param props the Properties object to read
 	 * @param key the name of the property to lookup
@@ -697,7 +704,8 @@ public class Settings {
 	}
 	
 	/**
-	 * Gets the Integer value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value.
+	 * Gets the Integer value of a Properties object for the specified key. If no value is defined for that key, it
+	 * returns the specified default value.
 	 * 
 	 * @param props the Properties object to read
 	 * @param key the name of the property to lookup
@@ -717,7 +725,8 @@ public class Settings {
 	}
 	
 	/**
-	 * Gets the Boolean value of a Properties object for the specified key. If no value is defined for that key, it returns the specified default value.
+	 * Gets the Boolean value of a Properties object for the specified key. If no value is defined for that key, it
+	 * returns the specified default value.
 	 * 
 	 * @param props the Properties object to read
 	 * @param key the name of the property to lookup

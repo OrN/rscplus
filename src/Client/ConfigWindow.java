@@ -126,8 +126,8 @@ public class ConfigWindow {
 	private JCheckBox generalPanelChatHistoryCheckbox;
 	private JCheckBox generalPanelCombatXPMenuCheckbox;
 	private JCheckBox generalPanelXPDropsCheckbox;
-		private JRadioButton generalPanelXPCenterAlignFocusButton;
-		private JRadioButton generalPanelXPRightAlignFocusButton;
+	private JRadioButton generalPanelXPCenterAlignFocusButton;
+	private JRadioButton generalPanelXPRightAlignFocusButton;
 	private JCheckBox generalPanelFatigueDropsCheckbox;
 	private JSpinner generalPanelFatigueFigSpinner;
 	private JCheckBox generalPanelFatigueAlertCheckbox;
@@ -419,14 +419,14 @@ public class ConfigWindow {
 		generalPanelXPDropsCheckbox = addCheckbox("XP drops", generalPanel);
 		generalPanelXPDropsCheckbox.setToolTipText("Show the XP gained as an overlay each time XP is received");
 		
-			ButtonGroup XPAlignButtonGroup = new ButtonGroup();
-			generalPanelXPRightAlignFocusButton = addRadioButton("Display on the right", generalPanel, 20);
-			generalPanelXPRightAlignFocusButton.setToolTipText("The XP bar and XP drops will be shown just left of the Settings menu.");
-			generalPanelXPCenterAlignFocusButton = addRadioButton("Display in the center", generalPanel, 20);
-			generalPanelXPCenterAlignFocusButton.setToolTipText("The XP bar and XP drops will be shown at the top-middle of the screen.");
-			XPAlignButtonGroup.add(generalPanelXPRightAlignFocusButton);
-			XPAlignButtonGroup.add(generalPanelXPCenterAlignFocusButton);
-
+		ButtonGroup XPAlignButtonGroup = new ButtonGroup();
+		generalPanelXPRightAlignFocusButton = addRadioButton("Display on the right", generalPanel, 20);
+		generalPanelXPRightAlignFocusButton.setToolTipText("The XP bar and XP drops will be shown just left of the Settings menu.");
+		generalPanelXPCenterAlignFocusButton = addRadioButton("Display in the center", generalPanel, 20);
+		generalPanelXPCenterAlignFocusButton.setToolTipText("The XP bar and XP drops will be shown at the top-middle of the screen.");
+		XPAlignButtonGroup.add(generalPanelXPRightAlignFocusButton);
+		XPAlignButtonGroup.add(generalPanelXPCenterAlignFocusButton);
+		
 		generalPanelFatigueDropsCheckbox = addCheckbox("Fatigue drops", generalPanel);
 		generalPanelFatigueDropsCheckbox.setToolTipText("Show the fatigue gained as an overlay each time fatigue is received");
 		
@@ -595,11 +595,13 @@ public class ConfigWindow {
 		
 		overlayPanelFoodHealingCheckbox = addCheckbox("Show food healing overlay (Not implemented yet)", overlayPanel);
 		overlayPanelFoodHealingCheckbox.setToolTipText("When hovering on food, shows the HP a consumable recovers");
-		overlayPanelFoodHealingCheckbox.setEnabled(false); // TODO: Remove this line when food healing overlay is implemented
+		// TODO: Remove this line when food healing overlay is implemented
+		overlayPanelFoodHealingCheckbox.setEnabled(false);
 		
 		overlayPanelHPRegenTimerCheckbox = addCheckbox("Display time until next HP regeneration (Not implemented yet)", overlayPanel);
 		overlayPanelHPRegenTimerCheckbox.setToolTipText("Shows the seconds until your HP will naturally regenerate");
-		overlayPanelHPRegenTimerCheckbox.setEnabled(false); // TODO: Remove this line when the HP regen timer is implemented
+		// TODO: Remove this line when the HP regen timer is implemented
+		overlayPanelHPRegenTimerCheckbox.setEnabled(false);
 		
 		overlayPanelDebugModeCheckbox = addCheckbox("Enable debug mode", overlayPanel);
 		overlayPanelDebugModeCheckbox.setToolTipText("Shows debug overlays and enables debug text in the console");
@@ -648,7 +650,8 @@ public class ConfigWindow {
 		
 		notificationPanelTradeNotifsCheckbox = addCheckbox("Enable trade notifications (Not implemented yet)", notificationPanel);
 		notificationPanelTradeNotifsCheckbox.setToolTipText("Shows a system notification when a trade request is received");
-		notificationPanelTradeNotifsCheckbox.setEnabled(false); // TODO: Remove this line after trade notifications are implemented
+		// TODO: Remove this line after trade notifications are implemented
+		notificationPanelTradeNotifsCheckbox.setEnabled(false);
 		
 		notificationPanelDuelNotifsCheckbox = addCheckbox("Enable duel notifications", notificationPanel);
 		notificationPanelDuelNotifsCheckbox.setToolTipText("Shows a system notification when a duel request is received");
@@ -836,8 +839,10 @@ public class ConfigWindow {
 	 * @param panel Panel to add the keybind label and button to
 	 * @param labelText Text describing the keybind's function as shown to the user on the config window.
 	 * @param commandID Unique String matching an entry in the processKeybindCommand switch statement.
-	 * @param defaultModifier Default modifier value. This can be one of the enum values of KeybindSet.KeyModifier, eg KeyModifier.CTRL
-	 * @param defaultKeyValue Default key value. This should match up with a KeyEvent.VK_ value. Set to -1 to set the default as NONE
+	 * @param defaultModifier Default modifier value. This can be one of the enum values of KeybindSet.KeyModifier, eg
+	 * KeyModifier.CTRL
+	 * @param defaultKeyValue Default key value. This should match up with a KeyEvent.VK_ value. Set to -1 to set the
+	 * default as NONE
 	 */
 	private void addKeybindSet(JPanel panel, String labelText, String commandID, KeyModifier defaultModifier, int defaultKeyValue) {
 		addKeybindLabel(panel, labelText);
@@ -858,12 +863,14 @@ public class ConfigWindow {
 	}
 	
 	/**
-	 * Tracks the number of keybind labels added to the keybind panel. Used to determine the gbc.gridy and panel preferred height.
+	 * Tracks the number of keybind labels added to the keybind panel. Used to determine the gbc.gridy and panel
+	 * preferred height.
 	 */
 	private int keybindLabelGridYCounter = 0;
 	
 	/**
-	 * Adds a new label to the keybinds list. This should be used in conjunction with adding a button in a 1:1 ratio. The new label will be added below the existing ones.
+	 * Adds a new label to the keybinds list. This should be used in conjunction with adding a button in a 1:1 ratio.
+	 * The new label will be added below the existing ones.
 	 * 
 	 * @param panel Panel to add the label to.
 	 * @param labelText Text of the label to add.
@@ -887,7 +894,8 @@ public class ConfigWindow {
 	private int keybindButtonGridYCounter = 0;
 	
 	/**
-	 * Adds a new button to the keybinds list. This should be used in conjunction with adding a label in a 1:1 ratio. The new button will be added below the existing ones.
+	 * Adds a new button to the keybinds list. This should be used in conjunction with adding a label in a 1:1 ratio.
+	 * The new button will be added below the existing ones.
 	 * 
 	 * @param panel Panel to add the button to.
 	 * @param buttonText Text of the label to add.
@@ -1000,7 +1008,8 @@ public class ConfigWindow {
 	}
 	
 	/**
-	 * Adds a preconfigured JCheckbox to the specified container, setting its alignment constraint to left and adding an empty padding border.
+	 * Adds a preconfigured JCheckbox to the specified container, setting its alignment constraint to left and adding an
+	 * empty padding border.
 	 * 
 	 * @param text The text of the checkbox
 	 * @param container The container to add the checkbox to.
@@ -1015,7 +1024,8 @@ public class ConfigWindow {
 	}
 	
 	/**
-	 * Adds a preconfigured JButton to the specified container using the specified alignment constraint. Does not modify the button's border.
+	 * Adds a preconfigured JButton to the specified container using the specified alignment constraint. Does not modify
+	 * the button's border.
 	 * 
 	 * @param text The text of the button
 	 * @param container The container to add the button to
@@ -1030,7 +1040,8 @@ public class ConfigWindow {
 	}
 	
 	/**
-	 * Adds a preconfigured radio button to the specified container. Does not currently assign the radio button to a group.
+	 * Adds a preconfigured radio button to the specified container. Does not currently assign the radio button to a
+	 * group.
 	 * 
 	 * @param text The text of the radio button
 	 * @param container The container to add the button to
@@ -1220,14 +1231,18 @@ public class ConfigWindow {
 	
 	/**
 	 * Applies the settings in the Config GUI to the Settings class variables. <br>
-	 * Note that this method should be used to apply any additional settings that are not applied automatically, such as those already present. Also note that thread-unsafe
-	 * operations affecting the applet should not be done in this method, as this method is invoked by the AWT event queue.
+	 * <p>
+	 * Note that this method should be used to apply any additional settings that are not applied automatically, such as
+	 * those already present. Also note that thread-unsafe operations affecting the applet should not be done in this
+	 * method, as this method is invoked by the AWT event queue.
+	 * </p>
 	 */
 	public void applySettings() {
 		saveSettings();
 		if (Settings.CUSTOM_CLIENT_SIZE)
 			Game.getInstance().resizeFrameWithContents();
-		Settings.fovUpdateRequired = true; // Tell the Renderer to update the FoV from its thread to avoid thread-safety issues.
+		// Tell the Renderer to update the FoV from its thread to avoid thread-safety issues.
+		Settings.fovUpdateRequired = true;
 		Settings.checkSoftwareCursor();
 		Camera.setDistance(Settings.VIEW_DISTANCE);
 		

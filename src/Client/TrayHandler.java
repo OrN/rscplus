@@ -89,8 +89,8 @@ public class TrayHandler implements MouseListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Perhaps find a way to close the client from the tray icon and call both WindowClosing() and WindowClosed(), though
-				// nothing seems broken from doing it this way
+				// TODO: Perhaps find a way to close the client from the tray icon and call both WindowClosing() and
+				// WindowClosed(), though nothing seems broken from doing it this way
 				Game.getInstance().dispatchEvent(new WindowEvent(Game.getInstance(), WindowEvent.WINDOW_CLOSING));
 			}
 		});

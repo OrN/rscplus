@@ -244,7 +244,8 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 	}
 	
 	/**
-	 * Resizes the Game window to match the X and Y values stored in Settings. The applet's size will be recalculated on the next rendering tick.
+	 * Resizes the Game window to match the X and Y values stored in Settings. The applet's size will be recalculated on
+	 * the next rendering tick.
 	 */
 	public void resizeFrameWithContents() {
 		int windowWidth = Settings.CUSTOM_CLIENT_SIZE_X + getInsets().left + getInsets().right;

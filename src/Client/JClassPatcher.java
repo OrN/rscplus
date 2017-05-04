@@ -528,7 +528,8 @@ public class JClassPatcher {
 				
 				// Check if dialogue option is pressed
 				methodNode.instructions.insert(lastNode, new JumpInsnNode(Opcodes.IF_ICMPGE, label));
-				methodNode.instructions.insert(lastNode, new FieldInsnNode(Opcodes.GETFIELD, "client", "Id", "I")); // Menu option count
+				// Menu option count
+				methodNode.instructions.insert(lastNode, new FieldInsnNode(Opcodes.GETFIELD, "client", "Id", "I"));
 				methodNode.instructions.insert(lastNode, new VarInsnNode(Opcodes.ALOAD, 0));
 				methodNode.instructions.insert(lastNode, new FieldInsnNode(Opcodes.GETSTATIC, "Game/KeyboardHandler", "dialogue_option", "I"));
 				methodNode.instructions.insert(lastNode, new JumpInsnNode(Opcodes.IFLT, label));
