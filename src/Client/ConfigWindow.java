@@ -77,22 +77,28 @@ import Game.KeyboardHandler;
  * GUI designed for the RSCPlus client that manages configuration options and keybind values from within an interface.
  * <p>
  * <b>To add a new configuration option to the GUI,</b> <br>
- * 1.) Declare an instance variable to hold the gui element (eg checkbox) and add it to the GUI from ConfigWindow.initialize() (see existing examples) <br>
- * 1.5.) If there is a helper method such as addCheckbox, use that method to create and store the element that is returned in the ConfigWindow.initialize() method. See existing
- * code for examples.<br>
- * 2.) ^Add an appropriate variable to the Settings class as a class variable, <i>and</i> as an assignment in the appropriate restore default method below. <br>
- * 3.) Add an entry in the ConfigWindow.synchronizeGuiValues() method that references the variable, as per the already-existing examples.<br>
- * 4.) Add an entry in the ConfigWindow.saveSettings() method referencing the variable, as per the already-existing examples.<br>
+ * 1.) Declare an instance variable to hold the gui element (eg checkbox) and add it to the GUI from
+ * ConfigWindow.initialize() (see existing examples) <br>
+ * 1.5.) If there is a helper method such as addCheckbox, use that method to create and store the element that is
+ * returned in the ConfigWindow.initialize() method. See existing code for examples.<br>
+ * 2.) ^Add an appropriate variable to the Settings class as a class variable, <i>and</i> as an assignment in the
+ * appropriate restore default method below. <br>
+ * 3.) Add an entry in the ConfigWindow.synchronizeGuiValues() method that references the variable, as per the
+ * already-existing examples.<br>
+ * 4.) Add an entry in the ConfigWindow.saveSettings() method referencing the variable, as per the already-existing
+ * examples.<br>
  * 5.) ^Add an entry in the Settings.Save() class save method to save the option to file.<br>
  * 6.) ^Add an entry in the Settings.Load() class load method to load the option from file.<br>
- * 7.) (Optional) If a method needs to be called to adjust settings other than the setting value itself, add it to the ConfigWindow.applySettings() method below.<br>
+ * 7.) (Optional) If a method needs to be called to adjust settings other than the setting value itself, add it to the
+ * ConfigWindow.applySettings() method below.<br>
  * <br>
  * <i>Entries marked with a ^ are steps used to add settings that are not included in the GUI.</i> <br>
  * <br>
  * <b>To add a new keybind,</b><br>
  * 1.) Add a call in the initialize method to addKeybind with appropriate parameters.<br>
  * 2.) Add an entry to the command switch statement in Settings to process the command when its keybind is pressed.<br>
- * 3.) Optional, recommended: Separate the command from its functionality by making a toggleBlah method and calling it from the switch statement.<br>
+ * 3.) Optional, recommended: Separate the command from its functionality by making a toggleBlah method and calling it
+ * from the switch statement.<br>
  * </p>
  */
 public class ConfigWindow {

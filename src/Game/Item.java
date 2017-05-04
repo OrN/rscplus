@@ -37,6 +37,14 @@ import Client.Settings;
  */
 public class Item {
 	
+	public static String[] item_name;
+	
+	public int x;
+	public int y;
+	public int width;
+	public int height;
+	public int id;
+	
 	public Item(int x, int y, int width, int height, int id) {
 		this.x = x;
 		this.y = y;
@@ -148,13 +156,5 @@ public class Item {
 		// This is an acceptable hash since it's fine if two unequal objects have the same hash according to docs
 		return this.x + this.y + this.width + this.height + this.id;
 	}
-	
-	public int x;
-	public int y;
-	public int width;
-	public int height;
-	public int id;
-	
-	public static String[] item_name;
 	
 }

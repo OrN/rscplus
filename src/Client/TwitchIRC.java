@@ -37,6 +37,17 @@ public class TwitchIRC implements Runnable {
 	public static final int PORT = 6667;
 	
 	/**
+	 * Boolean that dictates whether or not the twitch connection is initialized and active.
+	 * 
+	 * @see TwitchIRC#connect
+	 */
+	private boolean active = false;
+	private BufferedReader m_reader = null;
+	private BufferedWriter m_writer = null;
+	private Socket m_socket = null;
+	private Thread m_thread = null;
+	
+	/**
 	 * Creates a socket and buffered reader/writer to irc.twitch.tv on port 6667 and attempts to log in using the OAUTH
 	 * and name specified in {@link Settings} which can be configured via the config GUI.
 	 * It then creates a new thread to run this instance's {@link TwitchIRC#run} method and starts it.
@@ -110,9 +121,8 @@ public class TwitchIRC implements Runnable {
 					m_writer.write("CAP REQ :twitch.tv/commands\r\n");
 					m_writer.write("JOIN #" + Settings.TWITCH_CHANNEL.toLowerCase() + "\r\n");
 					m_writer.flush();
-					Client.displayMessage("@yel@Connected to @red@[" + Settings.TWITCH_CHANNEL + "]@yel@ Twitch chat", Client.CHAT_CHAT); // FIXME: Consider thread safety for
-																																			// applet GUI updates outside of its
-																																			// thread?
+					// FIXME: Consider thread safety for applet GUI updates outside of its thread?
+					Client.displayMessage("@yel@Connected to @red@[" + Settings.TWITCH_CHANNEL + "]@yel@ Twitch chat", Client.CHAT_CHAT);
 					Client.displayMessage("@lre@Messages starting with @whi@/@lre@ are sent to Twitch.", Client.CHAT_CHAT);
 					break;
 				} else if (line.contains("NOTICE")) {
@@ -239,15 +249,5 @@ public class TwitchIRC implements Runnable {
 		} catch (Exception e) {
 		}
 	}
-	
-	/**
-	 * Boolean that dictates whether or not the twitch connection is initialized and active.
-	 * @see TwitchIRC#connect
-	 */
-	private boolean active = false;
-	private BufferedReader m_reader = null;
-	private BufferedWriter m_writer = null;
-	private Socket m_socket = null;
-	private Thread m_thread = null;
 	
 }

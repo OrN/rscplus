@@ -56,6 +56,44 @@ import Client.Util;
  */
 public class Renderer {
 	
+	public static Object instance = null;
+	
+	public static int width;
+	public static int height;
+	public static int height_client;
+	public static int[] pixels;
+	
+	public static int fps;
+	public static float alpha_time;
+	public static float delta_time;
+	public static long time;
+	
+	public static ImageConsumer image_consumer = null;
+	
+	public static Color color_text = new Color(240, 240, 240);
+	public static Color color_shadow = new Color(15, 15, 15);
+	public static Color color_gray = new Color(60, 60, 60);
+	public static Color color_hp = new Color(0, 210, 0);
+	public static Color color_fatigue = new Color(210, 210, 0);
+	public static Color color_prayer = new Color(160, 160, 210);
+	public static Color color_low = new Color(255, 0, 0);
+	
+	public static Image image_border;
+	public static Image image_bar_frame;
+	public static Image image_cursor;
+	private static BufferedImage game_image;
+	
+	private static Dimension new_size = new Dimension(0, 0);
+	
+	private static Item last_item;
+	
+	private static Font font_main;
+	private static Font font_big;
+	
+	private static int frames = 0;
+	private static long fps_timer = 0;
+	private static boolean screenshot = false;
+	
 	public static void init() {
 		// Resize game window
 		new_size.width = 512;
@@ -599,44 +637,6 @@ public class Renderer {
 		Rectangle2D bounds = g.getFont().getStringBounds(str, context);
 		return new Dimension((int)bounds.getWidth(), (int)bounds.getHeight());
 	}
-	
-	private static Dimension new_size = new Dimension(0, 0);
-	
-	public static Object instance = null;
-	
-	public static int width;
-	public static int height;
-	public static int height_client;
-	public static int[] pixels;
-	
-	public static int fps;
-	public static float alpha_time;
-	public static float delta_time;
-	public static long time;
-	
-	public static ImageConsumer image_consumer = null;
-	
-	private static Font font_main;
-	private static Font font_big;
-	
-	private static int frames = 0;
-	private static long fps_timer = 0;
-	private static boolean screenshot = false;
-	
-	public static Color color_text = new Color(240, 240, 240);
-	public static Color color_shadow = new Color(15, 15, 15);
-	public static Color color_gray = new Color(60, 60, 60);
-	public static Color color_hp = new Color(0, 210, 0);
-	public static Color color_fatigue = new Color(210, 210, 0);
-	public static Color color_prayer = new Color(160, 160, 210);
-	public static Color color_low = new Color(255, 0, 0);
-	
-	public static Image image_border;
-	public static Image image_bar_frame;
-	public static Image image_cursor;
-	private static BufferedImage game_image;
-	
-	private static Item last_item;
 	
 }
 

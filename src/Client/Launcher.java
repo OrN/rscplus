@@ -35,6 +35,13 @@ import Game.Game;
  * Singleton main class which renders a loading window and the game client window.
  */
 public class Launcher extends JFrame implements Runnable {
+
+	// Singleton
+	private static Launcher instance;
+	private static ConfigWindow window;
+	
+	private JProgressBar m_progressBar;
+	private JClassLoader m_classLoader;
 	
 	private Launcher() {
 		// Empty private constructor to prevent extra instances from being created.
@@ -198,13 +205,5 @@ public class Launcher extends JFrame implements Runnable {
 	public static void setConfigWindow(ConfigWindow window) {
 		Launcher.window = window;
 	}
-	
-	private JProgressBar m_progressBar;
-	private JClassLoader m_classLoader;
-	
-	private static ConfigWindow window;
-	
-	// Singleton
-	private static Launcher instance;
 	
 }

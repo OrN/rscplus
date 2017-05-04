@@ -28,6 +28,16 @@ import Client.Settings;
  */
 public class Camera {
 	
+	public static Object instance = null;
+	
+	public static int fov = 9;
+	public static int zoom;
+	public static int rotation;
+	public static int distance1;
+	public static int distance2;
+	public static int distance3; // This one is divided onto something to do with fog (it's usually 1)
+	public static int distance4; // This one seems to be fog distance
+	
 	private Camera() {
 		// Empty private constructor to prevent instantiation.
 	}
@@ -98,13 +108,4 @@ public class Camera {
 			zoom -= 1;
 	}
 	
-	public static Object instance = null;
-	
-	public static int fov = 9;
-	public static int zoom;
-	public static int rotation;
-	public static int distance1;
-	public static int distance2;
-	public static int distance3; // This one is divided onto something to do with fog (it's usually 1)
-	public static int distance4; // This one seems to be fog distance
 }

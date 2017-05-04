@@ -45,6 +45,153 @@ import Client.TwitchIRC;
  */
 public class Client {
 	
+	// Game's client instance
+	public static Object instance;
+	
+	public static List<NPC> npc_list = new ArrayList<>();
+	public static List<Item> item_list = new ArrayList<>();
+	
+	public static final int SKILL_ATTACK = 0;
+	public static final int SKILL_DEFENSE = 1;
+	public static final int SKILL_STRENGTH = 2;
+	public static final int SKILL_HP = 3;
+	public static final int SKILL_RANGED = 4;
+	public static final int SKILL_PRAYER = 5;
+	public static final int SKILL_MAGIC = 6;
+	public static final int SKILL_COOKING = 7;
+	public static final int SKILL_WOODCUT = 8;
+	public static final int SKILL_FLETCHING = 9;
+	public static final int SKILL_FISHING = 10;
+	public static final int SKILL_FIREMAKING = 11;
+	public static final int SKILL_CRAFTING = 12;
+	public static final int SKILL_SMITHING = 13;
+	public static final int SKILL_MINING = 14;
+	public static final int SKILL_HERBLAW = 15;
+	public static final int SKILL_AGILITY = 16;
+	public static final int SKILL_THIEVING = 17;
+	
+	public static final int STATE_LOGIN = 1;
+	public static final int STATE_GAME = 2;
+	
+	public static final int MENU_NONE = 0;
+	public static final int MENU_INVENTORY = 1;
+	public static final int MENU_MINIMAP = 2;
+	public static final int MENU_STATS = 3;
+	public static final int MENU_FRIENDS = 4;
+	public static final int MENU_SETTINGS = 5;
+	
+	public static final int CHAT_NONE = 0;
+	public static final int CHAT_PRIVATE = 1;
+	public static final int CHAT_PRIVATE_OUTGOING = 2;
+	public static final int CHAT_QUEST = 3;
+	public static final int CHAT_CHAT = 4;
+	public static final int CHAT_PRIVATE_LOG_IN_OUT = 5;
+	// used for when player sends you a trade request. If player sends you a duel request it's type 7 for some reason...
+	public static final int CHAT_PLAYER_INTERACT_IN = 6;
+	// used for when you send a player a duel, trade request, or follow
+	public static final int CHAT_PLAYER_INTERACT_OUT = 7;
+	
+	public static final int COMBAT_CONTROLLED = 0;
+	public static final int COMBAT_AGGRESSIVE = 1;
+	public static final int COMBAT_ACCURATE = 2;
+	public static final int COMBAT_DEFENSIVE = 3;
+	
+	public static int state = STATE_LOGIN;
+	
+	public static int max_inventory;
+	public static int inventory_count;
+	public static long magic_timer = 0L;
+	
+	public static int combat_timer;
+	public static boolean show_bank;
+	public static boolean show_duel;
+	public static boolean show_duelconfirm;
+	public static int show_friends;
+	public static int show_menu;
+	public static boolean show_questionmenu;
+	public static int show_report;
+	public static boolean show_shop;
+	public static boolean show_sleeping;
+	public static boolean show_trade;
+	public static boolean show_tradeconfirm;
+	public static boolean show_welcome;
+	
+	public static int[] inventory_items;
+	
+	public static int fatigue;
+	private static float currentFatigue;
+	public static int[] current_level;
+	public static int[] base_level;
+	public static int[] xp;
+	public static String[] skill_name;
+	public static int combat_style;
+	
+	public static int friends_count;
+	public static String[] friends;
+	
+	public static String pm_username;
+	public static String pm_text;
+	public static String pm_enteredText;
+	public static String lastpm_username = null;
+	
+	public static int login_screen;
+	public static String username_login;
+	
+	public static Object player_object;
+	public static String player_name = null;
+	public static int player_posX = -1;
+	public static int player_posY = -1;
+	
+	public static int regionX = -1;
+	public static int regionY = -1;
+	
+	/**
+	 * An array of Strings that stores text used in the client
+	 */
+	public static String[] strings;
+	
+	public static XPDropHandler xpdrop_handler = new XPDropHandler();
+	public static XPBar xpbar = new XPBar();
+	
+	private static TwitchIRC twitch = new TwitchIRC();
+	private static MouseHandler handler_mouse;
+	private static KeyboardHandler handler_keyboard;
+	private static float[] xpdrop_state = new float[18];
+	
+	/**
+	 * A boolean array that stores if the XP per hour should be shown for a given skill when hovering on the XP bar.
+	 * <p>
+	 * This should only be false for a skill if there has been less than 2 XP drops during the current tracking session,
+	 * since there is not enough data to calculate the XP per
+	 * hour.
+	 * </p>
+	 */
+	private static boolean[] showXpPerHour = new boolean[18];
+	
+	/**
+	 * An array to store the XP per hour for a given skill
+	 */
+	private static double[] xpPerHour = new double[18];
+	
+	/**
+	 * A multi-dimensional array that stores the last time XP was gained for a given skill.
+	 * <p>
+	 * The first dimension stores the skill index corresponding to the constants defined in the client class (
+	 * {@link #SKILL_ATTACK}, etc.)<br>
+	 * The second dimension stores:<br>
+	 * - [0] the total XP gained in a given skill within the sample period,<br>
+	 * - [1] the time of the last XP drop in a given skill,<br>
+	 * - [2] the time of the first XP drop in a given skill within the sample period,<br>
+	 * - [3] and the total number of XP drops recorded within the sample period, plus 1.
+	 * </p>
+	 */
+	private static double[][] lastXpGain = new double[18][4];
+	
+	/**
+	 * The client version
+	 */
+	public static int version;
+	
 	/**
 	 * Iterates through {@link #strings} array and checks if various conditions are met. Used for patching client text.
 	 */
@@ -984,148 +1131,4 @@ public class Client {
 		return lastXpGain;
 	}
 	
-	public static List<NPC> npc_list = new ArrayList<>();
-	public static List<Item> item_list = new ArrayList<>();
-	
-	public static final int SKILL_ATTACK = 0;
-	public static final int SKILL_DEFENSE = 1;
-	public static final int SKILL_STRENGTH = 2;
-	public static final int SKILL_HP = 3;
-	public static final int SKILL_RANGED = 4;
-	public static final int SKILL_PRAYER = 5;
-	public static final int SKILL_MAGIC = 6;
-	public static final int SKILL_COOKING = 7;
-	public static final int SKILL_WOODCUT = 8;
-	public static final int SKILL_FLETCHING = 9;
-	public static final int SKILL_FISHING = 10;
-	public static final int SKILL_FIREMAKING = 11;
-	public static final int SKILL_CRAFTING = 12;
-	public static final int SKILL_SMITHING = 13;
-	public static final int SKILL_MINING = 14;
-	public static final int SKILL_HERBLAW = 15;
-	public static final int SKILL_AGILITY = 16;
-	public static final int SKILL_THIEVING = 17;
-	
-	public static final int STATE_LOGIN = 1;
-	public static final int STATE_GAME = 2;
-	
-	public static final int MENU_NONE = 0;
-	public static final int MENU_INVENTORY = 1;
-	public static final int MENU_MINIMAP = 2;
-	public static final int MENU_STATS = 3;
-	public static final int MENU_FRIENDS = 4;
-	public static final int MENU_SETTINGS = 5;
-	
-	public static final int CHAT_NONE = 0;
-	public static final int CHAT_PRIVATE = 1;
-	public static final int CHAT_PRIVATE_OUTGOING = 2;
-	public static final int CHAT_QUEST = 3;
-	public static final int CHAT_CHAT = 4;
-	public static final int CHAT_PRIVATE_LOG_IN_OUT = 5;
-	// used for when player sends you a trade request. If player sends you a duel request it's type 7 for some reason...
-	public static final int CHAT_PLAYER_INTERACT_IN = 6;
-	// used for when you send a player a duel, trade request, or follow
-	public static final int CHAT_PLAYER_INTERACT_OUT = 7;
-	
-	public static final int COMBAT_CONTROLLED = 0;
-	public static final int COMBAT_AGGRESSIVE = 1;
-	public static final int COMBAT_ACCURATE = 2;
-	public static final int COMBAT_DEFENSIVE = 3;
-	
-	public static int state = STATE_LOGIN;
-	
-	public static int max_inventory;
-	public static int inventory_count;
-	public static long magic_timer = 0L;
-	
-	public static int combat_timer;
-	public static boolean show_bank;
-	public static boolean show_duel;
-	public static boolean show_duelconfirm;
-	public static int show_friends;
-	public static int show_menu;
-	public static boolean show_questionmenu;
-	public static int show_report;
-	public static boolean show_shop;
-	public static boolean show_sleeping;
-	public static boolean show_trade;
-	public static boolean show_tradeconfirm;
-	public static boolean show_welcome;
-	
-	public static int[] inventory_items;
-	
-	public static int fatigue;
-	private static float currentFatigue;
-	public static int[] current_level;
-	public static int[] base_level;
-	public static int[] xp;
-	public static String[] skill_name;
-	public static int combat_style;
-	
-	public static int friends_count;
-	public static String[] friends;
-	
-	public static String pm_username;
-	public static String pm_text;
-	public static String pm_enteredText;
-	public static String lastpm_username = null;
-	
-	public static int login_screen;
-	public static String username_login;
-	
-	public static Object player_object;
-	public static String player_name = null;
-	public static int player_posX = -1;
-	public static int player_posY = -1;
-	
-	public static int regionX = -1;
-	public static int regionY = -1;
-	
-	/**
-	 * An array of Strings that stores text used in the client
-	 */
-	public static String[] strings;
-	
-	public static XPDropHandler xpdrop_handler = new XPDropHandler();
-	public static XPBar xpbar = new XPBar();
-	
-	// Game's client instance
-	public static Object instance;
-	
-	private static TwitchIRC twitch = new TwitchIRC();
-	private static MouseHandler handler_mouse;
-	private static KeyboardHandler handler_keyboard;
-	private static float[] xpdrop_state = new float[18];
-	
-	/**
-	 * A boolean array that stores if the XP per hour should be shown for a given skill when hovering on the XP bar.
-	 * <p>
-	 * This should only be false for a skill if there has been less than 2 XP drops during the current tracking session, since there is not enough data to calculate the XP per
-	 * hour.
-	 * </p>
-	 */
-	private static boolean[] showXpPerHour = new boolean[18];
-	
-	/**
-	 * An array to store the XP per hour for a given skill
-	 */
-	private static double[] xpPerHour = new double[18];
-	
-	/**
-	 * A multi-dimensional array that stores the last time XP was gained for a given skill.
-	 * <p>
-	 * The first dimension stores the skill index corresponding to the constants defined in the client class ({@link #SKILL_ATTACK}, etc.)<br>
-	 * The second dimension stores:<br>
-	 * - [0] the total XP gained in a given skill within the sample period,<br>
-	 * - [1] the time of the last XP drop in a given skill,<br>
-	 * - [2] the time of the first XP drop in a given skill within the sample period,<br>
-	 * - [3] and the total number of XP drops recorded within the sample period, plus 1.
-	 * </p>
-	 */
-	private static double[][] lastXpGain = new double[18][4];
-	
-	/**
-	 * The client version
-	 */
-	public static int version;
 }

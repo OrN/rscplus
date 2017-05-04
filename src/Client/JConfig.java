@@ -34,6 +34,24 @@ import Game.Game;
  */
 public class JConfig {
 	
+	// Official client version information, subversion uses 'other_sub_version'
+	public static final int VERSION = 124;
+	public static final int SUBVERSION = 2;
+	
+	/**
+	 * Stores the jav_config.ws 'param' value sets
+	 * 
+	 * @see #m_data
+	 */
+	public Map<String, String> parameters = new HashMap<>();
+	
+	/**
+	 * Stores the jav_config.ws value sets for everything but 'param' and 'msg'
+	 * 
+	 * @see JConfig#parameters
+	 */
+	private Map<String, String> m_data = new HashMap<>();
+	
 	/**
 	 * Opens and parses a jav_config.ws file.
 	 * 
@@ -205,21 +223,4 @@ public class JConfig {
 			return 0;
 	}
 	
-	// Official client version information, subversion uses 'other_sub_version'
-	public static final int VERSION = 124;
-	public static final int SUBVERSION = 2;
-	
-	/**
-	 * Stores the jav_config.ws 'param' value sets
-	 * 
-	 * @see #m_data
-	 */
-	public Map<String, String> parameters = new HashMap<>();
-	
-	/**
-	 * Stores the jav_config.ws value sets for everything but 'param' and 'msg'
-	 * 
-	 * @see JConfig#parameters
-	 */
-	private Map<String, String> m_data = new HashMap<>();
 }

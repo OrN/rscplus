@@ -26,6 +26,27 @@ package Game;
  */
 public class Menu {
 	
+	public static Object chat_menu;
+	public static int chat_type1;
+	public static int chat_type2;
+	public static int chat_type3;
+	public static int chat_input;
+	
+	public static Object quest_menu;
+	public static int quest_handle;
+	
+	public static Object friend_menu;
+	public static int friend_handle;
+	
+	public static Object spell_menu;
+	public static int spell_handle;
+	
+	/**
+	 * Keeps track of the last spell book used. 0 for the Magic tab, 1 for the Prayer tab.
+	 */
+	private static int spell_swap_idx = 0;
+	private static int[] spell_swap_scroll = { 0, 0 };
+	
 	/**
 	 * Adjusts the in-game menu position based on the window size
 	 */
@@ -87,24 +108,4 @@ public class Menu {
 		return true;
 	}
 	
-	/**
-	 * Keeps track of the last spell book used. 0 for the Magic tab, 1 for the Prayer tab.
-	 */
-	private static int spell_swap_idx = 0;
-	private static int[] spell_swap_scroll = { 0, 0 };
-	
-	public static Object chat_menu;
-	public static int chat_type1;
-	public static int chat_type2;
-	public static int chat_type3;
-	public static int chat_input;
-	
-	public static Object quest_menu;
-	public static int quest_handle;
-	
-	public static Object friend_menu;
-	public static int friend_handle;
-	
-	public static Object spell_menu;
-	public static int spell_handle;
 }

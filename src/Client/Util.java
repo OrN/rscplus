@@ -34,6 +34,16 @@ import java.net.URLConnection;
  */
 public class Util {
 	
+	/**
+	 * Stores the world populations in the array indices corresponding to the world numbers
+	 */
+	static int[] worldPopArray;
+	
+	/**
+	 * The last time the world populations were checked
+	 */
+	static long lastPopCheck = 0;
+	
 	private Util() {
 		// Empty private constructor to prevent instantiation.
 	}
@@ -162,13 +172,4 @@ public class Util {
 		return worldPopArray;
 	}
 	
-	/**
-	 * Stores the world populations in the array indices corresponding to the world numbers
-	 */
-	static int[] worldPopArray;
-	
-	/**
-	 * The last time the world populations were checked
-	 */
-	static long lastPopCheck = 0;
 }

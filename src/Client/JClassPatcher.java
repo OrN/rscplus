@@ -52,6 +52,12 @@ import org.objectweb.asm.util.TraceMethodVisitor;
  */
 public class JClassPatcher {
 	
+	// Singleton
+	private static JClassPatcher instance = null;
+	
+	private Printer printer = new Textifier();
+	private TraceMethodVisitor mp = new TraceMethodVisitor(printer);
+	
 	private JClassPatcher() {
 		// Empty private constructor to prevent extra instances from being created.
 	}
@@ -955,11 +961,5 @@ public class JClassPatcher {
 		}
 		return instance;
 	}
-	
-	private Printer printer = new Textifier();
-	private TraceMethodVisitor mp = new TraceMethodVisitor(printer);
-	
-	// Singleton
-	private static JClassPatcher instance = null;
 	
 }

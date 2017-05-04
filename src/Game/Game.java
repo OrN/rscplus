@@ -44,6 +44,12 @@ import Client.TrayHandler;
  */
 public class Game extends JFrame implements AppletStub, ComponentListener, WindowListener {
 	
+	// Singleton
+	private static Game instance = null;
+	
+	private JConfig m_config = new JConfig();
+	private Applet m_applet = null;
+	
 	private Game() {
 		// Empty private constructor to prevent extra instances from being created.
 	}
@@ -245,11 +251,5 @@ public class Game extends JFrame implements AppletStub, ComponentListener, Windo
 		int windowHeight = Settings.CUSTOM_CLIENT_SIZE_Y + getInsets().top + getInsets().bottom;
 		setSize(windowWidth, windowHeight);
 	}
-	
-	private JConfig m_config = new JConfig();
-	private Applet m_applet = null;
-	
-	// Singleton
-	private static Game instance = null;
 	
 }

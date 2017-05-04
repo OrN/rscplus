@@ -26,6 +26,8 @@ package Client;
  */
 public class Logger {
 	
+	private static final String[] m_logTypeName = { "DEBUG", " INFO", "ERROR" };
+	
 	public enum Type {
 		DEBUG(0), INFO(1), ERROR(2);
 		
@@ -59,7 +61,5 @@ public class Logger {
 	public static void Error(String message) {
 		Log(Type.ERROR, message);
 	}
-	
-	private static final String[] m_logTypeName = { "DEBUG", " INFO", "ERROR" };
 	
 }

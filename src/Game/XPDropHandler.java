@@ -32,6 +32,9 @@ import java.util.List;
  */
 public class XPDropHandler {
 	
+	private long m_timer;
+	private List<XPDrop> m_list = new ArrayList<>();
+	
 	public void add(String text, Color color) {
 		XPDrop xpdrop = new XPDrop(text, color);
 		m_list.add(xpdrop);
@@ -78,8 +81,5 @@ public class XPDropHandler {
 		private boolean active;
 		public float y;
 	}
-	
-	private long m_timer;
-	private List<XPDrop> m_list = new ArrayList<>();
 	
 }

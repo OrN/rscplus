@@ -33,6 +33,16 @@ import java.awt.event.MouseWheelListener;
  */
 public class MouseHandler implements MouseListener, MouseMotionListener, MouseWheelListener {
 	
+	public static int x = 0;
+	public static int y = 0;
+	public static boolean mouseClicked = false;
+	public static MouseListener listener_mouse = null;
+	public static MouseMotionListener listener_mouse_motion = null;
+	
+	private boolean m_rotating = false;
+	private Point m_rotatePosition;
+	private float m_rotateX = 0.0f;
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (listener_mouse == null)
@@ -139,13 +149,4 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 		Camera.addZoom(e.getWheelRotation() * 16);
 	}
 	
-	private boolean m_rotating = false;
-	private Point m_rotatePosition;
-	private float m_rotateX = 0.0f;
-	
-	public static int x = 0;
-	public static int y = 0;
-	public static boolean mouseClicked = false;
-	public static MouseListener listener_mouse = null;
-	public static MouseMotionListener listener_mouse_motion = null;
 }

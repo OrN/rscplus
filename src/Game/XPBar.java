@@ -31,6 +31,23 @@ import Client.Settings;
  */
 public class XPBar {
 	
+	public static Dimension bounds = new Dimension(110, 16);
+	public static int xp_bar_x;
+	// Don't need to set this more than once; we are always positioning the xp_bar to be vertically center aligned with
+	// the Settings wrench.
+	public static final int xp_bar_y = 20 - (bounds.height / 2);
+	
+	public static final int TIMER_LENGTH = 5000;
+	public static final long TIMER_FADEOUT = 2000;
+	
+	public int current_skill;
+	
+	/**
+	 * Keeps track of whether the XP bar from the last XP drop is still showing.
+	 */
+	private boolean last_timer_finished = false;
+	private long m_timer;
+	
 	public XPBar() {
 		current_skill = -1;
 	}
@@ -141,18 +158,4 @@ public class XPBar {
 		return NumberFormat.getIntegerInstance().format(Math.ceil(number));
 	}
 	
-	public static Dimension bounds = new Dimension(110, 16);
-	public static int xp_bar_x;
-	// Don't need to set this more than once; we are always positioning the xp_bar to be vertically center aligned with the Settings wrench.
-	public static final int xp_bar_y = 20 - (bounds.height / 2);
-	
-	public int current_skill;
-	public static final int TIMER_LENGTH = 5000;
-	public static final long TIMER_FADEOUT = 2000;
-	
-	/**
-	 * Keeps track of whether the XP bar from the last XP drop is still showing.
-	 */
-	private boolean last_timer_finished = false;
-	private long m_timer;
 }

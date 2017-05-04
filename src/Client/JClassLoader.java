@@ -33,6 +33,11 @@ import java.util.jar.JarInputStream;
 public class JClassLoader extends ClassLoader {
 	
 	/**
+	 * Stores class names and the corresponding class byte data
+	 */
+	private Map<String, byte[]> m_classData = new HashMap<>();
+	
+	/**
 	 * Fetches the game jar and loads and patches the classes
 	 * 
 	 * @param jarURL The URL of the jar to be loaded and patched
@@ -84,10 +89,5 @@ public class JClassLoader extends ClassLoader {
 		
 		return defineClass(data, 0, data.length);
 	}
-	
-	/**
-	 * Stores class names and the corresponding class byte data
-	 */
-	private Map<String, byte[]> m_classData = new HashMap<>();
 	
 }

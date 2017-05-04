@@ -56,6 +56,87 @@ public class Settings {
 	 */
 	public static final double VERSION_NUMBER = 20170402.075627; // TODO: Separate the "version" into its own file
 	
+	/*
+	 * Settings Variables
+	 * 
+	 * Note that the settings defaults are those values listed here, as the Load method now references these values as defaults. These have been ordered
+	 * according to their order on the GUI, for convenience.
+	 */
+	
+	// General options
+	public static boolean CUSTOM_CLIENT_SIZE = false;
+	public static int CUSTOM_CLIENT_SIZE_X = 512;
+	public static int CUSTOM_CLIENT_SIZE_Y = 346;
+	public static boolean LOAD_CHAT_HISTORY = false;
+	public static boolean COMBAT_MENU = false;
+	public static boolean SHOW_XPDROPS = true;
+	public static boolean CENTER_XPDROPS = false;
+	public static boolean SHOW_FATIGUEDROPS = true;
+	public static int FATIGUE_FIGURES = 2;
+	public static boolean FATIGUE_ALERT = true;
+	public static boolean INVENTORY_FULL_ALERT = false;
+	/**
+	 * Defines to what extent the item names should be patched.
+	 * <p>
+	 * 0 - No item name patching<br>
+	 * 1 - Purely practical name changes (potion dosages, unidentified herbs, unfinished potions)<br>
+	 * 2 - Capitalizations and fixed spellings on top of type 1 changes<br>
+	 * 3 - Reworded vague stuff to be more descriptive on top of type 1 &#38; 2 changes
+	 * </p>
+	 */
+	public static int NAME_PATCH_TYPE = 3;
+	public static boolean HIDE_ROOFS = true;
+	public static boolean COLORIZE = true; // TODO: Vague, consider refactoring for clarity
+	public static int FOV = 9;
+	public static boolean SOFTWARE_CURSOR = false;
+	public static int VIEW_DISTANCE = 10000;
+	
+	// Overlays options
+	public static boolean SHOW_STATUSDISPLAY = true; // TODO: PLEASE refactor to a name that isn't uselessly vague. This
+														// is apparently the HP/Prayer/Fatigue display.
+	public static boolean SHOW_INVCOUNT = true;
+	public static boolean SHOW_ITEMINFO = false; // TODO: Refactor to add the word 'overlay' for clarity
+	public static boolean SHOW_PLAYERINFO = false; // TODO: See above
+	public static boolean SHOW_FRIENDINFO = false; // TODO ^
+	public static boolean SHOW_NPCINFO = false; // TODO ^
+	public static boolean SHOW_HITBOX = false; // TODO: Consider refactoring for clarity that this only affects NPCs
+	public static boolean SHOW_FOOD_HEAL_OVERLAY = false;
+	public static boolean SHOW_TIME_UNTIL_HP_REGEN = false;
+	public static boolean DEBUG = false;
+	
+	// Notifications options
+	public static boolean TRAY_NOTIFS = true;
+	public static boolean TRAY_NOTIFS_ALWAYS = false; // If false, only when client is not focused. Based on radio
+														// button.
+	public static boolean NOTIFICATION_SOUNDS = !isRecommendedToUseSystemNotifs();
+	public static boolean SOUND_NOTIFS_ALWAYS = false; // If false, only when client focused. Also based on radio
+														// button. TODO
+	public static boolean USE_SYSTEM_NOTIFICATIONS = isRecommendedToUseSystemNotifs();
+	public static boolean PM_NOTIFICATIONS = true;
+	public static boolean TRADE_NOTIFICATIONS = true;
+	public static boolean DUEL_NOTIFICATIONS = true;
+	public static boolean LOGOUT_NOTIFICATIONS = true;
+	public static boolean LOW_HP_NOTIFICATIONS = true;
+	public static int LOW_HP_NOTIF_VALUE = 25;
+	public static boolean FATIGUE_NOTIFICATIONS = true;
+	public static int FATIGUE_NOTIF_VALUE = 98;
+	
+	// Streaming & Privacy
+	public static boolean TWITCH_HIDE = false; // TODO: Refactor? Vague, if it manages chat visibility
+	public static String TWITCH_CHANNEL = "";
+	public static String TWITCH_OAUTH = "";
+	public static String TWITCH_USERNAME = "";
+	public static boolean SHOW_LOGINDETAILS = true; // TODO: Consider refactoring for clarity. This determines if IP/DNS
+													// details are shown at login welcome screen
+	public static boolean SAVE_LOGININFO = true;
+	
+	// Miscellaneous settings (No GUI)
+	public static int COMBAT_STYLE = Client.COMBAT_AGGRESSIVE;
+	public static int WORLD = 2;
+	public static boolean FIRST_TIME = true;
+	public static boolean DISASSEMBLE = false;
+	public static String DISASSEMBLE_DIRECTORY = "dump";
+	
 	private Settings() {
 		// Empty private constructor to prevent instantiation.
 	}
@@ -770,83 +851,6 @@ public class Settings {
 			break;
 		}
 	}
-	
-	/*
-	 * Settings Variables
-	 * 
-	 * Note that the settings defaults are those values listed here, as the Load method now references these values as defaults. These have been ordered
-	 * according to their order on the GUI, for convenience.
-	 */
-	
-	// General options
-	public static boolean CUSTOM_CLIENT_SIZE = false;
-	public static int CUSTOM_CLIENT_SIZE_X = 512;
-	public static int CUSTOM_CLIENT_SIZE_Y = 346;
-	public static boolean LOAD_CHAT_HISTORY = false;
-	public static boolean COMBAT_MENU = false;
-	public static boolean SHOW_XPDROPS = true;
-	public static boolean CENTER_XPDROPS = false;
-	public static boolean SHOW_FATIGUEDROPS = true;
-	public static int FATIGUE_FIGURES = 2;
-	public static boolean FATIGUE_ALERT = true;
-	public static boolean INVENTORY_FULL_ALERT = false;
-	/**
-	 * Defines to what extent the item names should be patched.
-	 * <p>
-	 * 0 - No item name patching<br>
-	 * 1 - Purely practical name changes (potion dosages, unidentified herbs, unfinished potions)<br>
-	 * 2 - Capitalizations and fixed spellings on top of type 1 changes<br>
-	 * 3 - Reworded vague stuff to be more descriptive on top of type 1 &#38; 2 changes
-	 * </p>
-	 */
-	public static int NAME_PATCH_TYPE = 3;
-	public static boolean HIDE_ROOFS = true;
-	public static boolean COLORIZE = true; // TODO: Vague, consider refactoring for clarity
-	public static int FOV = 9;
-	public static boolean SOFTWARE_CURSOR = false;
-	public static int VIEW_DISTANCE = 10000;
-	
-	// Overlays options
-	public static boolean SHOW_STATUSDISPLAY = true; // TODO: PLEASE refactor to a name that isn't uselessly vague. This is apparently the HP/Prayer/Fatigue display.
-	public static boolean SHOW_INVCOUNT = true;
-	public static boolean SHOW_ITEMINFO = false; // TODO: Refactor to add the word 'overlay' for clarity
-	public static boolean SHOW_PLAYERINFO = false; // TODO: See above
-	public static boolean SHOW_FRIENDINFO = false; // TODO ^
-	public static boolean SHOW_NPCINFO = false; // TODO ^
-	public static boolean SHOW_HITBOX = false; // TODO: Consider refactoring for clarity that this only affects NPCs
-	public static boolean SHOW_FOOD_HEAL_OVERLAY = false;
-	public static boolean SHOW_TIME_UNTIL_HP_REGEN = false;
-	public static boolean DEBUG = false;
-	
-	// Notifications options
-	public static boolean TRAY_NOTIFS = true;
-	public static boolean TRAY_NOTIFS_ALWAYS = false; // If false, only when client is not focused. Based on radio button.
-	public static boolean NOTIFICATION_SOUNDS = !isRecommendedToUseSystemNotifs();
-	public static boolean SOUND_NOTIFS_ALWAYS = false; // If false, only when client focused. Also based on radio button. TODO
-	public static boolean USE_SYSTEM_NOTIFICATIONS = isRecommendedToUseSystemNotifs();
-	public static boolean PM_NOTIFICATIONS = true;
-	public static boolean TRADE_NOTIFICATIONS = true;
-	public static boolean DUEL_NOTIFICATIONS = true;
-	public static boolean LOGOUT_NOTIFICATIONS = true;
-	public static boolean LOW_HP_NOTIFICATIONS = true;
-	public static int LOW_HP_NOTIF_VALUE = 25;
-	public static boolean FATIGUE_NOTIFICATIONS = true;
-	public static int FATIGUE_NOTIF_VALUE = 98;
-	
-	// Streaming & Privacy
-	public static boolean TWITCH_HIDE = false; // TODO: Refactor? Vague, if it manages chat visibility
-	public static String TWITCH_CHANNEL = "";
-	public static String TWITCH_OAUTH = "";
-	public static String TWITCH_USERNAME = "";
-	public static boolean SHOW_LOGINDETAILS = true; // TODO: Consider refactoring for clarity. This determines if IP/DNS details are shown at login welcome screen
-	public static boolean SAVE_LOGININFO = true;
-	
-	// Miscellaneous settings (No GUI)
-	public static int COMBAT_STYLE = Client.COMBAT_AGGRESSIVE;
-	public static int WORLD = 2;
-	public static boolean FIRST_TIME = true;
-	public static boolean DISASSEMBLE = false;
-	public static String DISASSEMBLE_DIRECTORY = "dump";
 	
 	/**
 	 * Restores all settings on the 'General' tab to default values

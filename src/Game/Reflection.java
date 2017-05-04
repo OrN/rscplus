@@ -32,6 +32,32 @@ import Client.Logger;
  */
 public class Reflection {
 	
+	public static Field characterName = null;
+	public static Field characterWaypointX = null;
+	public static Field characterWaypointY = null;
+	
+	public static Field maxInventory = null;
+	
+	public static Field menuX = null;
+	public static Field menuY = null;
+	public static Field menuScroll = null;
+	public static Field menuWidth = null;
+	public static Field menuHeight = null;
+	public static Field menuUknown = null;
+	
+	public static Method displayMessage = null;
+	public static Method setCameraSize = null;
+	public static Method setGameBounds = null;
+	public static Method setLoginText = null;
+	public static Method logout = null;
+	
+	// Method descriptions
+	private static final String DISPLAYMESSAGE = "private final void client.a(boolean,java.lang.String,int,java.lang.String,int,int,java.lang.String,java.lang.String)";
+	private static final String SETCAMERASIZE = "final void lb.a(int,boolean,int,int,int,int,int)";
+	private static final String SETGAMEBOUNDS = "final void ua.a(int,int,int,int,byte)";
+	private static final String SETLOGINTEXT = "private final void client.b(byte,java.lang.String,java.lang.String)";
+	private static final String LOGOUT = "private final void client.B(int)";
+	
 	public static void Load() {
 		try {
 			JClassLoader classLoader = Launcher.getInstance().getClassLoader();
@@ -131,29 +157,4 @@ public class Reflection {
 		}
 	}
 	
-	public static Field characterName = null;
-	public static Field characterWaypointX = null;
-	public static Field characterWaypointY = null;
-	
-	public static Field maxInventory = null;
-	
-	public static Field menuX = null;
-	public static Field menuY = null;
-	public static Field menuScroll = null;
-	public static Field menuWidth = null;
-	public static Field menuHeight = null;
-	public static Field menuUknown = null;
-	
-	public static Method displayMessage = null;
-	public static Method setCameraSize = null;
-	public static Method setGameBounds = null;
-	public static Method setLoginText = null;
-	public static Method logout = null;
-	
-	// Method descriptions
-	private static final String DISPLAYMESSAGE = "private final void client.a(boolean,java.lang.String,int,java.lang.String,int,int,java.lang.String,java.lang.String)";
-	private static final String SETCAMERASIZE = "final void lb.a(int,boolean,int,int,int,int,int)";
-	private static final String SETGAMEBOUNDS = "final void ua.a(int,int,int,int,byte)";
-	private static final String SETLOGINTEXT = "private final void client.b(byte,java.lang.String,java.lang.String)";
-	private static final String LOGOUT = "private final void client.B(int)";
 }
