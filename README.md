@@ -14,9 +14,9 @@
 
 *I will not accept any game automation features (macroing, etc.)*
 
-## IRC
+## Discord
 
-Join #rscplus on Freenode ([Web Chat](http://webchat.freenode.net/?channels=%23rscplus))
+Join our Discord server ([Invite link](https://discord.gg/92gG87h))
 
 ## Features
 - Game resolution changing (about 80% complete)
@@ -46,6 +46,7 @@ Most keybinds are configurable via the Settings GUI
 - Ctrl + r - Toggle roof hiding
 - Ctrl + c - Toggle combat experience menu
 - Ctrl + f - Toggle fatigue alert at 100%
+- Ctrl + v - Toggle inventory full alert
 - Ctrl + e - Toggle inventory count overlay
 - Ctrl + u - Toggle Hits/Prayer/Fatigue display
 - Ctrl + g - Toggle Friend info
@@ -114,6 +115,12 @@ Most keybinds are configurable via the Settings GUI
 *::cmb* - WARNING! Because of color codes, this command will break the character limit and *may be bannable*. Don't send this command across PM to RS2/RS3 because they'll see a bunch of RS1 color codes and you may get banned if you're reported. Mimic's osbuddy's !cmb; outputs combat level (with decimal), Att, Str, Def, Hits, Ranged, Magic, and Prayer levels.
 
 *::cmbnocolor* - Mimic's osbuddy's !cmb; doesn't use color codes and is within character limits
+
+*::xmas* - Formats your message in festive Red Green and White colours
+
+*::rainbow* - Formats your message in all the colours of the rainbow (or at least 6)
+
+*::system* - Hides your username and outputs your message
 
 *::update* - Manually check if RSC+ is up to date
 
@@ -212,6 +219,10 @@ Most keybinds are configurable via the Settings GUI
   <dt>hide_roofs</dt>
   <dd>Range: <i>true or false</i><br>
   Sets whether rooftops are hidden</dd>
+  
+  <dt>inventory_full_alert</dt>
+  <dd>Range: <i>true or false</i><br>
+  Sets whether a large notice is displayed when the inventory is full</dd>
   
   <dt>logout_notifications</dt>
   <dd>Range: <i>true or false</i><br>
