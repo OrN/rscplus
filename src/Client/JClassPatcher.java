@@ -79,6 +79,7 @@ public class JClassPatcher {
 			patchClient(node);
 		else if (node.name.equals("f"))
 			patchRandom(node);
+
 		
 		// Patch applied to all classes
 		patchGeneric(node);
