@@ -45,7 +45,7 @@ public class Settings {
 	// Internally used variables
 	public static boolean fovUpdateRequired;
 	public static boolean versionCheckRequired = true;
-	public static final double VERSION_NUMBER = 20171115.164007;
+	public static final double VERSION_NUMBER = 20180513.192907;
 	/**
 	 * A time stamp corresponding to the current version of this source code. Used as a sophisticated versioning system.
 	 *
@@ -765,6 +765,10 @@ public class Settings {
 	 */
 	public static void processKeybindCommand(String commandName) {
 		switch (commandName) {
+		case "sleep":
+			if (Client.state != Client.STATE_LOGIN)
+				Client.sleep();
+			break;
 		case "logout":
 			if (Client.state != Client.STATE_LOGIN)
 				Client.logout();
