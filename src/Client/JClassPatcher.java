@@ -208,6 +208,9 @@ public class JClassPatcher {
 			
 			// Shell strings
 			hookStaticVariable(methodNode, "e", "Sb", "[Ljava/lang/String;", "Game/Renderer", "shellStrings", "[Ljava/lang/String;");
+			
+			hookClassVariable(methodNode, "client", "Jh", "Lda;", "Game/Client", "clientStream", "Ljava/lang/Object;",
+					true, false);
 		}
 	}
 	
