@@ -166,6 +166,7 @@ public class Client {
 	public static int[] bank_items;
 	public static int[] new_bank_items_count;
 	public static int[] new_bank_items;
+	public static int bank_active_page;
 	
 	// these two variables, they indicate distinct bank items count
 	public static int new_count_items_bank;
@@ -183,8 +184,8 @@ public class Client {
 	public static XPBar xpbar = new XPBar();
 	
 	private static TwitchIRC twitch = new TwitchIRC();
-	private static MouseHandler handler_mouse;
-	private static KeyboardHandler handler_keyboard;
+	public static MouseHandler handler_mouse;
+	public static KeyboardHandler handler_keyboard;
 	private static float[] xpdrop_state = new float[18];
 	private static long updateTimer = 0;
 	
@@ -269,6 +270,9 @@ public class Client {
 		// FIXME: This is a hack from a rsc client update (so we can skip updating the client this time)
 		version = 235;
 		
+		// Increment the replay timestamp
+		Replay.incrementTimestamp();
+		
 		if (state == STATE_GAME) {
 			// Process XP drops
 			boolean dropXP = xpdrop_state[SKILL_HP] > 0.0f; // TODO: Declare dropXP outside of the update method
@@ -334,12 +338,27 @@ public class Client {
 	}
 	
 	public static void init_game() {
+		// Reset values to make the client more deterministic
+		// This helps out the replay mode to have matching output from the time it was recorded
 		Camera.init();
+		Menu.init();
 		combat_style = Settings.COMBAT_STYLE;
 		state = STATE_GAME;
+		bank_active_page = 0;
 		
 		if (TwitchIRC.isUsing())
 			twitch.connect();
+	}
+	
+	public static void login_hook() {
+		// Replay.initializeReplayRecording();
+		Replay.initializeReplayPlayback(Settings.Dir.REPLAY + "/tylerbeg/05-26-2018 08.28.59");
+	}
+	
+	public static void disconnect_hook() {
+		// ::lostcon or closeConnection
+		// Replay.closeReplayRecording();
+		Replay.closeReplayPlayback();
 	}
 	
 	/**

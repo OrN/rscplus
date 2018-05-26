@@ -112,7 +112,7 @@ public class KeyboardHandler implements KeyListener {
 		}
 		
 		if (Client.state == Client.STATE_GAME && e.getKeyCode() == KeyEvent.VK_TAB && !Client.isInterfaceOpen()) {
-			if (Client.lastpm_username != null) {
+			if (!Replay.isPlaying && Client.lastpm_username != null) {
 				Client.pm_text = "";
 				Client.pm_enteredText = "";
 				Client.pm_username = Client.lastpm_username;
@@ -157,5 +157,4 @@ public class KeyboardHandler implements KeyListener {
 			listener_key.keyTyped(e);
 		}
 	}
-	
 }

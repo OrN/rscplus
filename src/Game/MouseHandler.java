@@ -146,6 +146,8 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		x = e.getX();
+		y = e.getY();
 		Camera.addZoom(e.getWheelRotation() * 16);
 	}
 	

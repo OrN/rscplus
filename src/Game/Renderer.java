@@ -645,7 +645,7 @@ public class Renderer {
 		}
 		
 		// Draw software cursor
-		if (Settings.SOFTWARE_CURSOR) {
+		if (Settings.SOFTWARE_CURSOR || Replay.isPlaying) {
 			setAlpha(g2, 1.0f);
 			g2.drawImage(image_cursor, MouseHandler.x, MouseHandler.y, null);
 		}

@@ -190,6 +190,8 @@ public class Settings {
 		Util.makeDirectory(Dir.CACHE);
 		Dir.SCREENSHOT = Dir.JAR + "/screenshots";
 		Util.makeDirectory(Dir.SCREENSHOT);
+		Dir.REPLAY = Dir.JAR + "/replay";
+		Util.makeDirectory(Dir.REPLAY);
 	}
 	
 	/**
@@ -836,6 +838,7 @@ public class Settings {
 		public static String CACHE;
 		public static String DUMP;
 		public static String SCREENSHOT;
+		public static String REPLAY;
 	}
 	
 	public static String[] WORLD_LIST = { "1", "2", "3", "4", "5" };

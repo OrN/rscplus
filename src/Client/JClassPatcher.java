@@ -222,6 +222,7 @@ public class JClassPatcher {
 			hookClassVariable(methodNode, "client", "di", "[I", "Game/Client", "bank_items_count", "[I", true, true);
 			hookClassVariable(methodNode, "client", "fj", "I", "Game/Client", "new_count_items_bank", "I", true, true);
 			hookClassVariable(methodNode, "client", "vj", "I", "Game/Client", "count_items_bank", "I", true, true);
+			hookClassVariable(methodNode, "client", "xg", "I", "Game/Client", "bank_active_page", "I", true, true);
 			
 			hookClassVariable(methodNode, "client", "sj", "I", "Game/Client", "selectedItem", "I", true, false);
 			hookClassVariable(methodNode, "client", "Rd", "I", "Game/Client", "selectedItemSlot", "I", true, false);
@@ -311,6 +312,24 @@ public class JClassPatcher {
 						methodNode.instructions.insert(insnNode, new InsnNode(Opcodes.RETURN));
 					}
 				}
+			} else if (methodNode.name.equals("a") && methodNode.desc.equals("(IB)V")) {
+				// FPS hook
+				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+				
+				while (insnNodeList.hasNext()) {
+					AbstractInsnNode insnNode = insnNodeList.next();
+					AbstractInsnNode nextNode = insnNode.getNext();
+					
+					if (nextNode == null)
+						break;
+					
+					if (insnNode.getOpcode() == Opcodes.GETSTATIC) {
+						FieldInsnNode call = (FieldInsnNode)insnNode;
+						methodNode.instructions.insertBefore(insnNode, new VarInsnNode(Opcodes.ILOAD, 1));
+						methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Replay", "remakeFPS", "(I)I", false));
+						methodNode.instructions.insertBefore(insnNode, new VarInsnNode(Opcodes.ISTORE, 1));
+					}
+				}
 			}
 		}
 	}
@@ -344,6 +363,18 @@ public class JClassPatcher {
 						}
 					}
 				}
+			} else if (methodNode.name.equals("a") && methodNode.desc.equals("(ILjava/lang/String;Ljava/lang/String;Z)V")) {
+				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+				int xteaIndex = 0;
+				while (insnNodeList.hasNext()) {
+					AbstractInsnNode insnNode = insnNodeList.next();
+					
+					// Dump login xtea keys
+					if (xteaIndex < 4 && insnNode.getOpcode() == Opcodes.IASTORE) {
+						methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Replay", "hookXTEAKey", "(I)I", false));
+						xteaIndex++;
+					}
+				}
 			} else if (methodNode.name.equals("J") && methodNode.desc.equals("(I)V")) {
 				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
 				while (insnNodeList.hasNext()) {
@@ -367,6 +398,29 @@ public class JClassPatcher {
 									new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Client", "processChatCommand", "(Ljava/lang/String;)Ljava/lang/String;"));
 							methodNode.instructions.insert(insertNode, new VarInsnNode(Opcodes.ALOAD, 2));
 						}
+					}
+				}
+				
+				insnNodeList = methodNode.instructions.iterator();
+				
+				while (insnNodeList.hasNext()) {
+					AbstractInsnNode insnNode = insnNodeList.next();
+					AbstractInsnNode nextNode = insnNode.getNext();
+					AbstractInsnNode twoNextNode = nextNode.getNext();
+					
+					if (nextNode == null || twoNextNode == null)
+						break;
+					
+					if (insnNode.getOpcode() == Opcodes.IMUL && nextNode.getOpcode() == Opcodes.IADD && twoNextNode.getOpcode() == Opcodes.PUTFIELD
+							&& ((FieldInsnNode)twoNextNode).name.equals("ug")) {
+						// entry point when its true to close it
+						// intercept first time camera rotation
+						AbstractInsnNode call = twoNextNode.getNext();
+						methodNode.instructions.insertBefore(call, new VarInsnNode(Opcodes.ALOAD, 0));
+						// this constant is from the one in Camera
+						methodNode.instructions.insertBefore(call, new IntInsnNode(Opcodes.BIPUSH, 126));
+						methodNode.instructions.insertBefore(call, new FieldInsnNode(Opcodes.PUTFIELD, "client", "ug", "I"));
+						break;
 					}
 				}
 			} else if (methodNode.name.equals("h") && methodNode.desc.equals("(B)V")) {
@@ -961,6 +1015,41 @@ public class JClassPatcher {
 						continue;
 					}
 				}
+			} else if (methodNode.name.equals("x") && methodNode.desc.equals("(I)V")) {
+				// Login button press hook
+				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+				
+				AbstractInsnNode findNode = null;
+				int count = 0;
+				while (insnNodeList.hasNext()) {
+					AbstractInsnNode insnNode = insnNodeList.next();
+					if (insnNode.getOpcode() == Opcodes.PUTFIELD) {
+						FieldInsnNode field = (FieldInsnNode)insnNode;
+						if (count != 1 && field.owner.equals("client") && field.name.equals("wh") && field.desc.equals("Ljava/lang/String;")) {
+							findNode = insnNode.getNext();
+							count++;
+						}
+					}
+				}
+				
+				methodNode.instructions.insertBefore(findNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Client", "login_hook", "()V", false));
+			} else if (methodNode.name.equals("a") && methodNode.desc.equals("(ZI)V")) {
+				// Disconnect hook (::closecon)
+				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+				
+				while (insnNodeList.hasNext()) {
+					AbstractInsnNode insnNode = insnNodeList.next();
+					AbstractInsnNode nextNode = insnNode.getNext();
+					
+					if (nextNode == null)
+						break;
+					
+					if (insnNode.getOpcode() == Opcodes.SIPUSH && ((IntInsnNode)insnNode).operand == -6924 && nextNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+						// entry point when its true to close it
+						methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Client", "disconnect_hook", "()V", false));
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -1103,6 +1192,52 @@ public class JClassPatcher {
 					methodNode.instructions.insertBefore(insnNode, new VarInsnNode(Opcodes.ALOAD, 0));
 					methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/GameApplet", "cacheURLHook", "(Ljava/net/URL;)Ljava/net/URL;"));
 					methodNode.instructions.insertBefore(insnNode, new VarInsnNode(Opcodes.ASTORE, 0));
+				} else if (methodNode.desc.equals("(Z)V")) {
+					// Disconnect hook (::lostcon)
+					Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+					AbstractInsnNode insnNode = insnNodeList.next();
+					methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Client", "disconnect_hook", "()V", false));
+				} else if (methodNode.desc.equals("([BIII)V")) {
+					// dump whole input stream!
+					Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+					while (insnNodeList.hasNext()) {
+						AbstractInsnNode insnNode = insnNodeList.next();
+						AbstractInsnNode nextNode = insnNode.getNext();
+						
+						// entry point
+						if (insnNode.getOpcode() == Opcodes.ILOAD && ((VarInsnNode)insnNode).var == 5 && nextNode.getOpcode() == Opcodes.ILOAD
+								&& ((VarInsnNode)nextNode).var == 7) {
+							VarInsnNode call = (VarInsnNode)insnNode;
+							methodNode.instructions.insertBefore(call, new VarInsnNode(Opcodes.ALOAD, 1)); // byte[]
+							methodNode.instructions.insertBefore(call, new VarInsnNode(Opcodes.ILOAD, 2)); // n
+							methodNode.instructions.insertBefore(call, new VarInsnNode(Opcodes.ILOAD, 3)); // n2
+							// methodNode.instructions.insertBefore(call, new VarInsnNode(Opcodes.ILOAD, 4)); // n3
+							// methodNode.instructions.insertBefore(call, new VarInsnNode(Opcodes.ILOAD, 6)); // n4
+							methodNode.instructions.insertBefore(call, new VarInsnNode(Opcodes.ILOAD, 5)); // n5
+							methodNode.instructions.insertBefore(call, new VarInsnNode(Opcodes.ILOAD, 7)); // bytes read
+							methodNode.instructions.insertBefore(call, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Replay", "dumpRawInputStream", "([BIIII)V"));
+							break;
+						}
+					}
+				}
+			} else if (methodNode.name.equals("run")) {
+				
+				// dump whole output stream!
+				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+				while (insnNodeList.hasNext()) {
+					AbstractInsnNode insnNode = insnNodeList.next();
+					AbstractInsnNode nextNode = insnNode.getNext();
+					
+					// entry point
+					if (insnNode.getOpcode() == Opcodes.ALOAD && ((VarInsnNode)insnNode).var == 0 && nextNode.getOpcode() == Opcodes.GETFIELD
+							&& ((FieldInsnNode)nextNode).name.equals("Q") && ((FieldInsnNode)nextNode).desc.equals("Ljava/io/OutputStream;")) {
+						methodNode.instructions.insertBefore(insnNode, new VarInsnNode(Opcodes.ALOAD, 0));
+						methodNode.instructions.insertBefore(insnNode, new FieldInsnNode(Opcodes.GETFIELD, "da", "Y", "[B"));
+						methodNode.instructions.insertBefore(insnNode, new VarInsnNode(Opcodes.ILOAD, 2));
+						methodNode.instructions.insertBefore(insnNode, new VarInsnNode(Opcodes.ILOAD, 1));
+						methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Replay", "dumpRawOutputStream", "([BII)V"));
+						break;
+					}
 				}
 			}
 		}
