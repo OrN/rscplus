@@ -36,7 +36,7 @@ import Client.Settings;
 import Client.Util;
 
 public class Replay {
-	static DataOutputStream output = null;
+	// static DataOutputStream output = null;
 	static DataOutputStream input = null;
 	static DataOutputStream keys = null;
 	static DataOutputStream keyboard = null;
@@ -61,7 +61,10 @@ public class Replay {
 	
 	public static boolean isPlaying = false;
 	public static boolean isRecording = false;
-	public static float fpsPlayMultiplier = 0.5f;
+	public static boolean paused = false;
+	
+	public static int fps = 50;
+	public static float fpsPlayMultiplier = 1.0f;
 	
 	public static ReplayServer replayServer = null;
 	public static Thread replayThread = null;
@@ -75,6 +78,9 @@ public class Replay {
 	}
 	
 	public static void initializeReplayPlayback(String replayDirectory) {
+		if (Client.username_login.length() == 0)
+			Client.username_login = "Replay";
+		
 		try {
 			play_keys = new DataInputStream(new FileInputStream(new File(replayDirectory + "/keys.bin")));
 			play_keyboard = new DataInputStream(new FileInputStream(new File(replayDirectory + "/keyboard.bin")));
@@ -134,7 +140,7 @@ public class Replay {
 		Util.makeDirectory(recordingDirectory);
 		
 		try {
-			output = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/out.bin")));
+			// output = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/out.bin")));
 			input = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/in.bin")));
 			keys = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/keys.bin")));
 			keyboard = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/keyboard.bin")));
@@ -143,7 +149,7 @@ public class Replay {
 			
 			Logger.Info("Replay recording started");
 		} catch (Exception e) {
-			output = null;
+			// output = null;
 			input = null;
 			keys = null;
 			keyboard = null;
@@ -156,17 +162,17 @@ public class Replay {
 	}
 	
 	public static void closeReplayRecording() {
-		if (output == null)
+		if (input == null)
 			return;
 		
 		try {
-			output.close();
+			// output.close();
 			input.close();
 			keys.close();
 			keyboard.close();
 			mouse.close();
 			
-			output = null;
+			// output = null;
 			input = null;
 			keys = null;
 			keyboard = null;
@@ -174,7 +180,7 @@ public class Replay {
 			
 			Logger.Info("Replay recording stopped");
 		} catch (Exception e) {
-			output = null;
+			// output = null;
 			input = null;
 			keys = null;
 			keyboard = null;
@@ -186,6 +192,7 @@ public class Replay {
 		isRecording = false;
 	}
 	
+
 	public static void playKeyboardInput() {
 		try {
             int[] unplayedKeycodes = { KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT }; //KeyEvent.VK_DOWN, KeyEvent.VK_UP not used in rsc. neither are KeyEvent.VK_KP_RIGHT, KeyEvent.VK_KP_LEFT 
@@ -271,16 +278,25 @@ public class Replay {
 		} catch (Exception e) {
 		}
 	}
+
+	public static void togglePause() {
+		paused = !paused;
+	}
 	
-	public static int remakeFPS(int inFPS) {
+	public static boolean isValid(String path) {
+		return (new File(path + "/in.bin").exists() && new File(path + "/keys.bin").exists());
+	}
+	
+	public static int getFPS() {
+
 		// TODO: This method is only called once when the game is started
 		// So the FPS can't be adjusted dynamically
 		
 		if (isPlaying) {
-			return (int)(inFPS * fpsPlayMultiplier);
+			return (int)(fps * fpsPlayMultiplier);
 		}
 		
-		return inFPS;
+		return fps;
 	}
 	
 	public static void dumpKeyboardInput(int keycode, byte event, char keychar, int modifier) {
@@ -327,7 +343,7 @@ public class Replay {
 	}
 	
 	public static void dumpRawOutputStream(byte[] b, int off, int len) {
-		if (output == null)
+		/*if (output == null)
 			return;
 		
 		try {
@@ -335,7 +351,7 @@ public class Replay {
 			output.writeInt(len);
 			output.write(b, off, len);
 		} catch (Exception e) {
-		}
+		}*/
 	}
 	
 	public static int hookXTEAKey(int key) {

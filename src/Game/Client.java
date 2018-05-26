@@ -270,12 +270,16 @@ public class Client {
 		// FIXME: This is a hack from a rsc client update (so we can skip updating the client this time)
 		version = 235;
 		
+    /*
 		if (Replay.isPlaying) {
 			Replay.playKeyboardInput();
-			//Replay.playMouseInput();
+			Replay.playMouseInput();
 		}
+    */
 		
-		Replay.incrementTimestamp();
+		// Increment the replay timestamp
+		if (Replay.isRecording)
+			Replay.incrementTimestamp();
 		
 		if (state == STATE_GAME) {
 			// Process XP drops
@@ -332,6 +336,7 @@ public class Client {
 		
 		Camera.init();
 		state = STATE_LOGIN;
+		Renderer.replayOption = 0;
 		
 		twitch.disconnect();
 		
@@ -355,14 +360,18 @@ public class Client {
 	}
 	
 	public static void login_hook() {
-		// Replay.initializeReplayRecording();
-		Replay.initializeReplayPlayback(Settings.Dir.REPLAY + "/tylerbeg/05-26-2018 08.28.59");
+		if (Renderer.replayOption == 1)
+			Replay.initializeReplayRecording();
+		else if (Renderer.replayOption == 2)
+			Replay.initializeReplayPlayback(Renderer.replayName);
 	}
 	
 	public static void disconnect_hook() {
 		// ::lostcon or closeConnection
-		// Replay.closeReplayRecording();
-		Replay.closeReplayPlayback();
+		if (Renderer.replayOption == 1)
+			Replay.closeReplayRecording();
+		else if (Renderer.replayOption == 2)
+			Replay.closeReplayPlayback();
 	}
 	
 	/**

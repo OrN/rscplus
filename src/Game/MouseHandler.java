@@ -128,8 +128,6 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 			y = e.getY();
 			listener_mouse.mouseReleased(e);
 		}
-		
-		mouseClicked = false;
 	}
 	
 	@Override
