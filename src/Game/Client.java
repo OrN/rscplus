@@ -272,7 +272,7 @@ public class Client {
 		
 		if (Replay.isPlaying) {
 			Replay.playKeyboardInput();
-			Replay.playMouseInput();
+			//Replay.playMouseInput();
 		}
 		
 		Replay.incrementTimestamp();
