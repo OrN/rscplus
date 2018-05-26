@@ -346,7 +346,6 @@ public class Replay {
 			return;
 		
 		int off = n2 + n5;
-		int len = -n5 + n;
 		
 		try {
 			input.writeInt(timestamp);
