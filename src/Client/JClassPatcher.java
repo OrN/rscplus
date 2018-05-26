@@ -125,6 +125,7 @@ public class JClassPatcher {
 			
 			hookClassVariable(methodNode, "e", "m", "I", "Game/Renderer", "width", "I", false, true);
 			hookClassVariable(methodNode, "e", "a", "I", "Game/Renderer", "height", "I", false, true);
+			hookClassVariable(methodNode, "e", "Ib", "I", "Game/Replay", "frame_time_slice", "I", true, true);
 			
 			hookClassVariable(methodNode, "lb", "pb", "[I", "Game/Renderer", "pixels", "[I", true, true);
 			
@@ -374,6 +375,18 @@ public class JClassPatcher {
 						xteaIndex++;
 					}
 				}
+			} else if (methodNode.name.equals("u") && methodNode.desc.equals("(I)V")) {
+				// Replay pause hook
+				// TODO: Not sure but it seems like it gets broken upon starting another replay sometimes?
+				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+				AbstractInsnNode findNode = insnNodeList.next();
+				
+				LabelNode label = new LabelNode();
+				methodNode.instructions.insertBefore(findNode, new InsnNode(Opcodes.ICONST_0));
+				methodNode.instructions.insertBefore(findNode, new FieldInsnNode(Opcodes.GETSTATIC, "Game/Replay", "isPlaying", "Z"));
+				methodNode.instructions.insertBefore(findNode, new JumpInsnNode(Opcodes.IFEQ, label));
+				methodNode.instructions.insertBefore(findNode, new InsnNode(Opcodes.RETURN));
+				methodNode.instructions.insertBefore(findNode, label);
 			} else if (methodNode.name.equals("J") && methodNode.desc.equals("(I)V")) {
 				Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
 				while (insnNodeList.hasNext()) {

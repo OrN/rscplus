@@ -35,17 +35,14 @@ public class ReplayServer implements Runnable {
 			
 			Logger.Info("ReplayServer: Starting playback");
 			
-			long frame_time_slice = 1000 / Replay.getFPS();
-			long frame_timer = System.currentTimeMillis() + frame_time_slice;
+			long frame_timer = System.currentTimeMillis() + (Replay.getFrameTimeSlice());
 			
 			for(;;) {
 				if (!Replay.paused) {
 					long time = System.currentTimeMillis();
 				
-					frame_time_slice = 1000 / Replay.getFPS();
-				
 					if (time >= frame_timer) {
-						frame_timer = time + frame_time_slice;
+						frame_timer = time + (Replay.getFrameTimeSlice());
 						Replay.incrementTimestamp();
 					}
 
