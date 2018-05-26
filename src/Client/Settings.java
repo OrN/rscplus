@@ -28,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 import Client.KeybindSet.KeyModifier;
 import Game.Camera;
@@ -40,24 +42,23 @@ import Game.Renderer;
  * Manages storing, loading, and changing settings.
  */
 public class Settings {
-	
+
 	// Internally used variables
 	public static boolean fovUpdateRequired;
 	public static boolean versionCheckRequired = true;
-	
+	public static final double VERSION_NUMBER = 20180525.201802;
 	/**
-	 * A time stamp corresponding to the current version of this source code. Used as a crude versioning system.
-	 * <p>
+	 * A time stamp corresponding to the current version of this source code. Used as a sophisticated versioning system.
+	 *
 	 * This variable follows ISO 8601 yyyyMMdd.HHmmss format. The version number will actually be read from this source
 	 * file, so please don't change the name of this variable and
-	 * keep the assignment near the top for scanning.<br>
-	 * <br>
+	 * keep the assignment near the top for scanning.
+	 *
 	 * This variable can be set automatically by ant by issuing `ant setversion` before you push your changes, so
 	 * there's no need to update it manually.
-	 * </p>
+	 *
 	 */
-	public static final double VERSION_NUMBER = 20170402.075627; // TODO: Separate the "version" into its own file
-	
+
 	/*
 	 * Settings Variables
 	 * 
@@ -69,6 +70,7 @@ public class Settings {
 	public static boolean CUSTOM_CLIENT_SIZE = false;
 	public static int CUSTOM_CLIENT_SIZE_X = 512;
 	public static int CUSTOM_CLIENT_SIZE_Y = 346;
+	public static boolean CHECK_UPDATES = true;
 	public static boolean LOAD_CHAT_HISTORY = false;
 	public static boolean COMBAT_MENU = false;
 	public static boolean SHOW_XPDROPS = true;
@@ -87,6 +89,16 @@ public class Settings {
 	 * </p>
 	 */
 	public static int NAME_PATCH_TYPE = 3;
+	/**
+	 * Defines to what extent fix the item commands should be patched.
+	 * <p>
+	 * 0 - No item command patching<br>
+	 * 1 - Disable item consumption on discontinued rares<br>
+	 * 2 - Swap item command, i.e. use instead of consuming on quest-only items<br>
+	 * 3 - Apply both fixes 1 and 2
+	 * </p>
+	 */
+	public static int COMMAND_PATCH_TYPE = 3;
 	public static boolean HIDE_ROOFS = true;
 	public static boolean COLORIZE = true; // TODO: Vague, consider refactoring for clarity
 	public static int FOV = 9;
@@ -101,11 +113,14 @@ public class Settings {
 	public static boolean SHOW_PLAYERINFO = false; // TODO: See above
 	public static boolean SHOW_FRIENDINFO = false; // TODO ^
 	public static boolean SHOW_NPCINFO = false; // TODO ^
+	public static boolean USE_PERCENTAGE = false;
 	public static boolean SHOW_HITBOX = false; // TODO: Consider refactoring for clarity that this only affects NPCs
 	public static boolean SHOW_FOOD_HEAL_OVERLAY = false;
 	public static boolean SHOW_TIME_UNTIL_HP_REGEN = false;
 	public static boolean DEBUG = false;
-	
+	public static ArrayList<String> HIGHLIGHTED_ITEMS = new ArrayList<String>();
+	public static ArrayList<String> BLOCKED_ITEMS = new ArrayList<String>();
+
 	// Notifications options
 	public static boolean TRAY_NOTIFS = true;
 	public static boolean TRAY_NOTIFS_ALWAYS = false; // If false, only when client is not focused. Based on radio
@@ -132,10 +147,15 @@ public class Settings {
 													// details are shown at login welcome screen
 	public static boolean SAVE_LOGININFO = true;
 	
+	// Settings for searchable bank
+	public static boolean START_SEARCHEDBANK = false;
+	public static String SEARCH_BANK_WORD = "";
+	
 	// Miscellaneous settings (No GUI)
 	public static int COMBAT_STYLE = Client.COMBAT_AGGRESSIVE;
 	public static int WORLD = 2;
 	public static boolean FIRST_TIME = true;
+	public static boolean UPDATE_CONFIRMATION = false;
 	public static boolean DISASSEMBLE = false;
 	public static String DISASSEMBLE_DIRECTORY = "dump";
 	
@@ -187,6 +207,7 @@ public class Settings {
 			CUSTOM_CLIENT_SIZE = getBoolean(props, "custom_client_size", CUSTOM_CLIENT_SIZE);
 			CUSTOM_CLIENT_SIZE_X = getInt(props, "custom_client_size_x", CUSTOM_CLIENT_SIZE_X);
 			CUSTOM_CLIENT_SIZE_Y = getInt(props, "custom_client_size_y", CUSTOM_CLIENT_SIZE_Y);
+			CHECK_UPDATES = getBoolean(props, "check_updates", CHECK_UPDATES);
 			LOAD_CHAT_HISTORY = getBoolean(props, "load_chat_history", LOAD_CHAT_HISTORY);
 			COMBAT_MENU = getBoolean(props, "combat_menu", COMBAT_MENU);
 			SHOW_XPDROPS = getBoolean(props, "show_xpdrops", SHOW_XPDROPS);
@@ -195,11 +216,14 @@ public class Settings {
 			FATIGUE_ALERT = getBoolean(props, "fatigue_alert", FATIGUE_ALERT);
 			INVENTORY_FULL_ALERT = getBoolean(props, "inventory_full_alert", INVENTORY_FULL_ALERT);
 			NAME_PATCH_TYPE = getInt(props, "name_patch_type", NAME_PATCH_TYPE);
+			COMMAND_PATCH_TYPE = getInt(props, "command_patch_type", COMMAND_PATCH_TYPE);
 			HIDE_ROOFS = getBoolean(props, "hide_roofs", HIDE_ROOFS);
 			COLORIZE = getBoolean(props, "colorize", COLORIZE);
 			FOV = getInt(props, "fov", FOV);
 			SOFTWARE_CURSOR = getBoolean(props, "software_cursor", SOFTWARE_CURSOR);
 			VIEW_DISTANCE = getInt(props, "view_distance", VIEW_DISTANCE);
+			START_SEARCHEDBANK = getBoolean(props, "start_searched_bank", START_SEARCHEDBANK);
+			SEARCH_BANK_WORD = getString(props, "search_bank_word", SEARCH_BANK_WORD);
 			
 			// Overlays options
 			SHOW_STATUSDISPLAY = getBoolean(props, "show_statusdisplay", SHOW_STATUSDISPLAY);
@@ -208,11 +232,14 @@ public class Settings {
 			SHOW_PLAYERINFO = getBoolean(props, "show_playerinfo", SHOW_PLAYERINFO);
 			SHOW_FRIENDINFO = getBoolean(props, "show_friendinfo", SHOW_FRIENDINFO);
 			SHOW_NPCINFO = getBoolean(props, "show_npcinfo", SHOW_NPCINFO);
+			USE_PERCENTAGE = getBoolean(props, "use_percentage", DEBUG);
 			SHOW_HITBOX = getBoolean(props, "show_hitbox", SHOW_HITBOX);
 			SHOW_FOOD_HEAL_OVERLAY = getBoolean(props, "show_food_heal_overlay", SHOW_FOOD_HEAL_OVERLAY);
 			SHOW_TIME_UNTIL_HP_REGEN = getBoolean(props, "show_time_until_hp_regen", SHOW_TIME_UNTIL_HP_REGEN);
 			DEBUG = getBoolean(props, "debug", DEBUG);
-			
+			HIGHLIGHTED_ITEMS = getArrayListString(props, "highlighted_items", HIGHLIGHTED_ITEMS);
+			BLOCKED_ITEMS = getArrayListString(props, "blocked_items", BLOCKED_ITEMS);
+
 			// Notifications options
 			TRAY_NOTIFS = getBoolean(props, "tray_notifs", TRAY_NOTIFS);
 			TRAY_NOTIFS_ALWAYS = getBoolean(props, "tray_notifs_always", TRAY_NOTIFS_ALWAYS);
@@ -240,6 +267,7 @@ public class Settings {
 			WORLD = getInt(props, "world", 2);
 			COMBAT_STYLE = getInt(props, "combat_style", Client.COMBAT_AGGRESSIVE);
 			FIRST_TIME = getBoolean(props, "first_time", FIRST_TIME);
+			UPDATE_CONFIRMATION = getBoolean(props, "update_confirmation", UPDATE_CONFIRMATION);
 			DISASSEMBLE = getBoolean(props, "disassemble", false);
 			DISASSEMBLE_DIRECTORY = getString(props, "disassemble_directory", "dump");
 			
@@ -283,6 +311,14 @@ public class Settings {
 				save();
 			} else if (NAME_PATCH_TYPE > 3) {
 				NAME_PATCH_TYPE = 3;
+				save();
+			}
+			
+			if (COMMAND_PATCH_TYPE < 0) {
+				COMMAND_PATCH_TYPE = 0;
+				save();
+			} else if (COMMAND_PATCH_TYPE > 3) {
+				COMMAND_PATCH_TYPE = 3;
 				save();
 			}
 			
@@ -336,6 +372,7 @@ public class Settings {
 			props.setProperty("custom_client_size", Boolean.toString(CUSTOM_CLIENT_SIZE));
 			props.setProperty("custom_client_size_x", Integer.toString(CUSTOM_CLIENT_SIZE_X));
 			props.setProperty("custom_client_size_y", Integer.toString(CUSTOM_CLIENT_SIZE_Y));
+			props.setProperty("check_updates", Boolean.toString(CHECK_UPDATES));
 			props.setProperty("load_chat_history", Boolean.toString(LOAD_CHAT_HISTORY));
 			props.setProperty("combat_menu", Boolean.toString(COMBAT_MENU));
 			props.setProperty("show_xpdrops", Boolean.toString(SHOW_XPDROPS));
@@ -344,11 +381,14 @@ public class Settings {
 			props.setProperty("fatigue_alert", Boolean.toString(FATIGUE_ALERT));
 			props.setProperty("inventory_full_alert", Boolean.toString(INVENTORY_FULL_ALERT));
 			props.setProperty("name_patch_type", Integer.toString(NAME_PATCH_TYPE));
+			props.setProperty("command_patch_type", Integer.toString(COMMAND_PATCH_TYPE));
 			props.setProperty("hide_roofs", Boolean.toString(HIDE_ROOFS));
 			props.setProperty("colorize", Boolean.toString(COLORIZE));
 			props.setProperty("fov", Integer.toString(FOV));
 			props.setProperty("software_cursor", Boolean.toString(SOFTWARE_CURSOR));
 			props.setProperty("view_distance", Integer.toString(VIEW_DISTANCE));
+			props.setProperty("start_searched_bank", Boolean.toString(START_SEARCHEDBANK));
+			props.setProperty("search_bank_word", "" + SEARCH_BANK_WORD);
 			
 			// Overlays
 			props.setProperty("show_statusdisplay", Boolean.toString(SHOW_STATUSDISPLAY));
@@ -357,11 +397,14 @@ public class Settings {
 			props.setProperty("show_playerinfo", Boolean.toString(SHOW_PLAYERINFO));
 			props.setProperty("show_friendinfo", Boolean.toString(SHOW_FRIENDINFO));
 			props.setProperty("show_npcinfo", Boolean.toString(SHOW_NPCINFO));
+			props.setProperty("use_percentage", Boolean.toString(USE_PERCENTAGE));
 			props.setProperty("show_hitbox", Boolean.toString(SHOW_HITBOX));
 			props.setProperty("show_food_heal_overlay", Boolean.toString(SHOW_FOOD_HEAL_OVERLAY));
 			props.setProperty("show_time_until_hp_regen", Boolean.toString(SHOW_TIME_UNTIL_HP_REGEN));
 			props.setProperty("debug", Boolean.toString(DEBUG));
-			
+			props.setProperty("highlighted_items", "" + Util.joinAsString(",", HIGHLIGHTED_ITEMS));
+			props.setProperty("blocked_items", "" + Util.joinAsString(",", BLOCKED_ITEMS));
+
 			// Notifications
 			props.setProperty("tray_notifs", Boolean.toString(TRAY_NOTIFS));
 			props.setProperty("tray_notifs_always", Boolean.toString(TRAY_NOTIFS_ALWAYS));
@@ -390,6 +433,7 @@ public class Settings {
 			props.setProperty("combat_style", Integer.toString(COMBAT_STYLE));
 			// This is set to false, as logically, saving the config would imply this is not a first-run.
 			props.setProperty("first_time", Boolean.toString(false));
+			props.setProperty("update_confirmation", Boolean.toString(UPDATE_CONFIRMATION));
 			props.setProperty("disassemble", Boolean.toString(DISASSEMBLE));
 			props.setProperty("disassemble_directory", "" + DISASSEMBLE_DIRECTORY);
 			
@@ -570,6 +614,26 @@ public class Settings {
 		save();
 	}
 	
+	public static void toggleStartSearchedBank(String searchWord, boolean replaceSavedWord) {
+		// Settings.SEARCH_BANK_WORD should be trimmed
+		if (Settings.SEARCH_BANK_WORD.trim().equals("") && searchWord.trim().equals("")) {
+			if (Settings.START_SEARCHEDBANK) {
+				START_SEARCHEDBANK = !START_SEARCHEDBANK;
+			}
+		} else {
+			START_SEARCHEDBANK = !START_SEARCHEDBANK;
+			// check if search word should be updated
+			if (replaceSavedWord && !searchWord.trim().equals("") && !searchWord.trim().toLowerCase().equals(Settings.SEARCH_BANK_WORD)) {
+				Settings.SEARCH_BANK_WORD = searchWord.trim().toLowerCase();
+			}
+			if (Settings.START_SEARCHEDBANK)
+				Client.displayMessage("@cya@Your bank will start searched with keyword '" + Settings.SEARCH_BANK_WORD + "' next time", Client.CHAT_NONE);
+			else
+				Client.displayMessage("@cya@Your bank will start as normal next time", Client.CHAT_NONE);
+		}
+		save();
+	}
+	
 	public static void toggleDebug() {
 		DEBUG = !DEBUG;
 		if (DEBUG)
@@ -702,6 +766,24 @@ public class Settings {
 		
 		return value;
 	}
+
+	/**
+	 * Gets the ArrayList<String> value of a Properties object for the specified key. If no value is defined for that key, it
+	 * returns the specified default value.
+	 *
+	 * @param props the Properties object to read
+	 * @param key the name of the property to lookup
+	 * @param defaultProp the default ArrayList<String> value of the specified property
+	 * @return an ArrayList<String> value corresponding to the specified property
+	 */
+	private static ArrayList<String> getArrayListString (Properties props, String key, ArrayList<String> defaultProp) {
+		String valueString = props.getProperty(key);
+		if (valueString == null) {
+			return defaultProp;
+		}
+
+		return new ArrayList<>(Arrays.asList(valueString.split(",")));
+	}
 	
 	/**
 	 * Gets the Integer value of a Properties object for the specified key. If no value is defined for that key, it
@@ -765,6 +847,10 @@ public class Settings {
 	 */
 	public static void processKeybindCommand(String commandName) {
 		switch (commandName) {
+		case "sleep":
+			if (Client.state != Client.STATE_LOGIN)
+				Client.sleep();
+			break;
 		case "logout":
 			if (Client.state != Client.STATE_LOGIN)
 				Client.logout();
@@ -832,6 +918,9 @@ public class Settings {
 		case "toggle_xp_drops":
 			Settings.toggleXpDrops();
 			break;
+		case "toggle_start_searched_bank":
+			Settings.toggleStartSearchedBank("", false);
+			break;
 		case "show_config_window":
 			Launcher.getConfigWindow().showConfigWindow();
 			break;
@@ -876,11 +965,14 @@ public class Settings {
 		FATIGUE_ALERT = true;
 		INVENTORY_FULL_ALERT = false;
 		NAME_PATCH_TYPE = 3;
+		COMMAND_PATCH_TYPE = 3;
 		HIDE_ROOFS = true;
 		COLORIZE = true;
 		FOV = 9;
 		SOFTWARE_CURSOR = false;
 		VIEW_DISTANCE = 10000;
+		START_SEARCHEDBANK = false;
+		SEARCH_BANK_WORD = "";
 		Launcher.getConfigWindow().synchronizeGuiValues();
 	}
 	
@@ -894,10 +986,13 @@ public class Settings {
 		SHOW_PLAYERINFO = false;
 		SHOW_FRIENDINFO = false;
 		SHOW_NPCINFO = false;
+		USE_PERCENTAGE = false;
 		SHOW_HITBOX = false;
 		SHOW_FOOD_HEAL_OVERLAY = false;
 		SHOW_TIME_UNTIL_HP_REGEN = false;
 		DEBUG = false;
+		HIGHLIGHTED_ITEMS = new ArrayList<String>();
+		BLOCKED_ITEMS = new ArrayList<String>();
 		Launcher.getConfigWindow().synchronizeGuiValues();
 	}
 	
@@ -913,7 +1008,7 @@ public class Settings {
 		LOW_HP_NOTIF_VALUE = 25;
 		FATIGUE_NOTIFICATIONS = true;
 		FATIGUE_NOTIF_VALUE = 98;
-		NOTIFICATION_SOUNDS = false;
+		NOTIFICATION_SOUNDS = !isRecommendedToUseSystemNotifs();
 		USE_SYSTEM_NOTIFICATIONS = isRecommendedToUseSystemNotifs();
 		TRAY_NOTIFS = true;
 		TRAY_NOTIFS_ALWAYS = false;
@@ -956,7 +1051,11 @@ public class Settings {
 	 */
 	public static boolean isRecommendedToUseSystemNotifs() {
 		// Users on Windows 8.1 or 10 are recommend to set USE_SYSTEM_NOTIFICATIONS = true
-		return "Windows 10".equals(System.getProperty("os.name")) || "Windows 8.1".equals(System.getProperty("os.name"));
+		if (System.getProperty("os.name").contains("Windows")) {
+			return "Windows 10".equals(System.getProperty("os.name")) || "Windows 8.1".equals(System.getProperty("os.name"));
+		} else { //Linux, macOS, etc.
+			return NotificationsHandler.hasNotifySend;
+		}
 	}
 	
 }

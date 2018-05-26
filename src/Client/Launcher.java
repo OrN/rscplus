@@ -24,11 +24,18 @@ package Client;
 import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.ByteBuffer;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+import Game.Client;
 import Game.Game;
 
 /**
@@ -39,6 +46,9 @@ public class Launcher extends JFrame implements Runnable {
 	// Singleton
 	private static Launcher instance;
 	private static ConfigWindow window;
+	
+	public static ImageIcon icon = null;
+	public static ImageIcon icon_warn = null;
 	
 	private JProgressBar m_progressBar;
 	private JClassLoader m_classLoader;
@@ -59,8 +69,12 @@ public class Launcher extends JFrame implements Runnable {
 		// Set window icon
 		URL iconURL = Settings.getResource("/assets/icon.png");
 		if (iconURL != null) {
-			ImageIcon icon = new ImageIcon(iconURL);
+			icon = new ImageIcon(iconURL);
 			setIconImage(icon.getImage());
+		}
+		iconURL = Settings.getResource("/assets/icon_warn.png");
+		if (iconURL != null) {
+			icon_warn = new ImageIcon(iconURL);
 		}
 		
 		// Set size
@@ -91,6 +105,63 @@ public class Launcher extends JFrame implements Runnable {
 		// Generates a config file if needed
 		Settings.save();
 		
+		if (!Settings.UPDATE_CONFIRMATION) {
+			int response = JOptionPane.showConfirmDialog(this, "rscplus has an automatic update feature.\n" +
+					"\n" +
+					"When enabled, rscplus will prompt for and install updates when launching the client.\n" +
+					"The updates are obtained from our 'Latest' release on GitHub.\n" +
+					"\n" +
+					"Would you like to enable this feature?\n" +
+					"\n" +
+					"NOTE: This option can be toggled in the Settings interface under the General tab.", "rscplus", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, icon);
+			if (response == JOptionPane.YES_OPTION || response == JOptionPane.CLOSED_OPTION) {
+				Settings.CHECK_UPDATES = true;
+				JOptionPane.showMessageDialog(this, "rscplus is set to check for updates on GitHub at every launch!", "rscplus", JOptionPane.INFORMATION_MESSAGE, icon);
+			}
+			else if (response == JOptionPane.NO_OPTION) {
+				Settings.CHECK_UPDATES = false;
+				JOptionPane.showMessageDialog(this, "rscplus will not check for updates automatically.\n" +
+						"\n" +
+						"You will not get notified when new releases are available. To update your client, you\n" +
+						"will need to do it manually by replacing 'rscplus.jar' in your rscplus directory.\n" +
+						"\n" +
+						"You can enable GitHub updates again in the Settings interface under the General tab.", "rscplus", JOptionPane.INFORMATION_MESSAGE, icon_warn);
+			}
+			Settings.UPDATE_CONFIRMATION = true;
+			Settings.save();
+		}
+			
+		if (Settings.CHECK_UPDATES) {
+			setStatus("Checking for rscplus update...");
+			double latestVersion = Client.fetchLatestVersionNumber();
+			if (Settings.VERSION_NUMBER < latestVersion) {
+				setStatus("rscplus update is available");
+				// TODO: before Y10K update this to %9.6f
+				int response = JOptionPane.showConfirmDialog(this, "An rscplus client update is available!\n" +
+						"\n" +
+						"Latest: " + String.format("%8.6f", latestVersion) + "\n" +
+						"Installed: " + String.format("%8.6f", Settings.VERSION_NUMBER) + "\n" +
+						"\n" +
+						"Would you like to update now?", "rscplus", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, icon);
+				if (response == JOptionPane.YES_OPTION) {
+					if (updateJar()) {
+						JOptionPane.showMessageDialog(this, "rscplus has been updated successfully!\n" +
+								"\n" +
+								"The client requires a restart, and will now exit.", "rscplus", JOptionPane.INFORMATION_MESSAGE, icon);
+						System.exit(0);
+					}
+					else {
+						response = JOptionPane.showConfirmDialog(this, "rscplus has failed to update, please try again later.\n" +
+								"\n" +
+								"Would you like to continue without updating?", "rscplus", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, icon_warn);
+						if (response == JOptionPane.NO_OPTION || response == JOptionPane.CLOSED_OPTION) {
+							System.exit(0);
+						}
+					}
+				}
+			}
+		}
+		
 		setStatus("Loading JConfig...");
 		JConfig config = Game.getInstance().getJConfig();
 		if (!config.fetch(Util.makeWorldURL(Settings.WORLD))) {
@@ -106,6 +177,11 @@ public class Launcher extends JFrame implements Runnable {
 		m_classLoader = new JClassLoader();
 		if (!m_classLoader.fetch("/assets/rsc.jar")) {
 			error("Unable to fetch Jar");
+		}
+		
+		setStatus("Updating game cache...");
+		if (!updateCache()) {
+			Logger.Info("Some of the cache has failed to download, but we're going to try and continue anyway");
 		}
 		
 		setStatus("Launching game...");
@@ -132,6 +208,7 @@ public class Launcher extends JFrame implements Runnable {
 		setStatus("Error: " + text);
 		try {
 			Thread.sleep(5000);
+			System.exit(0);
 		} catch (Exception e) {
 		}
 	}
@@ -148,6 +225,103 @@ public class Launcher extends JFrame implements Runnable {
 				m_progressBar.setString(text);
 			}
 		});
+	}
+	
+	public boolean updateCache() {
+		boolean success = true;
+		String contentcrcs_fname = "/contentcrcs" + Long.toHexString(System.currentTimeMillis());
+		CacheDownload download = new CacheDownload(contentcrcs_fname);
+		setStatus("Checking for game cache updates...");
+		if (download.fetch(this)) {
+			if (!download.dump(Settings.Dir.CACHE + "/contentcrcs")) {
+				Logger.Error("Unable to write contentcrcs cache file to path");
+				success = false;
+			}
+			ByteBuffer data = download.getDataBuffer();
+			int cacheCount = (data.capacity() - 8) / 4;
+			for (int idx = 0; idx < cacheCount; idx++) {
+				int idx_crc = data.getInt(idx * 4);
+				String idx_fname = "/content" + idx + "_" + Long.toHexString(idx_crc);
+				File file = new File(Settings.Dir.CACHE + idx_fname);
+				boolean downloadContent = true;
+				if (file.exists()) {
+					int file_crc = (int)Util.fileGetCRC32(Settings.Dir.CACHE + idx_fname);
+					if (file_crc == idx_crc) {
+						Logger.Info("Cache file '" + idx_fname + "' is up-to-date");
+						setStatus("Cache file '" + idx_fname + "' is up-to-date");
+						downloadContent = false;
+					} else {
+						Logger.Info("Cache CRC mismatch (" + idx_crc + " != " + file_crc + "), redownloading file '" + idx_fname + "'");
+					}
+				}
+				
+				if (downloadContent) {
+					Logger.Info("Downloading cache file: " + idx_fname);
+					setStatus("Updating cache file '" + idx_fname + "' (" + (idx + 1) + " / " + cacheCount + ")");
+					download = new CacheDownload(idx_fname);
+					if (download.fetch(this)) {
+						if (download.getCRC() == idx_crc) {
+							if (!download.dump(Settings.Dir.CACHE + idx_fname)) {
+								Logger.Error("Unable to write cache file '" + idx_fname + "' to path");
+								success = false;
+							}
+						} else {
+							Logger.Error("CRC mismatch while downloading cache file '" + idx_fname + "'");
+							success = false;
+						}
+					} else {
+						Logger.Error("Failed to download cache file '" + idx_fname + "'");
+						success = false;
+					}
+				}
+			}
+		} else {
+			Logger.Error("Failed to retrieve contentcrcs, attempting run anyway!");
+		}
+		return success;
+	}
+	
+	public boolean updateJar() {
+		boolean success = true;
+		
+		setStatus("Starting rscplus update...");
+		setProgress(0, 1);
+		
+		try {
+			URL url = new URL("https://github.com/OrN/rscplus/releases/download/Latest/rscplus.jar");
+			
+			// Open connection
+			URLConnection connection = url.openConnection();
+			
+			int size = connection.getContentLength();
+			int offset = 0;
+			byte[] data = new byte[size];
+
+			InputStream input = url.openStream();
+			
+			int readSize;
+			while ((readSize = input.read(data, offset, size - offset)) != -1) {
+				offset += readSize;
+				setStatus("Updating rscplus (" + (offset / 1024) + "KiB / " + (size / 1024) + "KiB)");
+				setProgress(offset, size);
+			}
+			
+			if (offset != size) {
+				success = false;
+			} else {
+				// TODO: Get the jar filename in Settings.initDir
+				File file = new File(Settings.Dir.JAR + "/rscplus.jar");
+				FileOutputStream output = new FileOutputStream(file);
+				output.write(data);
+				output.close();
+				
+				setStatus("rscplus update complete");
+			}
+		} catch (Exception e) {
+			success = false;
+		}
+		
+		return success;
 	}
 	
 	/**

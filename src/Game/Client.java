@@ -28,6 +28,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -86,10 +87,8 @@ public class Client {
 	public static final int CHAT_QUEST = 3;
 	public static final int CHAT_CHAT = 4;
 	public static final int CHAT_PRIVATE_LOG_IN_OUT = 5;
-	// used for when player sends you a trade request. If player sends you a duel request it's type 7 for some reason...
-	public static final int CHAT_PLAYER_INTERACT_IN = 6;
-	// used for when you send a player a duel, trade request, or follow
-	public static final int CHAT_PLAYER_INTERACT_OUT = 7;
+	public static final int CHAT_TRADE_REQUEST_RECEIVED = 6; //only used when another player sends you a trade request. (hopefully!)
+	public static final int CHAT_OTHER = 7;	// used for when you send a player a duel/trade request, follow someone, or drop an item
 	
 	public static final int COMBAT_CONTROLLED = 0;
 	public static final int COMBAT_AGGRESSIVE = 1;
@@ -141,9 +140,39 @@ public class Client {
 	public static String player_name = null;
 	public static int player_posX = -1;
 	public static int player_posY = -1;
+	public static int player_height = -1;
+	public static int player_width = -1;
 	
 	public static int regionX = -1;
 	public static int regionY = -1;
+	public static int localRegionX = -1;
+	public static int localRegionY = -1;
+	public static int planeWidth = -1;
+	public static int planeHeight = -1;
+	public static int planeIndex = -1;
+	public static boolean loadingArea = false;
+	
+	public static boolean sleepCmdSent = false;
+	public static int sleepBagIdx = -1;
+	
+	public static Object clientStream;
+	public static Object writeBuffer;
+	public static Object menuCommon;
+	
+	// bank items and their count for each type, new bank items are first to get updated and indicate bank
+	// excluding inventory types and bank items do include them (in regular mode), as bank operations are messy
+	// they get excluded also in searchable bank
+	public static int[] bank_items_count;
+	public static int[] bank_items;
+	public static int[] new_bank_items_count;
+	public static int[] new_bank_items;
+	
+	// these two variables, they indicate distinct bank items count
+	public static int new_count_items_bank;
+	public static int count_items_bank;
+	
+	public static int selectedItem;
+	public static int selectedItemSlot;
 	
 	/**
 	 * An array of Strings that stores text used in the client
@@ -157,6 +186,7 @@ public class Client {
 	private static MouseHandler handler_mouse;
 	private static KeyboardHandler handler_keyboard;
 	private static float[] xpdrop_state = new float[18];
+	private static long updateTimer = 0;
 	
 	/**
 	 * A boolean array that stores if the XP per hour should be shown for a given skill when hovering on the XP bar.
@@ -206,6 +236,7 @@ public class Client {
 	}
 	
 	public static void init() {
+		
 		adaptStrings();
 		
 		handler_mouse = new MouseHandler();
@@ -417,6 +448,33 @@ public class Client {
 			case "togglelogindetails":
 				Settings.toggleShowLoginDetails();
 				break;
+			case "togglestartsearchedbank":
+				if (commandArray.length > 1) {
+					StringBuilder sb = new StringBuilder();
+					for (int i = 1; i < commandArray.length; i++) {
+						if (commandArray[i].trim().equals(""))
+							continue;
+						sb.append(commandArray[i].trim().toLowerCase());
+						if (i < commandArray.length - 1)
+							sb.append(" ");
+					}
+					Settings.toggleStartSearchedBank(sb.toString(), true);
+				} else {
+					Settings.toggleStartSearchedBank("", false);
+				}
+				
+				break;
+			case "banksearch":
+				// enters searchable bank mode, to return normal mode player has to speak to the banker again
+				if (commandArray.length > 1) {
+					Bank.search(commandArray, false);
+				} else {
+					Bank.search(commandArray, true);
+				}
+				break;
+			case "sleep":
+				Client.sleep();
+				break;
 			case "screenshot":
 				Renderer.takeScreenshot();
 				break;
@@ -602,6 +660,34 @@ public class Client {
 	}
 	
 	/**
+	 * Send over the instruction of sleep, if player has sleeping bag with them
+	 */
+	public static void sleep() {
+		if (Reflection.itemClick == null)
+			return;
+		
+		try {
+			int idx = -1;
+			// inventory_items contains ids of items
+			for (int n = 0; n < max_inventory; n++) {
+				// id of sleeping bag
+				if (inventory_items[n] == 1263) {
+					idx = n;
+					break;
+				}
+			}
+			if (idx != -1 && !Client.isInterfaceOpen() && !Client.isInCombat()) {
+				// method to sleep here
+				sleepCmdSent = true;
+				sleepBagIdx = idx;
+				Reflection.itemClick.invoke(Client.instance, false, 0);
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	/**
 	 * Logs the user out of the game.
 	 */
 	public static void logout() {
@@ -662,10 +748,89 @@ public class Client {
 		if (latestVersion > Settings.VERSION_NUMBER) {
 			displayMessage("@gre@A new version of RSC+ is available!", CHAT_QUEST);
 			// TODO: before Y10K update this to %9.6f
-			displayMessage("~034~ Your version is @red@" + String.format("%8.6f", Settings.VERSION_NUMBER), CHAT_QUEST);
 			displayMessage("The latest version is @gre@" + String.format("%8.6f", latestVersion), CHAT_QUEST);
+			displayMessage("~034~ Your version is @red@" + String.format("%8.6f", Settings.VERSION_NUMBER), CHAT_QUEST);
+			if (Settings.CHECK_UPDATES) {
+				displayMessage("~034~ You will receive the update next time you restart rscplus", CHAT_QUEST);
+			}
 		} else if (announceIfUpToDate) {
 			displayMessage("You're up to date: @gre@" + String.format("%8.6f", latestVersion), CHAT_QUEST);
+		}
+	}
+	
+	/**
+	 * Index fix after menu swap of redrawMenuHook
+	 * 
+	 * @param menuindex - the index of the menu
+	 * @return the fixed index
+	 */
+	public static int swapUseMenuHook(int menuindex) {
+		int newmenuindex = menuindex;
+		if (newmenuindex == 635) {
+			newmenuindex = 650;
+		} else {
+		}
+		return newmenuindex;
+	}
+	
+	/**
+	 * Redraw right click menu add item hook, only interested from the portion of items with special commands 640 or
+	 * none
+	 * 
+	 * @param instance - the instance of common menu
+	 * @param n - some index sent over
+	 * @param index - the item index
+	 * @param itemCommand - item command
+	 * @param itemName - item name
+	 */
+	public static void redrawMenuHook(Object instance, int n, int index, String itemCommand, String itemName) {
+		
+		if (instance != null) {
+			try {
+				// Client.strings[34] - @lre@
+				if (!itemCommand.equals("")) {
+					if (!Item.shouldPatch(index)) {
+						// Edible item command
+						Reflection.menuGen.invoke(instance, n, 640, false, itemCommand, Client.strings[34] + itemName);
+						// Use
+						Reflection.menuGen.invoke(instance, n, 650, false, Client.strings[71], Client.strings[34] + itemName);
+					} else {
+						// 635 is a synonym for 650 "Use", its lower than 640 since otherwise won't do the swap
+						// Use
+						Reflection.menuGen.invoke(instance, n, 635, false, Client.strings[71], Client.strings[34] + itemName);
+						// Edible item command
+						Reflection.menuGen.invoke(instance, n, 640, false, itemCommand, Client.strings[34] + itemName);
+					}
+				} else {
+					// Use
+					Reflection.menuGen.invoke(instance, n, 650, false, Client.strings[71], Client.strings[34] + itemName);
+				}
+				// Drop
+				Reflection.menuGen.invoke(instance, n, 660, false, Client.strings[67], Client.strings[34] + itemName);
+				// Examine
+				Reflection.menuGen.invoke(instance, index, 3600, false, Client.strings[51], Client.strings[34] + itemName);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	// combat packet received (testing only, the info is taken on function that draws hits)
+	public static void inCombatHook(int damageTaken, int currentHealth, int maxHealth, int index, int hooknum, Object obj) {
+		// discard if info seems to be for local player
+		int n1, n2;
+		String name;
+		// object was found
+		if (obj != null) {
+			try {
+				n1 = Reflection.attackingPlayerIdx.getInt(obj);
+				n2 = Reflection.attackingNpcIdx.getInt(obj);
+				name = (String)Reflection.characterDisplayName.get(obj);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+			}
 		}
 	}
 	
@@ -693,21 +858,13 @@ public class Client {
 			}
 		} else if (type == CHAT_PRIVATE) {
 			NotificationsHandler.notify(NotifType.PM, "PM from " + username, message);
-		}
-		
-		// TODO: For some reason, message = "" for trade notifications, unlike duel requests, which equals the game chat
-		// message.
-		// Something else needs to be detected to see if it's a trade request.
-		/*
-		else if (type == CHAT_PLAYER_INTERACT_IN) {
-			if (message.contains(" wishes to trade with you")) // TODO
-				TrayHandler.makePopupNotification("Trade Request", username + " wishes to trade with you");
-		}
-		*/
-		
-		else if (type == CHAT_PLAYER_INTERACT_OUT) {
+		} else if (type == CHAT_TRADE_REQUEST_RECEIVED) {
+			//as far as I know, this chat type is only used when receiving a trade request.
+			// (message == "") is true for trade notifications... could be used if CHAT_TRADE_REQUEST_RECEIVED is used for anything else
+			NotificationsHandler.notify(NotifType.TRADE, "Trade Request", username + " wishes to trade with you");
+		} else if (type == CHAT_OTHER) {
 			if (message.contains(" wishes to duel with you"))
-				NotificationsHandler.notify(NotifType.DUEL, "Duel Request", message.split(" ", 2)[0] + " wishes to duel you");
+				NotificationsHandler.notify(NotifType.DUEL, "Duel Request", message.replaceAll("@...@",""));
 		}
 		
 		if (type == Client.CHAT_PRIVATE || type == Client.CHAT_PRIVATE_OUTGOING) {
@@ -740,10 +897,11 @@ public class Client {
 			displayMessage("@mag@Type @yel@::help@mag@ for a list of commands", CHAT_QUEST);
 			displayMessage("@mag@Open the settings with @yel@" + configWindowShortcut + "@mag@ or @yel@right-click the tray icon", CHAT_QUEST);
 			
-			// Check to see if RSC+ is up to date
-			if (Settings.versionCheckRequired) {
-				Settings.versionCheckRequired = false;
+			// Check for updates every login in hour intervals, so users are notified when an update is available
+			long currentTime = System.currentTimeMillis();
+			if (Settings.CHECK_UPDATES && currentTime >= updateTimer) {
 				checkForUpdate(false);
+				updateTimer = currentTime + (60 * 60 * 1000);
 			}
 		}
 		
@@ -781,7 +939,7 @@ public class Client {
 		case CHAT_CHAT:
 			username = username + ": ";
 			break;
-		case CHAT_PLAYER_INTERACT_IN: // happens when player trades you
+		case CHAT_TRADE_REQUEST_RECEIVED: // happens when player trades you
 			username = username + " wishes to trade with you.";
 			break;
 		/* username will not appear in these chat types, but just to cover it I'm leaving code commented out here
@@ -822,7 +980,7 @@ public class Client {
 			// just bold username for chat
 			colorMessage = "@|yellow,intensity_bold " + colorMessage + "|@";
 			break;
-		case CHAT_PLAYER_INTERACT_IN: // happens when player trades you
+		case CHAT_TRADE_REQUEST_RECEIVED: // happens when player trades you
 			colorMessage = "@|white " + colorMessage + "|@";
 			break;
 		/* username will not appear in these chat types, but just to cover it I'm leaving code commented out here
@@ -847,9 +1005,9 @@ public class Client {
 	 */
 	public static String colorizeMessage(String colorMessage, int type) {
 		boolean whiteMessage = colorMessage.contains("Welcome to RuneScape!"); // want this to be bold
-		boolean blueMessage = colorMessage.contains("You have been standing here for 5 mins! Please move to a new area");
-		// boolean yellowMessage = false;
-		boolean greenMessage = colorMessage.contains("You just advanced ");
+		boolean blueMessage = (type == CHAT_NONE) && (colorMessage.contains("You have been standing here for 5 mins! Please move to a new area"));
+		boolean yellowMessage = (type == CHAT_NONE) && (colorMessage.contains("Well Done")); //tourist trap completion
+		boolean greenMessage = (type == CHAT_NONE) && (colorMessage.contains("You just advanced ") || colorMessage.contains("quest point") || colorMessage.contains("***") || colorMessage.contains("ou have completed")); //"***" is for Tourist Trap completion
 		
 		if (blueMessage) { // this is one of the messages which we must overwrite expected color for
 			return "@|cyan,intensity_faint " + colorMessage + "|@";
@@ -861,6 +1019,8 @@ public class Client {
 			// }
 			
 			return "@|white,intensity_bold " + colorMessage + "|@";
+		} else if (yellowMessage) {
+			return "@|yellow,intensity_bold " + colorMessage + "|@";
 		}
 		
 		switch (type) {
@@ -886,8 +1046,8 @@ public class Client {
 			colorMessage = "@|cyan,intensity_faint " + colorMessage + "|@";
 			break;
 		case CHAT_NONE: // have to replace b/c @cya@Screenshot saved...
-		case CHAT_PLAYER_INTERACT_IN:
-		case CHAT_PLAYER_INTERACT_OUT:
+		case CHAT_TRADE_REQUEST_RECEIVED:
+		case CHAT_OTHER:
 			colorMessage = "@|white " + colorReplace(colorMessage) + "|@";
 			break;
 		default: // this should never happen, only 8 Chat Types
@@ -934,13 +1094,13 @@ public class Client {
 		return colorMessage;
 	}
 	
-	public static void drawNPC(int x, int y, int width, int height, String name) {
+	public static void drawNPC(int x, int y, int width, int height, String name, int currentHits, int maxHits) {
 		// ILOAD 6 is index
-		npc_list.add(new NPC(x, y, width, height, name, NPC.TYPE_MOB));
+		npc_list.add(new NPC(x, y, width, height, name, NPC.TYPE_MOB, currentHits, maxHits));
 	}
 	
-	public static void drawPlayer(int x, int y, int width, int height, String name) {
-		npc_list.add(new NPC(x, y, width, height, name, NPC.TYPE_PLAYER));
+	public static void drawPlayer(int x, int y, int width, int height, String name, int currentHits, int maxHits) {
+		npc_list.add(new NPC(x, y, width, height, name, NPC.TYPE_PLAYER, currentHits, maxHits));
 	}
 	
 	public static void drawItem(int x, int y, int width, int height, int id) {

@@ -33,8 +33,16 @@ import Client.Logger;
 public class Reflection {
 	
 	public static Field characterName = null;
+	public static Field characterDisplayName = null;
+	public static Field characterX = null;
+	public static Field characterY = null;
+	public static Field characterDamageTaken = null;
+	public static Field characterCurrentHits = null;
+	public static Field characterMaxHits = null;
 	public static Field characterWaypointX = null;
 	public static Field characterWaypointY = null;
+	public static Field attackingPlayerIdx = null;
+	public static Field attackingNpcIdx = null;
 	
 	public static Field maxInventory = null;
 	
@@ -50,6 +58,13 @@ public class Reflection {
 	public static Method setGameBounds = null;
 	public static Method setLoginText = null;
 	public static Method logout = null;
+	public static Method itemClick = null;
+	public static Method menuGen = null;
+	
+	public static Method newPacket = null;
+	public static Method putShort = null;
+	public static Method sendPacket = null;
+	public static Field bufferField = null;
 	
 	// Method descriptions
 	private static final String DISPLAYMESSAGE = "private final void client.a(boolean,java.lang.String,int,java.lang.String,int,int,java.lang.String,java.lang.String)";
@@ -57,10 +72,18 @@ public class Reflection {
 	private static final String SETGAMEBOUNDS = "final void ua.a(int,int,int,int,byte)";
 	private static final String SETLOGINTEXT = "private final void client.b(byte,java.lang.String,java.lang.String)";
 	private static final String LOGOUT = "private final void client.B(int)";
+	private static final String ITEMCLICK = "private final void client.b(boolean,int)";
+	private static final String MENUGEN = "final void wb.a(int,int,boolean,java.lang.String,java.lang.String)";
+	
+	private static final String NEWPACKET = "final void b.b(int,int)";
+	private static final String PUTSHORT = "final void tb.e(int,int)";
+	private static final String SENDPACKET = "final void b.b(int)";
 	
 	public static void Load() {
 		try {
 			JClassLoader classLoader = Launcher.getInstance().getClassLoader();
+			boolean found = false;
+			boolean found2 = false;
 			
 			// Client
 			Class<?> c = classLoader.loadClass("client");
@@ -75,16 +98,76 @@ public class Reflection {
 				} else if (method.toGenericString().equals(LOGOUT)) {
 					logout = method;
 					Logger.Info("Found logout");
+				} else if (method.toGenericString().equals(ITEMCLICK)) {
+					itemClick = method;
+					Logger.Info("Found itemClick");
 				}
 			}
 			
 			// Region X and Region Y
 			c.getDeclaredField("Qg").setAccessible(true);
 			c.getDeclaredField("zg").setAccessible(true);
+			// Local Region X and Local Region Y
+			c.getDeclaredField("Lf").setAccessible(true);
+			c.getDeclaredField("sh").setAccessible(true);
+			// Plane related info + loadingArea var (though this one changes way too fast)
+			c.getDeclaredField("Ki").setAccessible(true);
+			c.getDeclaredField("sk").setAccessible(true);
+			c.getDeclaredField("bc").setAccessible(true);
+			c.getDeclaredField("Ub").setAccessible(true);
 			// Maximum inventory (30)
 			maxInventory = c.getDeclaredField("cl");
 			if (maxInventory != null)
 				maxInventory.setAccessible(true);
+			
+			// Client Stream
+			c = classLoader.loadClass("da");
+			found = false;
+			found2 = false;
+			while (c != null && !found && !found2) {
+				methods = c.getDeclaredMethods();
+				for (Method method : methods) {
+					if (method.toGenericString().equals(NEWPACKET)) {
+						newPacket = method;
+						Logger.Info("Found newPacket");
+						found = true;
+						continue;
+					}
+					if (method.toGenericString().equals(SENDPACKET)) {
+						sendPacket = method;
+						Logger.Info("Found sendPacket");
+						found2 = true;
+						continue;
+					}
+				}
+				c = c.getSuperclass();
+			}
+			
+			// Buffer field of clientStream
+			c = classLoader.loadClass("b");
+			Field[] fields = c.getDeclaredFields();
+			for (Field field : fields) {
+				if (field.getName().equals("f")) {
+					bufferField = field;
+					Logger.Info("Found bufferField");
+				}
+			}
+			
+			// Write buffer
+			c = classLoader.loadClass("ja");
+			found = false;
+			while (c != null && !found) {
+				methods = c.getDeclaredMethods();
+				for (Method method : methods) {
+					if (method.toGenericString().equals(PUTSHORT)) {
+						putShort = method;
+						Logger.Info("Found putShort");
+						found = true;
+						break;
+					}
+				}
+				c = c.getSuperclass();
+			}
 			
 			// Camera
 			c = classLoader.loadClass("lb");
@@ -109,14 +192,38 @@ public class Reflection {
 			// Character
 			c = classLoader.loadClass("ta");
 			characterName = c.getDeclaredField("C");
+			characterDisplayName = c.getDeclaredField("c");
+			characterX = c.getDeclaredField("i");
+			characterY = c.getDeclaredField("K");
+			characterDamageTaken = c.getDeclaredField("u");
+			characterCurrentHits = c.getDeclaredField("B");
+			characterMaxHits = c.getDeclaredField("G");
 			characterWaypointX = c.getDeclaredField("i");
 			characterWaypointY = c.getDeclaredField("K");
+			attackingPlayerIdx = c.getDeclaredField("z");
+			attackingNpcIdx = c.getDeclaredField("h");
 			if (characterName != null)
 				characterName.setAccessible(true);
+			if (characterDisplayName != null)
+				characterDisplayName.setAccessible(true);
+			if (characterX != null)
+				characterX.setAccessible(true);
+			if (characterY != null)
+				characterY.setAccessible(true);
+			if (characterDamageTaken != null)
+				characterDamageTaken.setAccessible(true);
+			if (characterCurrentHits != null)
+				characterCurrentHits.setAccessible(true);
+			if (characterMaxHits != null)
+				characterMaxHits.setAccessible(true);
 			if (characterWaypointX != null)
 				characterWaypointX.setAccessible(true);
 			if (characterWaypointY != null)
 				characterWaypointY.setAccessible(true);
+			if (attackingPlayerIdx != null)
+				attackingPlayerIdx.setAccessible(true);
+			if (attackingNpcIdx != null)
+				attackingNpcIdx.setAccessible(true);
 			
 			// Menu
 			c = classLoader.loadClass("qa");
@@ -128,6 +235,15 @@ public class Reflection {
 			menuHeight = c.getDeclaredField("O");
 			// this menu array I'm not sure whats for
 			menuUknown = c.getDeclaredField("sb");
+			
+			c = classLoader.loadClass("wb");
+			methods = c.getDeclaredMethods();
+			for (Method method : methods) {
+				if (method.toGenericString().equals(MENUGEN)) {
+					menuGen = method;
+					Logger.Info("Found menuGen");
+				}
+			}
 			
 			// Set all accessible
 			if (menuX != null)
@@ -152,9 +268,21 @@ public class Reflection {
 				setLoginText.setAccessible(true);
 			if (logout != null)
 				logout.setAccessible(true);
+			if (itemClick != null)
+				itemClick.setAccessible(true);
+			if (menuGen != null)
+				menuGen.setAccessible(true);
+			if (newPacket != null)
+				newPacket.setAccessible(true);
+			if (putShort != null)
+				putShort.setAccessible(true);
+			if (sendPacket != null)
+				sendPacket.setAccessible(true);
+			if (bufferField != null)
+				bufferField.setAccessible(true);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
 }

@@ -38,6 +38,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -106,6 +108,7 @@ public class ConfigWindow {
 	private JFrame frame;
 	
 	private JLabel generalPanelNamePatchModeDesc;
+	private JLabel generalPanelCommandPatchModeDesc;
 	private JLabel notificationPanelLowHPNotifsEndLabel;
 	private JLabel notificationPanelFatigueNotifsEndLabel;
 	
@@ -123,6 +126,7 @@ public class ConfigWindow {
 	private JCheckBox generalPanelClientSizeCheckbox;
 	private JSpinner generalPanelClientSizeXSpinner;
 	private JSpinner generalPanelClientSizeYSpinner;
+	private JCheckBox generalPanelCheckUpdates;
 	private JCheckBox generalPanelChatHistoryCheckbox;
 	private JCheckBox generalPanelCombatXPMenuCheckbox;
 	private JCheckBox generalPanelXPDropsCheckbox;
@@ -133,11 +137,14 @@ public class ConfigWindow {
 	private JCheckBox generalPanelFatigueAlertCheckbox;
 	private JCheckBox generalPanelInventoryFullAlertCheckbox;
 	private JSlider generalPanelNamePatchModeSlider;
+	private JSlider generalPanelCommandPatchModeSlider;
 	private JCheckBox generalPanelRoofHidingCheckbox;
 	private JCheckBox generalPanelColoredTextCheckbox;
 	private JSlider generalPanelFoVSlider;
 	private JCheckBox generalPanelCustomCursorCheckbox;
 	private JSlider generalPanelViewDistanceSlider;
+	private JCheckBox generalPanelStartSearchedBankCheckbox;
+	private JTextField generalPanelSearchBankWordTextfield;
 	
 	// Overlays tab
 	private JCheckBox overlayPanelStatusDisplayCheckbox;
@@ -147,9 +154,12 @@ public class ConfigWindow {
 	private JCheckBox overlayPanelFriendNamesCheckbox;
 	private JCheckBox overlayPanelNPCNamesCheckbox;
 	private JCheckBox overlayPanelNPCHitboxCheckbox;
+	private JCheckBox overlayPanelUsePercentageCheckbox;
 	private JCheckBox overlayPanelFoodHealingCheckbox;
 	private JCheckBox overlayPanelHPRegenTimerCheckbox;
 	private JCheckBox overlayPanelDebugModeCheckbox;
+	private JTextField blockedItemsTextField;
+	private JTextField highlightedItemsTextField;
 	
 	// Notifications tab
 	private JCheckBox notificationPanelPMNotifsCheckbox;
@@ -409,6 +419,9 @@ public class ConfigWindow {
 		spinnerWinYModel.setStepSize(10);
 		generalPanelClientSizeYSpinner.setModel(spinnerWinYModel);
 		
+		generalPanelCheckUpdates = addCheckbox("Check for rscplus updates from GitHub at launch", generalPanel);
+		generalPanelCheckUpdates.setToolTipText("When enabled, rscplus will check for client updates before launching the game and install them when prompted");
+		
 		generalPanelChatHistoryCheckbox = addCheckbox("Load chat history after relogging (Not implemented yet)", generalPanel);
 		generalPanelChatHistoryCheckbox.setToolTipText("Make chat history persist between logins");
 		generalPanelChatHistoryCheckbox.setEnabled(false); // TODO: Remove this line when chat history is implemented
@@ -517,6 +530,61 @@ public class ConfigWindow {
 			}
 		});
 		
+		JPanel generalPanelCommandPatchModePanel = new JPanel();
+		generalPanelCommandPatchModePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		generalPanelCommandPatchModePanel.setMaximumSize(new Dimension(300, 60));
+		generalPanelCommandPatchModePanel.setLayout(new BoxLayout(generalPanelCommandPatchModePanel, BoxLayout.X_AXIS));
+		generalPanel.add(generalPanelCommandPatchModePanel);
+		
+		generalPanelCommandPatchModeSlider = new JSlider();
+		generalPanelCommandPatchModeSlider.setMajorTickSpacing(1);
+		generalPanelCommandPatchModeSlider.setPaintLabels(true);
+		generalPanelCommandPatchModeSlider.setPaintTicks(true);
+		generalPanelCommandPatchModeSlider.setSnapToTicks(true);
+		generalPanelCommandPatchModeSlider.setMinimum(0);
+		generalPanelCommandPatchModeSlider.setMaximum(3);
+		generalPanelCommandPatchModeSlider.setPreferredSize(new Dimension(33, 0));
+		generalPanelCommandPatchModeSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
+		generalPanelCommandPatchModeSlider.setBorder(new EmptyBorder(0, 0, 5, 0));
+		generalPanelCommandPatchModeSlider.setOrientation(SwingConstants.VERTICAL);
+		generalPanelCommandPatchModePanel.add(generalPanelCommandPatchModeSlider);
+		
+		JPanel generalPanelCommandPatchModeTextPanel = new JPanel();
+		generalPanelCommandPatchModeTextPanel.setPreferredSize(new Dimension(255, 55));
+		generalPanelCommandPatchModeTextPanel.setLayout(new BorderLayout());
+		generalPanelCommandPatchModeTextPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
+		generalPanelCommandPatchModePanel.add(generalPanelCommandPatchModeTextPanel);
+		
+		JLabel generalPanelCommandPatchModeTitle = new JLabel("<html><b>Item command patch mode</b> (Requires restart)</html>");
+		generalPanelCommandPatchModeTitle.setToolTipText("Reworks certain discontinued/quest-only item edible commands with improved versions");
+		generalPanelCommandPatchModeTextPanel.add(generalPanelCommandPatchModeTitle, BorderLayout.PAGE_START);
+		generalPanelCommandPatchModeDesc = new JLabel("");
+		generalPanelCommandPatchModeTextPanel.add(generalPanelCommandPatchModeDesc, BorderLayout.CENTER);
+		
+		generalPanelCommandPatchModeSlider.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				switch (generalPanelCommandPatchModeSlider.getValue()) {
+				case 3:
+					generalPanelCommandPatchModeDesc.setText("<html>Apply both 1 & 2 changes</html>");
+					break;
+				case 2:
+					generalPanelCommandPatchModeDesc.setText("<html>Swap eat/drink option with use on quest-only items</html>");
+					break;
+				case 1:
+					generalPanelCommandPatchModeDesc.setText("<html>Remove eat/drink option on discontinued items</html>");
+					break;
+				case 0:
+					generalPanelCommandPatchModeDesc.setText("<html>No item command patching</html>");
+					break;
+				default:
+					Logger.Error("Invalid command patch mode value");
+					break;
+				}
+			}
+		});
+		
 		generalPanelRoofHidingCheckbox = addCheckbox("Roof hiding", generalPanel);
 		generalPanelRoofHidingCheckbox.setToolTipText("Always hide rooftops");
 		
@@ -566,6 +634,27 @@ public class ConfigWindow {
 		generalPanelViewDistanceSlider.setLabelTable(generalPanelViewDistanceLabelTable);
 		generalPanelViewDistanceSlider.setPaintLabels(true);
 		
+		generalPanelStartSearchedBankCheckbox = addCheckbox("Start with Searched Bank", generalPanel);
+		generalPanelStartSearchedBankCheckbox.setToolTipText("Always start with a searched bank");
+
+		JPanel searchBankPanel = new JPanel();
+		generalPanel.add(searchBankPanel);
+		searchBankPanel.setLayout(new BoxLayout(searchBankPanel, BoxLayout.X_AXIS));
+		searchBankPanel.setPreferredSize(new Dimension(0, 37));
+		searchBankPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		searchBankPanel.setBorder(new EmptyBorder(0, 0, 9, 0));
+
+		JLabel searchBankPanelLabel = new JLabel("Search term used on bank: ");
+		searchBankPanelLabel.setToolTipText("The search term that will be used on bank start");
+		searchBankPanel.add(searchBankPanelLabel);
+		searchBankPanelLabel.setAlignmentY((float)0.9);
+		
+		generalPanelSearchBankWordTextfield = new JTextField();
+		searchBankPanel.add(generalPanelSearchBankWordTextfield);
+		generalPanelSearchBankWordTextfield.setMinimumSize(new Dimension(100, 28));
+		generalPanelSearchBankWordTextfield.setMaximumSize(new Dimension(Short.MAX_VALUE, 28));
+		generalPanelSearchBankWordTextfield.setAlignmentY((float)0.75);
+		
 		/*
 		 * Overlays tab
 		 */
@@ -590,6 +679,9 @@ public class ConfigWindow {
 		overlayPanelNPCNamesCheckbox = addCheckbox("Display NPC name overlay", overlayPanel);
 		overlayPanelNPCNamesCheckbox.setToolTipText("Shows NPC names over the NPC");
 		
+		overlayPanelUsePercentageCheckbox = addCheckbox("Use percentage for NPC HP info", overlayPanel);
+		overlayPanelUsePercentageCheckbox.setToolTipText("Uses percentage for NPC HP info instead of actual HP");
+		
 		overlayPanelNPCHitboxCheckbox = addCheckbox("Show character hitboxes", overlayPanel);
 		overlayPanelNPCHitboxCheckbox.setToolTipText("Shows the clickable areas on NPCs and players");
 		
@@ -605,6 +697,42 @@ public class ConfigWindow {
 		
 		overlayPanelDebugModeCheckbox = addCheckbox("Enable debug mode", overlayPanel);
 		overlayPanelDebugModeCheckbox.setToolTipText("Shows debug overlays and enables debug text in the console");
+
+		// Blocked Items
+		JPanel blockedItemsPanel = new JPanel();
+		overlayPanel.add(blockedItemsPanel);
+		blockedItemsPanel.setLayout(new BoxLayout(blockedItemsPanel, BoxLayout.X_AXIS));
+		blockedItemsPanel.setPreferredSize(new Dimension(0,37));
+		blockedItemsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		blockedItemsPanel.setBorder(new EmptyBorder(0,0,9,0));
+
+		JLabel blockedItemsPanelNameLabel = new JLabel("Blocked items: ");
+		blockedItemsPanel.add(blockedItemsPanelNameLabel);
+		blockedItemsPanelNameLabel.setAlignmentY((float) 0.9);
+
+		blockedItemsTextField = new JTextField();
+		blockedItemsPanel.add(blockedItemsTextField);
+		blockedItemsTextField.setMinimumSize(new Dimension(100,28));
+		blockedItemsTextField.setMaximumSize(new Dimension(Short.MAX_VALUE,28));
+		blockedItemsTextField.setAlignmentY((float) 0.75);
+
+		// Highlighted Items
+		JPanel highlightedItemsPanel = new JPanel();
+		overlayPanel.add(highlightedItemsPanel);
+		highlightedItemsPanel.setLayout(new BoxLayout(highlightedItemsPanel, BoxLayout.X_AXIS));
+		highlightedItemsPanel.setPreferredSize(new Dimension(0,37));
+		highlightedItemsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		highlightedItemsPanel.setBorder(new EmptyBorder(0,0,9,0));
+
+		JLabel highlightedItemsPanelNameLabel = new JLabel("Highlighted items: ");
+		highlightedItemsPanel.add(highlightedItemsPanelNameLabel);
+		highlightedItemsPanelNameLabel.setAlignmentY((float) 0.9);
+
+		highlightedItemsTextField = new JTextField();
+		highlightedItemsPanel.add(highlightedItemsTextField);
+		highlightedItemsTextField.setMinimumSize(new Dimension(100,28));
+		highlightedItemsTextField.setMaximumSize(new Dimension(Short.MAX_VALUE,28));
+		highlightedItemsTextField.setAlignmentY((float) 0.75);
 		
 		/*
 		 * Notifications tab
@@ -648,10 +776,8 @@ public class ConfigWindow {
 		notificationPanelPMNotifsCheckbox = addCheckbox("Enable PM notifications", notificationPanel);
 		notificationPanelPMNotifsCheckbox.setToolTipText("Shows a system notification when a PM is received");
 		
-		notificationPanelTradeNotifsCheckbox = addCheckbox("Enable trade notifications (Not implemented yet)", notificationPanel);
+		notificationPanelTradeNotifsCheckbox = addCheckbox("Enable trade notifications", notificationPanel);
 		notificationPanelTradeNotifsCheckbox.setToolTipText("Shows a system notification when a trade request is received");
-		// TODO: Remove this line after trade notifications are implemented
-		notificationPanelTradeNotifsCheckbox.setEnabled(false);
 		
 		notificationPanelDuelNotifsCheckbox = addCheckbox("Enable duel notifications", notificationPanel);
 		notificationPanelDuelNotifsCheckbox.setToolTipText("Shows a system notification when a duel request is received");
@@ -796,6 +922,7 @@ public class ConfigWindow {
 		keybindPanel.setLayout(gbl_panel);
 		
 		addKeybindCategory(keybindPanel, "General");
+		addKeybindSet(keybindPanel, "Sleep", "sleep", KeyModifier.CTRL, KeyEvent.VK_X);
 		addKeybindSet(keybindPanel, "Logout", "logout", KeyModifier.CTRL, KeyEvent.VK_L);
 		addKeybindSet(keybindPanel, "Take screenshot", "screenshot", KeyModifier.CTRL, KeyEvent.VK_S);
 		addKeybindSet(keybindPanel, "Show settings window", "show_config_window", KeyModifier.CTRL, KeyEvent.VK_O);
@@ -806,6 +933,7 @@ public class ConfigWindow {
 		addKeybindSet(keybindPanel, "Toggle inventory full alert", "toggle_inventory_full_alert", KeyModifier.CTRL, KeyEvent.VK_V);
 		addKeybindSet(keybindPanel, "Toggle roof hiding", "toggle_roof_hiding", KeyModifier.CTRL, KeyEvent.VK_R);
 		addKeybindSet(keybindPanel, "Toggle color coded text", "toggle_colorize", KeyModifier.CTRL, KeyEvent.VK_Z);
+		addKeybindSet(keybindPanel, "Toggle start with searched bank", "toggle_start_searched_bank", KeyModifier.CTRL, KeyEvent.VK_Q);
 		
 		addKeybindCategory(keybindPanel, "Overlays");
 		addKeybindSet(keybindPanel, "Toggle HP/prayer/fatigue display", "toggle_hpprayerfatigue_display", KeyModifier.CTRL, KeyEvent.VK_U);
@@ -1076,6 +1204,7 @@ public class ConfigWindow {
 		generalPanelClientSizeCheckbox.setSelected(Settings.CUSTOM_CLIENT_SIZE);
 		generalPanelClientSizeXSpinner.setValue(Settings.CUSTOM_CLIENT_SIZE_X);
 		generalPanelClientSizeYSpinner.setValue(Settings.CUSTOM_CLIENT_SIZE_Y);
+		generalPanelCheckUpdates.setSelected(Settings.CHECK_UPDATES);
 		generalPanelChatHistoryCheckbox.setSelected(Settings.LOAD_CHAT_HISTORY); // TODO: Implement this feature
 		generalPanelCombatXPMenuCheckbox.setSelected(Settings.COMBAT_MENU);
 		generalPanelXPDropsCheckbox.setSelected(Settings.SHOW_XPDROPS);
@@ -1088,11 +1217,14 @@ public class ConfigWindow {
 		generalPanelFatigueAlertCheckbox.setSelected(Settings.FATIGUE_ALERT);
 		generalPanelInventoryFullAlertCheckbox.setSelected(Settings.INVENTORY_FULL_ALERT);
 		generalPanelNamePatchModeSlider.setValue(Settings.NAME_PATCH_TYPE);
+		generalPanelCommandPatchModeSlider.setValue(Settings.COMMAND_PATCH_TYPE);
 		generalPanelRoofHidingCheckbox.setSelected(Settings.HIDE_ROOFS);
 		generalPanelColoredTextCheckbox.setSelected(Settings.COLORIZE);
 		generalPanelFoVSlider.setValue(Settings.FOV);
 		generalPanelCustomCursorCheckbox.setSelected(Settings.SOFTWARE_CURSOR);
 		generalPanelViewDistanceSlider.setValue(Settings.VIEW_DISTANCE);
+		generalPanelStartSearchedBankCheckbox.setSelected(Settings.START_SEARCHEDBANK);
+		generalPanelSearchBankWordTextfield.setText(Settings.SEARCH_BANK_WORD);
 		
 		// Sets the text associated with the name patch slider.
 		switch (generalPanelNamePatchModeSlider.getValue()) {
@@ -1121,13 +1253,16 @@ public class ConfigWindow {
 		overlayPanelFriendNamesCheckbox.setSelected(Settings.SHOW_FRIENDINFO);
 		overlayPanelNPCNamesCheckbox.setSelected(Settings.SHOW_NPCINFO);
 		overlayPanelNPCHitboxCheckbox.setSelected(Settings.SHOW_HITBOX);
+		overlayPanelUsePercentageCheckbox.setSelected(Settings.USE_PERCENTAGE);
 		overlayPanelFoodHealingCheckbox.setSelected(Settings.SHOW_FOOD_HEAL_OVERLAY); // TODO: Implement this feature
 		overlayPanelHPRegenTimerCheckbox.setSelected(Settings.SHOW_TIME_UNTIL_HP_REGEN); // TODO: Implement this feature
 		overlayPanelDebugModeCheckbox.setSelected(Settings.DEBUG);
+		highlightedItemsTextField.setText(Util.joinAsString(",", Settings.HIGHLIGHTED_ITEMS));
+		blockedItemsTextField.setText(Util.joinAsString(",", Settings.BLOCKED_ITEMS));
 		
 		// Notifications tab
 		notificationPanelPMNotifsCheckbox.setSelected(Settings.PM_NOTIFICATIONS);
-		notificationPanelTradeNotifsCheckbox.setSelected(Settings.TRADE_NOTIFICATIONS); // TODO: Implement this feature
+		notificationPanelTradeNotifsCheckbox.setSelected(Settings.TRADE_NOTIFICATIONS);
 		notificationPanelDuelNotifsCheckbox.setSelected(Settings.DUEL_NOTIFICATIONS);
 		notificationPanelLogoutNotifsCheckbox.setSelected(Settings.LOGOUT_NOTIFICATIONS);
 		notificationPanelLowHPNotifsCheckbox.setSelected(Settings.LOW_HP_NOTIFICATIONS);
@@ -1163,6 +1298,7 @@ public class ConfigWindow {
 		Settings.CUSTOM_CLIENT_SIZE = generalPanelClientSizeCheckbox.isSelected();
 		Settings.CUSTOM_CLIENT_SIZE_X = ((SpinnerNumberModel)(generalPanelClientSizeXSpinner.getModel())).getNumber().intValue();
 		Settings.CUSTOM_CLIENT_SIZE_Y = ((SpinnerNumberModel)(generalPanelClientSizeYSpinner.getModel())).getNumber().intValue();
+		Settings.CHECK_UPDATES = generalPanelCheckUpdates.isSelected();
 		Settings.LOAD_CHAT_HISTORY = generalPanelChatHistoryCheckbox.isSelected();
 		Settings.COMBAT_MENU = generalPanelCombatXPMenuCheckbox.isSelected();
 		Settings.SHOW_XPDROPS = generalPanelXPDropsCheckbox.isSelected();
@@ -1172,11 +1308,14 @@ public class ConfigWindow {
 		Settings.FATIGUE_ALERT = generalPanelFatigueAlertCheckbox.isSelected();
 		Settings.INVENTORY_FULL_ALERT = generalPanelInventoryFullAlertCheckbox.isSelected();
 		Settings.NAME_PATCH_TYPE = generalPanelNamePatchModeSlider.getValue();
+		Settings.COMMAND_PATCH_TYPE = generalPanelCommandPatchModeSlider.getValue();
 		Settings.HIDE_ROOFS = generalPanelRoofHidingCheckbox.isSelected();
 		Settings.COLORIZE = generalPanelColoredTextCheckbox.isSelected();
 		Settings.FOV = generalPanelFoVSlider.getValue();
 		Settings.SOFTWARE_CURSOR = generalPanelCustomCursorCheckbox.isSelected();
 		Settings.VIEW_DISTANCE = generalPanelViewDistanceSlider.getValue();
+		Settings.START_SEARCHEDBANK = generalPanelStartSearchedBankCheckbox.isSelected();
+		Settings.SEARCH_BANK_WORD = generalPanelSearchBankWordTextfield.getText().trim().toLowerCase();
 		
 		// Overlays options
 		Settings.SHOW_STATUSDISPLAY = overlayPanelStatusDisplayCheckbox.isSelected();
@@ -1186,10 +1325,13 @@ public class ConfigWindow {
 		Settings.SHOW_FRIENDINFO = overlayPanelFriendNamesCheckbox.isSelected();
 		Settings.SHOW_NPCINFO = overlayPanelNPCNamesCheckbox.isSelected();
 		Settings.SHOW_HITBOX = overlayPanelNPCHitboxCheckbox.isSelected();
+		Settings.USE_PERCENTAGE = overlayPanelUsePercentageCheckbox.isSelected();
 		Settings.SHOW_FOOD_HEAL_OVERLAY = overlayPanelFoodHealingCheckbox.isSelected();
 		Settings.SHOW_TIME_UNTIL_HP_REGEN = overlayPanelHPRegenTimerCheckbox.isSelected();
 		Settings.DEBUG = overlayPanelDebugModeCheckbox.isSelected();
-		
+		Settings.HIGHLIGHTED_ITEMS = new ArrayList<>(Arrays.asList(highlightedItemsTextField.getText().split(",")));
+		Settings.BLOCKED_ITEMS = new ArrayList<>(Arrays.asList(blockedItemsTextField.getText().split(",")));
+
 		// Notifications options
 		Settings.PM_NOTIFICATIONS = notificationPanelPMNotifsCheckbox.isSelected();
 		Settings.TRADE_NOTIFICATIONS = notificationPanelTradeNotifsCheckbox.isSelected();

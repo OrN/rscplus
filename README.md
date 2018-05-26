@@ -6,6 +6,9 @@
 
 *The code is licensed under GPLv3 in hopes of protecting people from malicious modifications.*
 
+## Download
+The latest release can be found [here](https://github.com/OrN/rscplus/releases/latest).
+
 ## Contributing
 
 - Fork the project
@@ -43,6 +46,7 @@ Most keybinds are configurable via the Settings GUI
 - Mouse wheel scroll - Zoom camera
 - Ctrl + o - Open the options/settings window
 - Ctrl + s - Take screenshot (Saved in the screenshots directory)
+- Ctrl + x - Sleep, provided you have a sleeping bag in inventory
 - Ctrl + r - Toggle roof hiding
 - Ctrl + c - Toggle combat experience menu
 - Ctrl + f - Toggle fatigue alert at 100%
@@ -56,6 +60,8 @@ Most keybinds are configurable via the Settings GUI
 - Ctrl + n - Toggle NPC info
 - Ctrl + p - Toggle Player info
 - Ctrl + h - Toggle hitboxes for NPC info
+- Ctrl + q - Toggle start on searchable bank mode (uses previously 
+stored keyword on searchable bank)
 - Ctrl + [ - Toggle XP drops
 - Ctrl + ] - Toggle fatigue drops
 - Ctrl + l - Logout
@@ -75,6 +81,18 @@ Most keybinds are configurable via the Settings GUI
 *::fatigue* - Shows the fatigue percentage accurately in chat
 
 *::screenshot* - Take screenshot (Saved in the screenshots directory)
+
+*::sleep* - Sleep, provided you have a sleeping bag in inventory
+
+*::banksearch [aWord]* - Searches current bank state for banked items 
+containing "aWord". Note that withdrawing all of a certain item's type 
+will push it to the end of the bank and thus withdrawing all should not 
+be done if your bank is tidy. To exit the search mode, speak to the 
+banker again.
+
+*::togglestartsearchedbank [[aWord]]* - Toggle between searchable bank 
+mode and normal mode; specifying the parameter updates the search 
+keyword stored.
 
 *::toggleroofs* - Toggle roof hiding
 
@@ -136,6 +154,17 @@ Most keybinds are configurable via the Settings GUI
     <li>Purely practical name changes (potion dosages, unidentified herbs, unfinished potions)</li>
     <li>Capitalizations and fixed spellings on top of type 1 changes</li>
     <li>Reworded vague stuff to be more descriptive on top of type 1 & 2 changes</li>
+  </ol></dd>
+  </dd>
+
+  <dt>command_patch_type</dt>
+  <dd>Range: <i>0 to 3</i><br>
+  Sets how edible items are patched:<br>
+  <ol start=0>
+    <li>No item command patching</li>
+    <li>Remove eat/drink option from discontinued rares (pumpkin, easter egg, etc.)</li>
+    <li>Swap the eat/drink option with use for quest-only items (chocolaty milky, nightshade, etc.)</li>
+    <li>Apply both 1 & 2 changes</li>
   </ol></dd>
   </dd>
   
@@ -271,6 +300,23 @@ Most keybinds are configurable via the Settings GUI
   <dt>show_fatiguedrops</dt>
   <dd>Range: <i>true or false</i><br>
   Sets whether fatigue drops appear on screen</dd>
+
+  <dt>start_searched_bank</dt>
+  <dd>Range: <i>true or false</i><br>
+  Sets whether bank should start on search mode</dd>
+
+  <dt>search_bank_word</dt>
+  <dd>Range: <i>Any non-empty string</i><br>
+  Sets the word that will be used when starting bank search 
+mode</dd>
+
+  <dt>highlight_list</dt>
+  <dd>Range: <i>Any non-empty sequence of comma separated strings</i><br>
+  Sets the list of items that will be highlighted on the ground when `show_iteminfo` is enabled</dd>
+
+  <dt>block_list</dt>
+  <dd>Range: <i>Any non-empty sequence of comma separated strings</i><br>
+  Sets the list of items that will be not shown on the ground when `show_iteminfo` is enabled</dd>
   
   <dt>trade_notifications</dt>
   <dd>Range: <i>true or false</i><br>
@@ -319,6 +365,3 @@ There is also an Eclipse project in the source root you can import.
 Check [here](https://github.com/OrN/rscplus/graphs/contributors)
 
 Thanks to Warriorccc0 (Brinner) for testing various things on Windows.
-
-## Download
-The latest release can be found [here](https://github.com/OrN/rscplus/releases/latest) (rscplus.jar).

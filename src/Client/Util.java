@@ -28,6 +28,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.zip.CRC32;
 
 /**
  * A miscellaneous utility class
@@ -46,6 +50,29 @@ public class Util {
 	
 	private Util() {
 		// Empty private constructor to prevent instantiation.
+	}
+	
+	public static boolean isMacOS() {
+		String os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+		return (os.contains("mac") || os.contains("darwin"));
+	}
+	
+	/**
+	 * Gets the CRC32 of a given file name.
+	 * 
+	 * @param fname Path to the file
+	 * @return CRC32 of the file data
+	 */
+	public static long fileGetCRC32(String fname) {
+		try {
+			byte[] data = Files.readAllBytes(new File(fname).toPath());
+			CRC32 crc = new CRC32();
+			crc.update(data);
+			return crc.getValue();
+		} catch (Exception e) {
+		}
+		
+		return -1;
 	}
 	
 	/**
@@ -170,6 +197,25 @@ public class Util {
 		}
 		
 		return worldPopArray;
+	}
+
+	/**
+	 * Polyfill for Java 8 `String.join`
+	 *
+	 * Convert an arraylist of strings to a single string, where each element
+	 * is separated by some deliminator.
+	 *
+	 * @param delim The string to use when combining elements
+	 * @param list The list to combine
+	 * @return The string of the arraylist
+	 */
+	public static String joinAsString (String delim, ArrayList<String> list) {
+		StringBuilder sb = new StringBuilder();
+		for (String s : list) {
+			sb.append(s);
+			sb.append(delim);
+		}
+		return sb.toString();
 	}
 	
 }
