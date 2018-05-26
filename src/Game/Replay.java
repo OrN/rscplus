@@ -72,6 +72,8 @@ public class Replay {
 	public static int timestamp;
 	public static int timestamp_kb_input;
 	public static int timestamp_mouse_input;
+    
+    public static boolean started_record_kb_mouse = true;
 	
 	public static void incrementTimestamp() {
 		timestamp++;
@@ -83,8 +85,13 @@ public class Replay {
 		
 		try {
 			play_keys = new DataInputStream(new FileInputStream(new File(replayDirectory + "/keys.bin")));
-			play_keyboard = new DataInputStream(new FileInputStream(new File(replayDirectory + "/keyboard.bin")));
-			play_mouse = new DataInputStream(new FileInputStream(new File(replayDirectory + "/mouse.bin")));
+            if (Settings.RECORD_KB_MOUSE) {
+                play_keyboard = new DataInputStream(new FileInputStream(new File(replayDirectory + "/keyboard.bin")));
+                play_mouse = new DataInputStream(new FileInputStream(new File(replayDirectory + "/mouse.bin")));
+                started_record_kb_mouse = true;
+            } else {
+                started_record_kb_mouse = false;
+            }
 			
 			timestamp = 0;
 			timestamp_kb_input = play_keyboard.readInt();
@@ -143,8 +150,13 @@ public class Replay {
 			// output = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/out.bin")));
 			input = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/in.bin")));
 			keys = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/keys.bin")));
-			keyboard = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/keyboard.bin")));
-			mouse = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/mouse.bin")));
+            if (Settings.RECORD_KB_MOUSE) {
+                keyboard = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/keyboard.bin")));
+                mouse = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/mouse.bin")));
+                started_record_kb_mouse = true; //need this to know whether or not to close the file if the user changes settings mid-recording
+            } else {
+                started_record_kb_mouse = false;
+            }
 			timestamp = 0;
 			
 			Logger.Info("Replay recording started");
@@ -169,8 +181,10 @@ public class Replay {
 			// output.close();
 			input.close();
 			keys.close();
-			keyboard.close();
-			mouse.close();
+            if (started_record_kb_mouse) {
+                keyboard.close();
+                mouse.close();
+            }
 			
 			// output = null;
 			input = null;
