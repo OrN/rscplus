@@ -188,7 +188,7 @@ public class ConfigWindow {
 	
     //Replay tab
     private JCheckBox replayPanelRecordKBMouseCheckbox;
-	//private JSlider replayPanelFFAdjustmentSlider;
+    private JCheckBox replayPanelRecordAutomaticallyCheckbox;
     
 	public ConfigWindow() {
 		try {
@@ -984,6 +984,9 @@ public class ConfigWindow {
 		replayPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		replayPanel.setLayout(new BoxLayout(replayPanel, BoxLayout.Y_AXIS));
 		
+        replayPanelRecordAutomaticallyCheckbox = addCheckbox("Record your play sessions by default", replayPanel);
+		replayPanelRecordAutomaticallyCheckbox.setToolTipText("Record your play sessions without having to click the record button every time you log in");
+        
         replayPanelRecordKBMouseCheckbox = addCheckbox("(EXPERIMENTAL) Record Keyboard and Mouse input for future replay recordings", replayPanel);
 		replayPanelRecordKBMouseCheckbox.setToolTipText("(EXPERIMENTAL) additionally record mouse and keyboard inputs when recording a session");
 	}
@@ -1313,6 +1316,7 @@ public class ConfigWindow {
 		streamingPanelSaveLoginCheckbox.setSelected(Settings.SAVE_LOGININFO);
 		
         // Replay tab
+        replayPanelRecordAutomaticallyCheckbox.setSelected(Settings.RECORD_AUTOMATICALLY);
         replayPanelRecordKBMouseCheckbox.setSelected(Settings.RECORD_KB_MOUSE);
         
 		for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
@@ -1386,6 +1390,7 @@ public class ConfigWindow {
 		Settings.SAVE_LOGININFO = streamingPanelSaveLoginCheckbox.isSelected();
         
         // Replay
+        Settings.RECORD_AUTOMATICALLY = replayPanelRecordAutomaticallyCheckbox.isSelected();
         Settings.RECORD_KB_MOUSE = replayPanelRecordKBMouseCheckbox.isSelected();
 		
 		Settings.save();
