@@ -1,5 +1,6 @@
 package Game;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,16 +10,19 @@ import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.zip.GZIPInputStream;
 import Client.Logger;
 
 public class ReplayServer implements Runnable {
 	String playbackDirectory;
 	DataInputStream input = null;
+	FileInputStream file_input = null;
+	ServerSocketChannel sock = null;
 	SocketChannel client = null;
 	ByteBuffer readBuffer = null;
 	
 	public boolean isDone = false;
-	public int size = 0;
+	public long size = 0;
 	public long available = 0;
 	
 	ReplayServer(String directory) {
@@ -36,7 +40,7 @@ public class ReplayServer implements Runnable {
 	
 	@Override
 	public void run() {
-		ServerSocketChannel sock = null;
+		sock = null;
 		// this one will try to find open port
 		int port = -1;
 		int usePort;
@@ -51,12 +55,15 @@ public class ReplayServer implements Runnable {
 			}
 		}
 		
-		
 		try {
-			input = new DataInputStream(new FileInputStream(new File(playbackDirectory + "/in.bin")));
-			size = input.available();
+			File file = new File(playbackDirectory + "/in.bin.gz");
+			size = file.length();
+			file_input = new FileInputStream(file);
+			input = new DataInputStream(new BufferedInputStream(new GZIPInputStream(file_input)));
 			
 			Logger.Info("ReplayServer: Waiting for client...");
+			
+			file_input.available();
 			
 			sock = ServerSocketChannel.open();
 			// last attempt 10 + default port
@@ -72,6 +79,7 @@ public class ReplayServer implements Runnable {
 			
 			isDone = false;
 			
+			sock.configureBlocking(false);
 			while (!isDone) {
 				if (!Replay.paused) {
 					if (!doTick()) {
@@ -102,12 +110,17 @@ public class ReplayServer implements Runnable {
 	
 	public boolean doTick() {
 		try {
-			// We've reached the end of the replay
-			if (input.available() <= 2) {
-				return false;
-			}
-			
 			int timestamp_input = input.readInt();
+			
+			// We've reached the end of the replay
+			if (timestamp_input == -1)
+				return false;
+			
+			int length = input.readInt();
+			ByteBuffer buffer = ByteBuffer.allocate(length);
+			input.read(buffer.array());
+			available = file_input.available();
+			
 			long frame_timer = System.currentTimeMillis() + Replay.getFrameTimeSlice();
 			
 			while (Replay.timestamp < timestamp_input) {
@@ -117,21 +130,25 @@ public class ReplayServer implements Runnable {
 					Replay.incrementTimestamp();
 				}
 				
+				// Check if client is reconnecting to support reconnection in replays
+				SocketChannel client_new = sock.accept();
+				if (client_new != null) {
+					Logger.Info("ReplayServer: Client has reconnected");
+					client.close();
+					client = client_new;
+					client.configureBlocking(false);
+				}
+				
 				// Don't hammer the cpu
 				Thread.sleep(1);
 			}
-			
-			int length = input.readInt();
-			ByteBuffer buffer = ByteBuffer.allocate(length);
-			input.read(buffer.array());
-			client.write(buffer);
-			
-			available = input.available();
 			
 			// Read from client, but don't do anything with the data
 			while (client.read(readBuffer) > 0) {
 				readBuffer.clear();
 			}
+			
+			client.write(buffer);
 			
 			return true;
 		} catch (Exception e) {

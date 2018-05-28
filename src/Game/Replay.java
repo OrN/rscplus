@@ -24,6 +24,8 @@ package Game;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -32,6 +34,8 @@ import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import Client.Logger;
 import Client.Settings;
 import Client.Util;
@@ -83,6 +87,11 @@ public class Replay {
 	
 	public static void incrementTimestamp() {
 		timestamp++;
+		
+		// EOF is -1
+		if (timestamp == -1) {
+			timestamp = 0;
+		}
 	}
 	
 	public static void initializeReplayPlayback(String replayDirectory) {
@@ -90,12 +99,18 @@ public class Replay {
 			Client.username_login = "Replay";
 		
 		try {
-			play_keys = new DataInputStream(new FileInputStream(new File(replayDirectory + "/keys.bin")));
+			play_keys = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(replayDirectory + "/keys.bin"))));
             if (Settings.RECORD_KB_MOUSE) {
-                play_keyboard = new DataInputStream(new FileInputStream(new File(replayDirectory + "/keyboard.bin")));
-                play_mouse = new DataInputStream(new FileInputStream(new File(replayDirectory + "/mouse.bin")));
-				timestamp_kb_input = play_keyboard.readInt();
-				timestamp_mouse_input = play_mouse.readInt();
+				File file = new File(replayDirectory + "/keyboard.bin.gz");
+				if (file.exists()) {
+					play_keyboard = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(file))));
+					timestamp_kb_input = play_keyboard.readInt();
+				}
+				file = new File(replayDirectory + "/mouse.bin.gz");
+				if (file.exists()) {
+					play_mouse = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(new File(replayDirectory + "/mouse.bin.gz")))));
+					timestamp_mouse_input = play_mouse.readInt();
+				}
                 started_record_kb_mouse = true;
             } else {
                 started_record_kb_mouse = false;
@@ -158,12 +173,12 @@ public class Replay {
 		Util.makeDirectory(recordingDirectory);
 		
 		try {
-			output = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/out.bin")));
-			input = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/in.bin")));
-			keys = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/keys.bin")));
+			output = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(new File(recordingDirectory + "/out.bin.gz")))));
+			input = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(new File(recordingDirectory + "/in.bin.gz")))));
+			keys = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File(recordingDirectory + "/keys.bin"))));
             if (Settings.RECORD_KB_MOUSE) {
-                keyboard = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/keyboard.bin")));
-                mouse = new DataOutputStream(new FileOutputStream(new File(recordingDirectory + "/mouse.bin")));
+				keyboard = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(new File(recordingDirectory + "/keyboard.bin.gz")))));
+				mouse = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(new File(recordingDirectory + "/mouse.bin.gz")))));
                 started_record_kb_mouse = true; //need this to know whether or not to close the file if the user changes settings mid-recording
             } else {
                 started_record_kb_mouse = false;
@@ -189,10 +204,16 @@ public class Replay {
 			return;
 		
 		try {
+			// Write EOF values
+			input.writeInt(-1);
+			output.writeInt(-1);
+			
 			output.close();
 			input.close();
 			keys.close();
             if (started_record_kb_mouse) {
+            	keyboard.writeInt(-1);
+            	mouse.writeInt(-1);
                 keyboard.close();
                 mouse.close();
             }
@@ -326,7 +347,7 @@ public class Replay {
 	}
 	
 	public static boolean isValid(String path) {
-		return (new File(path + "/in.bin").exists() && new File(path + "/keys.bin").exists());
+		return (new File(path + "/in.bin.gz").exists() && new File(path + "/keys.bin").exists());
 	}
 	
 	public static void resetFrameTimeSlice() {
@@ -408,8 +429,20 @@ public class Replay {
             return false;
         }
     }
+	
+	public static void shutdown_error() {
+		closeReplayPlayback();
+		closeReplayRecording();
+		if (Client.state == Client.STATE_GAME) {
+			Client.displayMessage("Recording has been stopped because of an error", Client.CHAT_QUEST);
+			Client.displayMessage("Please log back in to start recording again", Client.CHAT_QUEST);
+		}
+	}
     
 	public static void dumpKeyboardInput(int keycode, byte event, char keychar, int modifier) {
+		if (keyboard == null)
+			return;
+		
 		try {
 			keyboard.writeInt(timestamp);
 			keyboard.writeByte(event);
@@ -417,10 +450,15 @@ public class Replay {
 			keyboard.writeInt(keycode);
 			keyboard.writeInt(modifier);
 		} catch (Exception e) {
+			e.printStackTrace();
+			shutdown_error();
 		}
 	}
 	
 	public static void dumpMouseInput(byte event, int x, int y, int rotation, int modifier, int clickCount, int scrollType, int scrollAmount, boolean popupTrigger, int button) {
+		if (mouse == null)
+			return;
+		
 		try {
 			mouse.writeInt(timestamp);
 			mouse.writeByte(event);
@@ -434,6 +472,8 @@ public class Replay {
 			mouse.writeBoolean(popupTrigger);
 			mouse.writeInt(button);
 		} catch (Exception e) {
+			e.printStackTrace();
+			shutdown_error();
 		}
 	}
 	
@@ -448,6 +488,8 @@ public class Replay {
 			input.writeInt(bytesread);
 			input.write(b, off, bytesread);
 		} catch (Exception e) {
+			e.printStackTrace();
+			shutdown_error();
 		}
 	}
 	
@@ -484,6 +526,8 @@ public class Replay {
 			output.writeInt(len);
 			output.write(b, off, len);
 		} catch (Exception e) {
+			e.printStackTrace();
+			shutdown_error();
 		}
 	}
 	
@@ -492,6 +536,8 @@ public class Replay {
 			try {
 				return play_keys.readInt();
 			} catch (Exception e) {
+				e.printStackTrace();
+				shutdown_error();
 				return key;
 			}
 		}
@@ -502,6 +548,8 @@ public class Replay {
 		try {
 			keys.writeInt(key); // data length
 		} catch (Exception e) {
+			e.printStackTrace();
+			shutdown_error();
 		}
 		
 		return key;

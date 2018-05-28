@@ -292,7 +292,7 @@ public class Client {
 			int response = JOptionPane.showConfirmDialog(Game.getInstance().getApplet(), "If you'd like, you can record your session every time you play by default.\n" +
 					"\n" +
 					"These recordings do not leave your computer unless you manually do it on purpose.\n" +
-					"They also take up negligible space. You could probably fit a 1 hour session on a floppy disk, depending on what you do.\n" +
+					"They also take up negligible space. You could fit about a 6 hour session on a floppy disk, depending on what you do.\n" +
 					"\n" +
 					"Recordings can be played back later, even offline, and capture the data the server sends and that you send the server.\n" +
 					"Your password is not in the capture.\n" +
@@ -311,6 +311,10 @@ public class Client {
 		}
 		
 		if (state == STATE_GAME) {
+			if (Client.player_name == null) {
+				Client.getPlayerName();
+			}
+			
 			// Process XP drops
 			boolean dropXP = xpdrop_state[SKILL_HP] > 0.0f; // TODO: Declare dropXP outside of the update method
 			for (int i = 0; i < xpdrop_state.length; i++) {
@@ -372,6 +376,7 @@ public class Client {
 		twitch.disconnect();
 		
 		resetLoginMessage();
+		Replay.closeReplayPlayback();
 		adaptStrings();
 		player_name = null;
 	}
@@ -400,10 +405,7 @@ public class Client {
 	
 	public static void disconnect_hook() {
 		// ::lostcon or closeConnection
-		if (Renderer.replayOption == 1)
-			Replay.closeReplayRecording();
-		else if (Renderer.replayOption == 2)
-			Replay.closeReplayPlayback();
+		Replay.closeReplayRecording();
 	}
 	
 	public static void resetLoginMessage() {
