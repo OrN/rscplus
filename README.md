@@ -21,7 +21,7 @@ Join our Discord server ([Invite link](https://discord.gg/92gG87h))
 - Mouse wheel zoom
 - Middle mouse camera rotation
 - HP, Prayer, and fatigue bars on the bottom right of the screen
-- Fatigue on-screen alert at 100%
+- Fatigue on-screen alert
 - Integrated Twitch chat into in-game chat
 - Inventory free space counter
 - Highlight friends and show their names when they're near you
@@ -63,7 +63,7 @@ keyword stored.
 
 *::togglecombat* - Toggle combat experience menu
 
-*::togglefatigue* - Toggle fatigue alert at 100%
+*::togglefatigue* - Toggle fatigue alert
 
 *::debug* - Toggle debug mode
 
@@ -119,7 +119,7 @@ All keybinds are configurable via the Settings GUI
 - Ctrl + c - Toggle combat experience menu
 - Ctrl + [ - Toggle XP drops
 - Ctrl + ] - Toggle fatigue drops
-- Ctrl + f - Toggle fatigue alert at 100%
+- Ctrl + f - Toggle fatigue alert
 - Ctrl + v - Toggle inventory full alert
 - Ctrl + r - Toggle roof hiding
 - Ctrl + q - Toggle start on searchable bank mode (uses previously 
@@ -140,7 +140,7 @@ stored keyword on searchable bank)
 
 #### Streaming & Privacy
 - Ctrl + t - Toggle twitch chat hidden/shown
-- Ctrl + ? - Toggle IP/DNS shown at login screen
+- Unbound - Toggle IP/DNS shown at login screen
 
 #### Replay (only used while a recording is played back)
 - Ctrl + b - Stop playback
