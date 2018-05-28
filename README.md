@@ -8,13 +8,6 @@
 ## Download
 The latest release can be found [here](https://github.com/OrN/rscplus/releases/latest).
 
-## Contributing
-- Fork the project
-- Work on it
-- Pull request the branch
-
-*I will not accept any game automation features (macroing, etc.)*
-
 ## Discord
 Join our Discord server ([Invite link](https://discord.gg/92gG87h))
 
@@ -159,7 +152,16 @@ stored keyword on searchable bank)
 #### Miscellaneous
 - Ctrl + 1-5 - World switch on login screen
 
-## Building [![Build Status](https://travis-ci.org/OrN/rscplus.svg?branch=master)](https://travis-ci.org/OrN/rscplus)
+
+## Contributing
+- Fork the project
+- Work on it
+- Pull request the branch
+
+*I will not accept any game automation features (macroing, etc.)*
+
+
+### Building [![Build Status](https://travis-ci.org/OrN/rscplus.svg?branch=master)](https://travis-ci.org/OrN/rscplus)
 *You must have git, apache-ant, and jdk 1.7 or 1.8 installed to do this.*
 ```
 git clone https://github.com/OrN/rscplus
@@ -171,7 +173,7 @@ The result should be in the *dist* folder.
 
 There is an Eclipse project in the source root you can import.
 
-## Contributors
+### Contributors
 Check [here](https://github.com/OrN/rscplus/graphs/contributors)
 
 Thanks to Warriorccc0 (Brinner) for testing various things on Windows.
