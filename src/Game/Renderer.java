@@ -656,34 +656,31 @@ public class Renderer {
 				if (replayOption == 2) {
 					replayOption = 0;
 				} else {
-                    if (!Util.isMacOS()) {
-                        JFileChooser j = new JFileChooser(Settings.Dir.REPLAY);
-                        j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                        int response = j.showDialog(Game.getInstance().getApplet(), "Select Folder");
-                        
-                        File selection = j.getSelectedFile();
-                        if (selection != null && response != JFileChooser.CANCEL_OPTION) {
-                            replayName = selection.getPath();
-                            if (Replay.isValid(replayName)) {
-                                replayOption = 2;
-                                Logger.Info("Replay selected: " + replayName);
-                                Client.login_hook();
-                                // it doesn't matters credentials here
-                                Client.login(false, "a", "a");
-                            } else {
-                                JOptionPane.showMessageDialog(Game.getInstance().getApplet(), "The replay folder you selected is not valid.\n" +
-                                        "\n" +
-                                        "You need to select a folder that contains the 'in.bin.gz' and 'keys.bin' for your replay.\n" +
-                                        "They're usually in a folder with your login username.", "rscplus", JOptionPane.ERROR_MESSAGE,
-                                        Launcher.icon_warn);
-                            }
-                        } else {
-                            replayOption = 0;
-                        }
-                    } else { //temporarily warn Macintosh users that recording works, but playback only works in Windows and Linux, and we're sorry and will try to make it work.
-                        Client.showMacintoshReplayNotImplementedError = true;
-                    }
-                }
+          if (!Util.isMacOS()) {
+					  JFileChooser j = new JFileChooser(Settings.Dir.REPLAY);
+					  j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					  int response = j.showDialog(Game.getInstance().getApplet(), "Select Folder");
+					
+					  File selection = j.getSelectedFile();
+					  if (selection != null && response != JFileChooser.CANCEL_OPTION) {
+						  replayName = selection.getPath();
+						  if (Replay.isValid(replayName)) {
+							  replayOption = 2;
+							  Logger.Info("Replay selected: " + replayName);
+							  Client.login_hook();
+						  } else {
+							  JOptionPane.showMessageDialog(Game.getInstance().getApplet(), "The replay folder you selected is not valid.\n" +
+								  	"\n" +
+									  "You need to select a folder that contains the 'version.bin', 'in.bin.gz', and 'keys.bin' for your replay.\n" +
+									  "They're usually in a folder with your login username.", "rscplus", JOptionPane.ERROR_MESSAGE,
+									  Launcher.icon_warn);
+						  }
+					  } else {
+						  replayOption = 0;
+					  }
+				  } else {
+            Client.showMacintoshReplayNotImplementedError = true;
+          }
 			}
 			
 			drawShadowText(g2, "Populations", width - 67, 14, color_text, false);
