@@ -404,6 +404,8 @@ public class JClassPatcher {
 					}
 				}
 				
+				insnNodeList = methodNode.instructions.iterator();
+				
 				while (insnNodeList.hasNext()) {
 					AbstractInsnNode insnNode = insnNodeList.next();
 					AbstractInsnNode nextNode = insnNode.getNext();
