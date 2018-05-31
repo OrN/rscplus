@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 import Client.KeybindSet.KeyModifier;
+// in here there should always be "Client.NotificationsHandler"
+import Client.NotificationsHandler;
 import Game.Camera;
 import Game.Client;
 import Game.Game;
