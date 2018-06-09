@@ -104,7 +104,7 @@ public class Launcher extends JFrame implements Runnable {
 		// Generates a config file if needed
 		Settings.save();
 		
-		if (!Settings.UPDATE_CONFIRMATION.get(Settings.currentProfile)) {
+		if (Settings.UPDATE_CONFIRMATION.get(Settings.currentProfile)) {
 			int response = JOptionPane.showConfirmDialog(this, "rscplus has an automatic update feature.\n" +
 					"\n" +
 					"When enabled, rscplus will prompt for and install updates when launching the client.\n" +
@@ -126,7 +126,7 @@ public class Launcher extends JFrame implements Runnable {
 						"\n" +
 						"You can enable GitHub updates again in the Settings interface under the General tab.", "rscplus", JOptionPane.INFORMATION_MESSAGE, icon_warn);
 			}
-			Settings.UPDATE_CONFIRMATION.put(Settings.currentProfile, true);
+			Settings.UPDATE_CONFIRMATION.put(Settings.currentProfile, false);
 			Settings.save();
 		}
 			

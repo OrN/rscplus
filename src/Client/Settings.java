@@ -827,7 +827,7 @@ public class Settings {
         FIRST_TIME.put("heavy",   false);
         FIRST_TIME.put("all",     false);
         FIRST_TIME.put("custom",
-            getPropBoolean(props, "first_time", FIRST_TIME.get("default")));
+            getPropBoolean(props, "first_time", true));
 
         UPDATE_CONFIRMATION.put("vanilla", false);
         UPDATE_CONFIRMATION.put("vanilla_resizable", false);
@@ -836,16 +836,16 @@ public class Settings {
         UPDATE_CONFIRMATION.put("heavy",   false);
         UPDATE_CONFIRMATION.put("all",     false);
         UPDATE_CONFIRMATION.put("custom",
-            getPropBoolean(props, "update_confirmation", UPDATE_CONFIRMATION.get("default")));
+            getPropBoolean(props, "update_confirmation", true));
 
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("vanilla", !RECORD_AUTOMATICALLY.get("vanilla")); 
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("vanilla_resizable", !RECORD_AUTOMATICALLY.get("vanilla_resizable")); 
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("lite",    !RECORD_AUTOMATICALLY.get("lite"));
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("default", !RECORD_AUTOMATICALLY.get("default"));
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("heavy",   !RECORD_AUTOMATICALLY.get("heavy"));
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("all",     !RECORD_AUTOMATICALLY.get("all"));
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("vanilla", false); 
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("vanilla_resizable", false); 
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("lite",    false);
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("default", false);
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("heavy",   false);
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("all",     false);
         RECORD_AUTOMATICALLY_FIRST_TIME.put("custom",
-            getPropBoolean(props, "record_automatically_first_time", RECORD_AUTOMATICALLY_FIRST_TIME.get("default")));
+            getPropBoolean(props, "record_automatically_first_time", true));
 
         DISASSEMBLE.put("vanilla", false);
         DISASSEMBLE.put("vanilla_resizable", false);
@@ -868,59 +868,59 @@ public class Settings {
 		// Sanitize settings
 		if (CUSTOM_CLIENT_SIZE_X.get("custom") < 512) {
 			CUSTOM_CLIENT_SIZE_X.put("custom", 512);
-			save();
+			save("custom");
 		}
 		if (CUSTOM_CLIENT_SIZE_Y.get("custom") < 346) {
 			CUSTOM_CLIENT_SIZE_Y.put("custom", 346);
-			save();
+			save("custom");
 		}
 		
 		if (WORLD.get("custom") < 1) {
 			WORLD.put("custom", 1);
-			save();
+			save("custom");
 		} else if (WORLD.get("custom") > 5) {
 			WORLD.put("custom", 5);
-			save();
+			save("custom");
 		}
 		
 		if (VIEW_DISTANCE.get("custom") < 2300) {
 			VIEW_DISTANCE.put("custom", 2300);
-			save();
+			save("custom");
 		} else if (VIEW_DISTANCE.get("custom") > 10000) {
 			VIEW_DISTANCE.put("custom", 10000);
-			save();
+			save("custom");
 		}
 		
 		if (COMBAT_STYLE.get("custom") < Client.COMBAT_CONTROLLED) {
 			COMBAT_STYLE.put("custom", Client.COMBAT_CONTROLLED);
-			save();
+			save("custom");
 		} else if (COMBAT_STYLE.get("custom") > Client.COMBAT_DEFENSIVE) {
 			COMBAT_STYLE.put("custom", Client.COMBAT_DEFENSIVE);
-			save();
+			save("custom");
 		}
 		
 		if (NAME_PATCH_TYPE.get("custom") < 0) {
 			NAME_PATCH_TYPE.put("custom", 0);
-			save();
+			save("custom");
 		} else if (NAME_PATCH_TYPE.get("custom") > 3) {
 			NAME_PATCH_TYPE.put("custom", 3);
-			save();
+			save("custom");
 		}
 		
 		if (COMMAND_PATCH_TYPE.get("custom") < 0) {
 			COMMAND_PATCH_TYPE.put("custom", 0);
-			save();
+			save("custom");
 		} else if (COMMAND_PATCH_TYPE.get("custom") > 3) {
 			COMMAND_PATCH_TYPE.put("custom", 3);
-			save();
+			save("custom");
 		}
 		
 		if (FATIGUE_FIGURES.get("custom") < 1) {
 			FATIGUE_FIGURES.put("custom", 1);
-			save();
+			save("custom");
 		} else if (FATIGUE_FIGURES.get("custom") > 7) {
 			FATIGUE_FIGURES.put("custom", 7);
-			save();
+			save("custom");
 		}
     }
     
@@ -967,6 +967,7 @@ public class Settings {
 			props.load(in);
 			in.close();
 
+            currentProfile = getPropString(props, "current_profile", "custom");
             definePresets(props);
 			updateInjectedVariables(); //TODO remove this function
 			
@@ -1005,6 +1006,12 @@ public class Settings {
 	 * Writes all setting variables to config.ini.
 	 */
 	public static void save() {
+        updateInjectedVariables(); //TODO remove this function
+        if (currentProfile.equals("custom")) {
+            save("custom");
+        }
+    }
+	public static void save(String preset) {
 		try {
 			Properties props = new Properties();
 			
@@ -1012,150 +1019,153 @@ public class Settings {
 			
             //// general
             props.setProperty("custom_client_size",Boolean.toString(
-                CUSTOM_CLIENT_SIZE.get("custom")));
+                CUSTOM_CLIENT_SIZE.get(preset)));
             props.setProperty("custom_client_size_x",Integer.toString(
-                CUSTOM_CLIENT_SIZE_X.get("custom")));
+                CUSTOM_CLIENT_SIZE_X.get(preset)));
             props.setProperty("custom_client_size_y",Integer.toString(
-                CUSTOM_CLIENT_SIZE_Y.get("custom")));
+                CUSTOM_CLIENT_SIZE_Y.get(preset)));
             props.setProperty("check_updates",Boolean.toString(
-                CHECK_UPDATES.get("custom")));
+                CHECK_UPDATES.get(preset)));
             props.setProperty("load_chat_history",Boolean.toString(
-                LOAD_CHAT_HISTORY.get("custom")));
+                LOAD_CHAT_HISTORY.get(preset)));
             props.setProperty("combat_menu",Boolean.toString(
-                COMBAT_MENU_SHOWN.get("custom")));
+                COMBAT_MENU_SHOWN.get(preset)));
             props.setProperty("show_xpdrops",Boolean.toString(
-                SHOW_XPDROPS.get("custom")));
+                SHOW_XPDROPS.get(preset)));
             props.setProperty("center_xpdrops",Boolean.toString(
-                CENTER_XPDROPS.get("custom")));
+                CENTER_XPDROPS.get(preset)));
             props.setProperty("show_fatiguedrops",Boolean.toString(
-                SHOW_FATIGUEDROPS.get("custom")));
+                SHOW_FATIGUEDROPS.get(preset)));
             props.setProperty("fatigue_figures",Integer.toString(
-                FATIGUE_FIGURES.get("custom")));
+                FATIGUE_FIGURES.get(preset)));
             props.setProperty("fatigue_alert",Boolean.toString(
-                FATIGUE_ALERT.get("custom")));
+                FATIGUE_ALERT.get(preset)));
             props.setProperty("inventory_full_alert",Boolean.toString(
-                INVENTORY_FULL_ALERT.get("custom")));
+                INVENTORY_FULL_ALERT.get(preset)));
             props.setProperty("name_patch_type",Integer.toString(
-                NAME_PATCH_TYPE.get("custom")));
+                NAME_PATCH_TYPE.get(preset)));
             props.setProperty("command_patch_type",Integer.toString(
-                COMMAND_PATCH_TYPE.get("custom")));
+                COMMAND_PATCH_TYPE.get(preset)));
             props.setProperty("bypass_attack",Boolean.toString(
-                ATTACK_ALWAYS_LEFT_CLICK.get("custom")));
+                ATTACK_ALWAYS_LEFT_CLICK.get(preset)));
             props.setProperty("hide_roofs",Boolean.toString(
-                HIDE_ROOFS.get("custom")));
+                HIDE_ROOFS.get(preset)));
             props.setProperty("colorize",Boolean.toString(
-                COLORIZE_CONSOLE_TEXT.get("custom")));
+                COLORIZE_CONSOLE_TEXT.get(preset)));
             props.setProperty("fov",Integer.toString(
-                FOV.get("custom")));
+                FOV.get(preset)));
             props.setProperty("software_cursor",Boolean.toString(
-                SOFTWARE_CURSOR.get("custom")));
+                SOFTWARE_CURSOR.get(preset)));
             props.setProperty("view_distance",Integer.toString(
-                VIEW_DISTANCE.get("custom")));
+                VIEW_DISTANCE.get(preset)));
             props.setProperty("start_searched_bank",Boolean.toString(
-                START_SEARCHEDBANK.get("custom")));
+                START_SEARCHEDBANK.get(preset)));
             props.setProperty("search_bank_word",
-                SEARCH_BANK_WORD.get("custom"));
+                SEARCH_BANK_WORD.get(preset));
 
             //// overlays
             props.setProperty("show_statusdisplay",Boolean.toString(
-                SHOW_HP_PRAYER_FATIGUE_OVERLAY.get("custom")));
+                SHOW_HP_PRAYER_FATIGUE_OVERLAY.get(preset)));
             props.setProperty("show_buffs",Boolean.toString(
-                SHOW_BUFFS.get("custom")));
+                SHOW_BUFFS.get(preset)));
             props.setProperty("show_invcount",Boolean.toString(
-                SHOW_INVCOUNT.get("custom")));
+                SHOW_INVCOUNT.get(preset)));
             props.setProperty("show_iteminfo",Boolean.toString(
-                SHOW_ITEM_GROUND_OVERLAY.get("custom")));
+                SHOW_ITEM_GROUND_OVERLAY.get(preset)));
             props.setProperty("show_playerinfo",Boolean.toString(
-                SHOW_PLAYER_NAME_OVERLAY.get("custom")));
+                SHOW_PLAYER_NAME_OVERLAY.get(preset)));
             props.setProperty("show_friendinfo",Boolean.toString(
-                SHOW_FRIEND_NAME_OVERLAY.get("custom")));
+                SHOW_FRIEND_NAME_OVERLAY.get(preset)));
             props.setProperty("show_npcinfo",Boolean.toString(
-                SHOW_NPC_NAME_OVERLAY.get("custom")));
+                SHOW_NPC_NAME_OVERLAY.get(preset)));
             props.setProperty("show_combat_info",Boolean.toString(
-                SHOW_COMBAT_INFO.get("custom")));
+                SHOW_COMBAT_INFO.get(preset)));
             props.setProperty("show_retro_fps",Boolean.toString(
-                SHOW_RETRO_FPS.get("custom")));
+                SHOW_RETRO_FPS.get(preset)));
             props.setProperty("use_percentage",Boolean.toString(
-                NPC_HEALTH_SHOW_PERCENTAGE.get("custom")));
+                NPC_HEALTH_SHOW_PERCENTAGE.get(preset)));
             props.setProperty("show_hitbox",Boolean.toString(
-                SHOW_NPC_HITBOX.get("custom")));
+                SHOW_NPC_HITBOX.get(preset)));
             props.setProperty("show_food_heal_overlay",Boolean.toString(
-                SHOW_FOOD_HEAL_OVERLAY.get("custom")));
+                SHOW_FOOD_HEAL_OVERLAY.get(preset)));
             props.setProperty("show_time_until_hp_regen",Boolean.toString(
-                SHOW_TIME_UNTIL_HP_REGEN.get("custom")));
+                SHOW_TIME_UNTIL_HP_REGEN.get(preset)));
             props.setProperty("debug",Boolean.toString(
-                DEBUG.get("custom")));
+                DEBUG.get(preset)));
             props.setProperty("highlighted_items",Util.joinAsString(",", 
-                HIGHLIGHTED_ITEMS.get("custom")));
+                HIGHLIGHTED_ITEMS.get(preset)));
             props.setProperty("blocked_items",Util.joinAsString(",", 
-                BLOCKED_ITEMS.get("custom")));
+                BLOCKED_ITEMS.get(preset)));
 
             //// notifications
             props.setProperty("tray_notifs",Boolean.toString(
-                TRAY_NOTIFS.get("custom")));
+                TRAY_NOTIFS.get(preset)));
             props.setProperty("tray_notifs_always",Boolean.toString(
-                TRAY_NOTIFS_ALWAYS.get("custom")));
+                TRAY_NOTIFS_ALWAYS.get(preset)));
             props.setProperty("notification_sounds",Boolean.toString(
-                NOTIFICATION_SOUNDS.get("custom")));
+                NOTIFICATION_SOUNDS.get(preset)));
             props.setProperty("sound_notifs_always",Boolean.toString(
-                SOUND_NOTIFS_ALWAYS.get("custom")));
+                SOUND_NOTIFS_ALWAYS.get(preset)));
             props.setProperty("use_system_notifications",Boolean.toString(
-                USE_SYSTEM_NOTIFICATIONS.get("custom")));
+                USE_SYSTEM_NOTIFICATIONS.get(preset)));
             props.setProperty("pm_notifications",Boolean.toString(
-                PM_NOTIFICATIONS.get("custom")));
+                PM_NOTIFICATIONS.get(preset)));
             props.setProperty("trade_notifications",Boolean.toString(
-                TRADE_NOTIFICATIONS.get("custom")));
+                TRADE_NOTIFICATIONS.get(preset)));
             props.setProperty("duel_notifications",Boolean.toString(
-                DUEL_NOTIFICATIONS.get("custom")));
+                DUEL_NOTIFICATIONS.get(preset)));
             props.setProperty("logout_notifications",Boolean.toString(
-                LOGOUT_NOTIFICATIONS.get("custom")));
+                LOGOUT_NOTIFICATIONS.get(preset)));
             props.setProperty("low_hp_notifications",Boolean.toString(
-                LOW_HP_NOTIFICATIONS.get("custom")));
+                LOW_HP_NOTIFICATIONS.get(preset)));
             props.setProperty("low_hp_notif_value",Integer.toString(
-                LOW_HP_NOTIF_VALUE.get("custom")));
+                LOW_HP_NOTIF_VALUE.get(preset)));
             props.setProperty("fatigue_notifications",Boolean.toString(
-                FATIGUE_NOTIFICATIONS.get("custom")));
+                FATIGUE_NOTIFICATIONS.get(preset)));
             props.setProperty("fatigue_notif_value",Integer.toString(
-                FATIGUE_NOTIF_VALUE.get("custom")));
+                FATIGUE_NOTIF_VALUE.get(preset)));
 
             //// streaming
             props.setProperty("twitch_hide",Boolean.toString(
-                TWITCH_HIDE_CHAT.get("custom")));
+                TWITCH_HIDE_CHAT.get(preset)));
             props.setProperty("twitch_channel",
-                TWITCH_CHANNEL.get("custom"));
+                TWITCH_CHANNEL.get(preset));
             props.setProperty("twitch_oauth",
-                TWITCH_OAUTH.get("custom"));
+                TWITCH_OAUTH.get(preset));
             props.setProperty("twitch_username",
-                TWITCH_USERNAME.get("custom"));
+                TWITCH_USERNAME.get(preset));
             props.setProperty("show_logindetails",Boolean.toString(
-                SHOW_LOGIN_IP_ADDRESS.get("custom")));
+                SHOW_LOGIN_IP_ADDRESS.get(preset)));
             props.setProperty("save_logininfo",Boolean.toString(
-                SAVE_LOGININFO.get("custom")));
+                SAVE_LOGININFO.get(preset)));
 
             //// replay
             props.setProperty("record_kb_mouse",Boolean.toString(
-                RECORD_KB_MOUSE.get("custom")));
+                RECORD_KB_MOUSE.get(preset)));
             props.setProperty("record_automatically",Boolean.toString(
-                RECORD_AUTOMATICALLY.get("custom")));
+                RECORD_AUTOMATICALLY.get(preset)));
             props.setProperty("indicators",Boolean.toString(
-                LAG_INDICATOR.get("custom")));
+                LAG_INDICATOR.get(preset)));
+                
+            //// presets
+            props.setProperty("current_profile", currentProfile);
 
             //// nogui
             props.setProperty("combat_style",Integer.toString(
-                COMBAT_STYLE.get("custom")));
+                COMBAT_STYLE.get(preset)));
             props.setProperty("world",Integer.toString(
-                WORLD.get("custom")));
+                WORLD.get(preset)));
             // This is set to false, as logically, saving the config would imply this is not a first-run.
             props.setProperty("first_time",Boolean.toString(
                 false));
             props.setProperty("update_confirmation",Boolean.toString(
-                UPDATE_CONFIRMATION.get("custom")));
+                UPDATE_CONFIRMATION.get(preset)));
             props.setProperty("record_automatically_first_time",Boolean.toString(
-                RECORD_AUTOMATICALLY_FIRST_TIME.get("custom")));
+                RECORD_AUTOMATICALLY_FIRST_TIME.get(preset)));
             props.setProperty("disassemble",Boolean.toString(
-                DISASSEMBLE.get("custom")));
+                DISASSEMBLE.get(preset)));
             props.setProperty("disassemble_directory",
-                DISASSEMBLE_DIRECTORY.get("custom"));
+                DISASSEMBLE_DIRECTORY.get(preset));
 
             // Keybinds
 			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
@@ -1253,9 +1263,7 @@ public class Settings {
 			Client.displayMessage("@cya@You are no longer able to left click attack all monsters", Client.CHAT_NONE);
         }
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleHideRoofs() {
@@ -1267,9 +1275,7 @@ public class Settings {
 			Client.displayMessage("@cya@Roofs are now shown", Client.CHAT_NONE);
 		}
         
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleCombatMenuShown() {
@@ -1281,9 +1287,7 @@ public class Settings {
 			Client.displayMessage("@cya@Combat style is now hidden", Client.CHAT_NONE);
         }
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleShowFriendNameOverlay() {
@@ -1295,9 +1299,7 @@ public class Settings {
 			Client.displayMessage("@cya@Friend Names overlay now hidden", Client.CHAT_NONE);
 		}
 			
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleRetroFPS() {
@@ -1306,9 +1308,7 @@ public class Settings {
 			Client.displayMessage("@cya@Retro FPS is now shown", Client.CHAT_NONE);
 		else
 			Client.displayMessage("@cya@Retro FPS is now hidden", Client.CHAT_NONE);
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleInvCount() {
@@ -1320,9 +1320,7 @@ public class Settings {
 			Client.displayMessage("@cya@Inventory count is now hidden", Client.CHAT_NONE);
 		}
 			
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleBuffs() {
@@ -1334,9 +1332,7 @@ public class Settings {
 			Client.displayMessage("@cya@Combat (de)buffs and cooldowns are now hidden", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleHpPrayerFatigueOverlay() {
@@ -1348,9 +1344,7 @@ public class Settings {
 			Client.displayMessage("@cya@HP/Prayer/Fatigue are now hidden", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleShowHitbox() {
@@ -1362,9 +1356,7 @@ public class Settings {
 			Client.displayMessage("@cya@Hitboxes are now hidden", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleShowItemGroundOverlay() {
@@ -1376,9 +1368,7 @@ public class Settings {
 			Client.displayMessage("@cya@Ground item names are now hidden", Client.CHAT_NONE);
 		}
 			
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleShowNPCNameOverlay() {
@@ -1389,9 +1379,7 @@ public class Settings {
 			Client.displayMessage("@cya@NPC names are is now hidden", Client.CHAT_NONE);
 		}
 			
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleShowPlayerNameOverlay() {
@@ -1403,9 +1391,7 @@ public class Settings {
 			Client.displayMessage("@cya@Player names are now hidden", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
     
 	
@@ -1418,9 +1404,7 @@ public class Settings {
 			Client.displayMessage("@cya@IP address will not appear next login", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleStartSearchedBank(String searchWord, boolean replaceSavedWord) {
@@ -1441,7 +1425,7 @@ public class Settings {
 				Client.displayMessage("@cya@Your bank will start as normal next time", Client.CHAT_NONE);
 			}
 		}
-		save();
+		save("custom");
 	}
 	
 	public static void toggleDebug() {
@@ -1453,9 +1437,7 @@ public class Settings {
 			Client.displayMessage("@cya@Debug mode is off", Client.CHAT_NONE);
 		}
 			
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleFatigueAlert() {
@@ -1467,9 +1449,7 @@ public class Settings {
 			Client.displayMessage("@cya@Fatigue alert is now off", Client.CHAT_NONE);
 		}
 			
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleInventoryFullAlert() {
@@ -1481,9 +1461,7 @@ public class Settings {
 			Client.displayMessage("@cya@Inventory full alert is now off", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleTwitchHide() {
@@ -1495,9 +1473,7 @@ public class Settings {
 			Client.displayMessage("@cya@Twitch chat is now shown", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleXpDrops() {
@@ -1509,9 +1485,7 @@ public class Settings {
 			Client.displayMessage("@cya@XP drops are now hidden", Client.CHAT_NONE);
         }
         
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleFatigueDrops() {
@@ -1523,9 +1497,7 @@ public class Settings {
 			Client.displayMessage("@cya@Fatigue drops are now hidden", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleColorTerminal() {
@@ -1537,9 +1509,7 @@ public class Settings {
 			Client.displayMessage("@cya@Colors are now ignored in terminal", Client.CHAT_NONE);
 		}
 			
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void toggleLagIndicator() {
@@ -1551,9 +1521,7 @@ public class Settings {
 			Client.displayMessage("@cya@Connection indicators are now ignored", Client.CHAT_NONE);
 		}	
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
     
 	public static void checkSoftwareCursor() {
@@ -1574,9 +1542,7 @@ public class Settings {
 			Client.displayMessage("@cya@Not yet implemented, sorry!", Client.CHAT_NONE);
 		}
 			
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	private static void toggleSaveLoginInfo() {
@@ -1588,9 +1554,7 @@ public class Settings {
 			Client.displayMessage("@cya@Saving login info disabled.", Client.CHAT_NONE);
 		}
 		
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	private static void toggleHealthRegenTimer() {
@@ -1603,9 +1567,7 @@ public class Settings {
 			Client.displayMessage("@cya@Not yet implemented, sorry!", Client.CHAT_NONE);
 		}
 
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	public static void setClientFoV(String fovValue) {
@@ -1620,9 +1582,7 @@ public class Settings {
 			// More sane limitation would be 8 to 10, but it's fun to play with
 			Client.displayMessage("@whi@Please use an @lre@integer@whi@ between 7 and 16 (default = 9)", Client.CHAT_QUEST);
 		}
-        if (currentProfile == "custom") {
-            save();
-        }
+        save();
 	}
 	
 	/**

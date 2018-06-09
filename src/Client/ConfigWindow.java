@@ -367,7 +367,7 @@ public class ConfigWindow {
 			public void actionPerformed(ActionEvent e) {
 				int choice = JOptionPane.showConfirmDialog(
 						Launcher.getConfigWindow().frame,
-						"Are you sure you want to restore this tab's settings to their defaults?",
+						"Are you sure you want to restore all settings to their defaults?",
 						"Confirm",
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE);
@@ -375,7 +375,12 @@ public class ConfigWindow {
 					return;
 				}
 				
+                Settings.initSettings(); //make sure "default" is really default
+                Settings.save("default");
+                synchronizeGuiValues();
+                
 				// Restore defaults
+                /* TODO: reimplement per-tab defaults?
 				switch (tabbedPane.getSelectedIndex()) {
 				case 0:
 					Settings.restoreDefaultGeneral();
@@ -397,6 +402,7 @@ public class ConfigWindow {
 				default:
 					Logger.Error("Restore defaults attempted to operate on a non-existent tab!");
 				}
+                */
 			}
 		});
 		
@@ -1081,7 +1087,17 @@ public class ConfigWindow {
         replaceConfigButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO "Warning: this will delete your old settings! Are you sure you want to delete your old settings?"
+                int choice = JOptionPane.showConfirmDialog(
+						Launcher.getConfigWindow().frame,
+						"Warning: this will delete your old settings! Are you sure you want to delete your old settings?",
+						"Confirm",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
+				if (choice == JOptionPane.CLOSED_OPTION || choice == JOptionPane.NO_OPTION) {
+					return;
+				}
+				
+                Settings.save(Settings.currentProfile);
             }
         });
         resetPresetsButton = addButton("Reset Presets", presetsButtonPanel, Component.RIGHT_ALIGNMENT);
@@ -1345,10 +1361,12 @@ public class ConfigWindow {
 	public void synchronizeGuiValues() {
         
         //Presets tab (has to go first to properly synchronizeGui)
-        presetsPanelCustomSettingsCheckbox.setSelected(Settings.currentProfile == "custom");
+        presetsPanelCustomSettingsCheckbox.setSelected(Settings.currentProfile.equals("custom"));
         synchronizePresetOptions();
         
-        sliderValue = Settings.presetTable.indexOf(Settings.currentProfile);
+        if (!Settings.currentProfile.equals("custom")) {
+            sliderValue = Settings.presetTable.indexOf(Settings.currentProfile);
+        }
         if (sliderValue < 0 || sliderValue > Settings.presetTable.size()) {
             sliderValue = Settings.presetTable.indexOf("default");
         }
@@ -1529,7 +1547,7 @@ public class ConfigWindow {
         
         // Presets
         if (presetsPanelCustomSettingsCheckbox.isSelected()) {
-            if (Settings.currentProfile != "custom") {
+            if (!Settings.currentProfile.equals("custom")) {
                 Settings.currentProfile = "custom";
                 Logger.Info("Changed to custom profile");
             }
@@ -1543,12 +1561,13 @@ public class ConfigWindow {
                 Logger.Error("presetsPanelPresetSlider out of range of Settings.presetTable");
             }
 
-            if (lastPresetValue != Settings.currentProfile) {
+            if (!lastPresetValue.equals(Settings.currentProfile)) {
+                String saveMe = Settings.currentProfile;
                 Settings.initSettings(); //reset preset values to their defaults
+                Settings.currentProfile = saveMe;
                 Logger.Info("Changed to " + Settings.currentProfile + " preset");
             }
         }
-        
 		
 		Settings.save();
 	}
