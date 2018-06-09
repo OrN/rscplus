@@ -571,13 +571,13 @@ public class Client {
 			
 			switch (commandArray[0]) {
 			case "togglebypassattack":
-				Settings.toggleBypassAttack();
+				Settings.toggleAttackAlwaysLeftClick();
 				break;
 			case "toggleroofs":
 				Settings.toggleHideRoofs();
 				break;
 			case "togglecombat":
-				Settings.toggleCombatMenu();
+				Settings.toggleCombatMenuShown();
 				break;
 			case "togglecolor":
 				Settings.toggleColorTerminal();
@@ -592,19 +592,19 @@ public class Client {
 				Settings.toggleTwitchHide();
 				break;
 			case "toggleplayerinfo":
-				Settings.toggleShowPlayerInfo();
+				Settings.toggleShowPlayerNameOverlay();
 				break;
 			case "togglefriendinfo":
-				Settings.toggleShowFriendInfo();
+				Settings.toggleShowFriendNameOverlay();
 				break;
 			case "togglenpcinfo":
-				Settings.toggleShowNPCInfo();
+				Settings.toggleShowNPCNameOverlay();
 				break;
 			case "toggleiteminfo":
-				Settings.toggleShowItemInfo();
+				Settings.toggleShowItemGroundOverlay();
 				break;
 			case "togglelogindetails":
-				Settings.toggleShowLoginDetails();
+				Settings.toggleShowLoginIpAddress();
 				break;
 			case "togglestartsearchedbank":
 				if (commandArray.length > 1) {
@@ -663,7 +663,7 @@ public class Client {
 				Settings.toggleBuffs();
 				break;
 			case "togglestatusdisplay":
-				Settings.toggleStatusDisplay();
+				Settings.toggleHpPrayerFatigueOverlay();
 				break;
 			case "help":
 				try {
