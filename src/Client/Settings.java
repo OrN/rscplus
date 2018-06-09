@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.HashMap;
+import java.util.Hashtable;
 import Client.KeybindSet.KeyModifier;
 import Game.Camera;
 import Game.Client;
@@ -220,7 +221,9 @@ public class Settings {
     public static boolean COMBAT_MENU_SHOWN_BOOL = false;
     
     // determines which preset to load, or your custom settings :-)
-    public static String currentProfile = "default";
+    public static String currentProfile = "custom";
+    
+    public static ArrayList<String> presetTable = new ArrayList<String>();
     
 	private Settings() {
 		// Empty private constructor to prevent instantiation.
@@ -230,16 +233,27 @@ public class Settings {
 	* This is storage for all the presets
 	*/
     public static void definePresets(Properties props) {
+        if (presetTable.size() == 0) {
+            presetTable.add("all"); //0
+            presetTable.add("heavy"); //1
+            presetTable.add("default"); //2
+            presetTable.add("lite"); //3
+            presetTable.add("vanilla_resizable"); //4
+            presetTable.add("vanilla"); //5
+        }
+        
         //// general
-        CUSTOM_CLIENT_SIZE.put("vanilla", false);
-        CUSTOM_CLIENT_SIZE.put("lite",    true);
-        CUSTOM_CLIENT_SIZE.put("default", true);
-        CUSTOM_CLIENT_SIZE.put("heavy",   true);
-        CUSTOM_CLIENT_SIZE.put("all",     true);
+        CUSTOM_CLIENT_SIZE.put("vanilla", true);
+        CUSTOM_CLIENT_SIZE.put("vanilla_resizable", false);
+        CUSTOM_CLIENT_SIZE.put("lite",    false);
+        CUSTOM_CLIENT_SIZE.put("default", false);
+        CUSTOM_CLIENT_SIZE.put("heavy",   false);
+        CUSTOM_CLIENT_SIZE.put("all",     false);
         CUSTOM_CLIENT_SIZE.put("custom",
             getPropBoolean(props, "custom_client_size", CUSTOM_CLIENT_SIZE.get("default")));
 
         CUSTOM_CLIENT_SIZE_X.put("vanilla", 512);
+        CUSTOM_CLIENT_SIZE_X.put("vanilla_resizable", 512);
         CUSTOM_CLIENT_SIZE_X.put("lite",    512);
         CUSTOM_CLIENT_SIZE_X.put("default", 512);
         CUSTOM_CLIENT_SIZE_X.put("heavy",   512);
@@ -248,6 +262,7 @@ public class Settings {
             getPropInt(props, "custom_client_size_x", CUSTOM_CLIENT_SIZE_X.get("default")));
 
         CUSTOM_CLIENT_SIZE_Y.put("vanilla", 346);
+        CUSTOM_CLIENT_SIZE_Y.put("vanilla_resizable", 346);
         CUSTOM_CLIENT_SIZE_Y.put("lite",    346);
         CUSTOM_CLIENT_SIZE_Y.put("default", 346);
         CUSTOM_CLIENT_SIZE_Y.put("heavy",   346);
@@ -256,6 +271,7 @@ public class Settings {
             getPropInt(props, "custom_client_size_y", CUSTOM_CLIENT_SIZE_Y.get("default")));
 
         CHECK_UPDATES.put("vanilla", true);
+        CHECK_UPDATES.put("vanilla_resizable", true);
         CHECK_UPDATES.put("lite",    true);
         CHECK_UPDATES.put("default", true);
         CHECK_UPDATES.put("heavy",   true);
@@ -264,6 +280,7 @@ public class Settings {
             getPropBoolean(props, "check_updates", CHECK_UPDATES.get("default")));
 
         LOAD_CHAT_HISTORY.put("vanilla", false);
+        LOAD_CHAT_HISTORY.put("vanilla_resizable", false);
         LOAD_CHAT_HISTORY.put("lite",    false);
         LOAD_CHAT_HISTORY.put("default", false);
         LOAD_CHAT_HISTORY.put("heavy",   true);
@@ -272,6 +289,7 @@ public class Settings {
             getPropBoolean(props, "load_chat_history", LOAD_CHAT_HISTORY.get("default")));
 
         COMBAT_MENU_SHOWN.put("vanilla", false);
+        COMBAT_MENU_SHOWN.put("vanilla_resizable", false);
         COMBAT_MENU_SHOWN.put("lite",    false);
         COMBAT_MENU_SHOWN.put("default", false);
         COMBAT_MENU_SHOWN.put("heavy",   false);
@@ -280,6 +298,7 @@ public class Settings {
             getPropBoolean(props, "combat_menu", COMBAT_MENU_SHOWN.get("default")));
 
         SHOW_XPDROPS.put("vanilla", false);
+        SHOW_XPDROPS.put("vanilla_resizable", false);
         SHOW_XPDROPS.put("lite",    false);
         SHOW_XPDROPS.put("default", true);
         SHOW_XPDROPS.put("heavy",   true);
@@ -288,6 +307,7 @@ public class Settings {
             getPropBoolean(props, "show_xpdrops", SHOW_XPDROPS.get("default")));
 
         CENTER_XPDROPS.put("vanilla", false);
+        CENTER_XPDROPS.put("vanilla_resizable", false);
         CENTER_XPDROPS.put("lite",    false);
         CENTER_XPDROPS.put("default", false);
         CENTER_XPDROPS.put("heavy",   true);
@@ -296,6 +316,7 @@ public class Settings {
             getPropBoolean(props, "center_xpdrops", CENTER_XPDROPS.get("default")));
 
         SHOW_FATIGUEDROPS.put("vanilla", false);
+        SHOW_FATIGUEDROPS.put("vanilla_resizable", false);
         SHOW_FATIGUEDROPS.put("lite",    false);
         SHOW_FATIGUEDROPS.put("default", true);
         SHOW_FATIGUEDROPS.put("heavy",   true);
@@ -304,6 +325,7 @@ public class Settings {
             getPropBoolean(props, "show_fatiguedrops", SHOW_FATIGUEDROPS.get("default")));
 
         FATIGUE_FIGURES.put("vanilla", 2);
+        FATIGUE_FIGURES.put("vanilla_resizable", 2);
         FATIGUE_FIGURES.put("lite",    2);
         FATIGUE_FIGURES.put("default", 2);
         FATIGUE_FIGURES.put("heavy",   2);
@@ -312,6 +334,7 @@ public class Settings {
             getPropInt(props, "fatigue_figures", FATIGUE_FIGURES.get("default")));
 
         FATIGUE_ALERT.put("vanilla", false);
+        FATIGUE_ALERT.put("vanilla_resizable", false);
         FATIGUE_ALERT.put("lite",    true);
         FATIGUE_ALERT.put("default", true);
         FATIGUE_ALERT.put("heavy",   true);
@@ -320,6 +343,7 @@ public class Settings {
             getPropBoolean(props, "fatigue_alert", FATIGUE_ALERT.get("default")));
 
         INVENTORY_FULL_ALERT.put("vanilla", false);
+        INVENTORY_FULL_ALERT.put("vanilla_resizable", false);
         INVENTORY_FULL_ALERT.put("lite",    false);
         INVENTORY_FULL_ALERT.put("default", false);
         INVENTORY_FULL_ALERT.put("heavy",   false);
@@ -335,6 +359,7 @@ public class Settings {
         * 3 - Reworded vague stuff to be more descriptive on top of type 1 & 2 changes
         */
         NAME_PATCH_TYPE.put("vanilla", 0);
+        NAME_PATCH_TYPE.put("vanilla_resizable", 0);
         NAME_PATCH_TYPE.put("lite",    1);
         NAME_PATCH_TYPE.put("default", 1);
         NAME_PATCH_TYPE.put("heavy",   3);
@@ -350,6 +375,7 @@ public class Settings {
         * 3 - Apply both fixes 1 and 2
         */
         COMMAND_PATCH_TYPE.put("vanilla", 0);
+        COMMAND_PATCH_TYPE.put("vanilla_resizable", 0);
         COMMAND_PATCH_TYPE.put("lite",    1);
         COMMAND_PATCH_TYPE.put("default", 1);
         COMMAND_PATCH_TYPE.put("heavy",   3);
@@ -358,6 +384,7 @@ public class Settings {
             getPropInt(props, "command_patch_type", COMMAND_PATCH_TYPE.get("default")));
 
         ATTACK_ALWAYS_LEFT_CLICK.put("vanilla", false);
+        ATTACK_ALWAYS_LEFT_CLICK.put("vanilla_resizable", false);
         ATTACK_ALWAYS_LEFT_CLICK.put("lite",    false);
         ATTACK_ALWAYS_LEFT_CLICK.put("default", false);
         ATTACK_ALWAYS_LEFT_CLICK.put("heavy",   true);
@@ -366,7 +393,8 @@ public class Settings {
             getPropBoolean(props, "bypass_attack", ATTACK_ALWAYS_LEFT_CLICK.get("default")));
 
         HIDE_ROOFS.put("vanilla", false);
-        HIDE_ROOFS.put("lite",    true);
+        HIDE_ROOFS.put("vanilla_resizable", false);
+        HIDE_ROOFS.put("lite",    false);
         HIDE_ROOFS.put("default", true);
         HIDE_ROOFS.put("heavy",   true);
         HIDE_ROOFS.put("all",     true);
@@ -374,6 +402,7 @@ public class Settings {
             getPropBoolean(props, "hide_roofs", HIDE_ROOFS.get("default")));
 
         COLORIZE_CONSOLE_TEXT.put("vanilla", true);
+        COLORIZE_CONSOLE_TEXT.put("vanilla_resizable", true);
         COLORIZE_CONSOLE_TEXT.put("lite",    true);
         COLORIZE_CONSOLE_TEXT.put("default", true);
         COLORIZE_CONSOLE_TEXT.put("heavy",   true);
@@ -382,6 +411,7 @@ public class Settings {
             getPropBoolean(props, "colorize", COLORIZE_CONSOLE_TEXT.get("default")));
 
         FOV.put("vanilla", 9);
+        FOV.put("vanilla_resizable", 9);
         FOV.put("lite",    9);
         FOV.put("default", 9);
         FOV.put("heavy",   9);
@@ -390,6 +420,7 @@ public class Settings {
             getPropInt(props, "fov", FOV.get("default")));
 
         SOFTWARE_CURSOR.put("vanilla", false);
+        SOFTWARE_CURSOR.put("vanilla_resizable", false);
         SOFTWARE_CURSOR.put("lite",    false);
         SOFTWARE_CURSOR.put("default", false);
         SOFTWARE_CURSOR.put("heavy",   false);
@@ -397,7 +428,8 @@ public class Settings {
         SOFTWARE_CURSOR.put("custom",
             getPropBoolean(props, "software_cursor", SOFTWARE_CURSOR.get("default")));
 
-        VIEW_DISTANCE.put("vanilla", 3000);
+        VIEW_DISTANCE.put("vanilla", 2300);
+        VIEW_DISTANCE.put("vanilla_resizable", 3000);
         VIEW_DISTANCE.put("lite",    10000);
         VIEW_DISTANCE.put("default", 10000);
         VIEW_DISTANCE.put("heavy",   10000);
@@ -406,6 +438,7 @@ public class Settings {
             getPropInt(props, "view_distance", VIEW_DISTANCE.get("default")));
 
         START_SEARCHEDBANK.put("vanilla", false);
+        START_SEARCHEDBANK.put("vanilla_resizable", false);
         START_SEARCHEDBANK.put("lite",    false);
         START_SEARCHEDBANK.put("default", false);
         START_SEARCHEDBANK.put("heavy",   false);
@@ -414,6 +447,7 @@ public class Settings {
             getPropBoolean(props, "start_searched_bank", START_SEARCHEDBANK.get("default")));
 
         SEARCH_BANK_WORD.put("vanilla", "");
+        SEARCH_BANK_WORD.put("vanilla_resizable", "");
         SEARCH_BANK_WORD.put("lite",    "");
         SEARCH_BANK_WORD.put("default", "");
         SEARCH_BANK_WORD.put("heavy",   "");
@@ -423,6 +457,7 @@ public class Settings {
 
         //// overlays
         SHOW_HP_PRAYER_FATIGUE_OVERLAY.put("vanilla", false);
+        SHOW_HP_PRAYER_FATIGUE_OVERLAY.put("vanilla_resizable", false);
         SHOW_HP_PRAYER_FATIGUE_OVERLAY.put("lite",    true);
         SHOW_HP_PRAYER_FATIGUE_OVERLAY.put("default", true);
         SHOW_HP_PRAYER_FATIGUE_OVERLAY.put("heavy",   true);
@@ -431,6 +466,7 @@ public class Settings {
             getPropBoolean(props, "show_statusdisplay", SHOW_HP_PRAYER_FATIGUE_OVERLAY.get("default")));
 
         SHOW_BUFFS.put("vanilla", false);
+        SHOW_BUFFS.put("vanilla_resizable", false);
         SHOW_BUFFS.put("lite",    true);
         SHOW_BUFFS.put("default", true);
         SHOW_BUFFS.put("heavy",   true);
@@ -439,6 +475,7 @@ public class Settings {
             getPropBoolean(props, "show_buffs", SHOW_BUFFS.get("default")));
 
         SHOW_INVCOUNT.put("vanilla", false);
+        SHOW_INVCOUNT.put("vanilla_resizable", false);
         SHOW_INVCOUNT.put("lite",    true);
         SHOW_INVCOUNT.put("default", true);
         SHOW_INVCOUNT.put("heavy",   true);
@@ -447,14 +484,16 @@ public class Settings {
             getPropBoolean(props, "show_invcount", SHOW_INVCOUNT.get("default")));
 
         SHOW_ITEM_GROUND_OVERLAY.put("vanilla", false);
+        SHOW_ITEM_GROUND_OVERLAY.put("vanilla_resizable", false);
         SHOW_ITEM_GROUND_OVERLAY.put("lite",    false);
-        SHOW_ITEM_GROUND_OVERLAY.put("default", false);
+        SHOW_ITEM_GROUND_OVERLAY.put("default", true);
         SHOW_ITEM_GROUND_OVERLAY.put("heavy",   true);
         SHOW_ITEM_GROUND_OVERLAY.put("all",     true);
         SHOW_ITEM_GROUND_OVERLAY.put("custom",
             getPropBoolean(props, "show_iteminfo", SHOW_ITEM_GROUND_OVERLAY.get("default")));
 
         SHOW_PLAYER_NAME_OVERLAY.put("vanilla", false);
+        SHOW_PLAYER_NAME_OVERLAY.put("vanilla_resizable", false);
         SHOW_PLAYER_NAME_OVERLAY.put("lite",    false);
         SHOW_PLAYER_NAME_OVERLAY.put("default", false);
         SHOW_PLAYER_NAME_OVERLAY.put("heavy",   false);
@@ -463,6 +502,7 @@ public class Settings {
             getPropBoolean(props, "show_playerinfo", SHOW_PLAYER_NAME_OVERLAY.get("default")));
 
         SHOW_FRIEND_NAME_OVERLAY.put("vanilla", false);
+        SHOW_FRIEND_NAME_OVERLAY.put("vanilla_resizable", false);
         SHOW_FRIEND_NAME_OVERLAY.put("lite",    false);
         SHOW_FRIEND_NAME_OVERLAY.put("default", false);
         SHOW_FRIEND_NAME_OVERLAY.put("heavy",   true);
@@ -471,6 +511,7 @@ public class Settings {
             getPropBoolean(props, "show_friendinfo", SHOW_FRIEND_NAME_OVERLAY.get("default")));
 
         SHOW_NPC_NAME_OVERLAY.put("vanilla", false);
+        SHOW_NPC_NAME_OVERLAY.put("vanilla_resizable", false);
         SHOW_NPC_NAME_OVERLAY.put("lite",    false);
         SHOW_NPC_NAME_OVERLAY.put("default", false);
         SHOW_NPC_NAME_OVERLAY.put("heavy",   false);
@@ -479,6 +520,7 @@ public class Settings {
             getPropBoolean(props, "show_npcinfo", SHOW_NPC_NAME_OVERLAY.get("default")));
 
         SHOW_COMBAT_INFO.put("vanilla", false);
+        SHOW_COMBAT_INFO.put("vanilla_resizable", false);
         SHOW_COMBAT_INFO.put("lite",    false);
         SHOW_COMBAT_INFO.put("default", false);
         SHOW_COMBAT_INFO.put("heavy",   true);
@@ -487,6 +529,7 @@ public class Settings {
             getPropBoolean(props, "show_combat_info", SHOW_COMBAT_INFO.get("default")));
 
         SHOW_RETRO_FPS.put("vanilla", false);
+        SHOW_RETRO_FPS.put("vanilla_resizable", false);
         SHOW_RETRO_FPS.put("lite",    false);
         SHOW_RETRO_FPS.put("default", false);
         SHOW_RETRO_FPS.put("heavy",   true);
@@ -495,6 +538,7 @@ public class Settings {
             getPropBoolean(props, "show_retro_fps", SHOW_RETRO_FPS.get("default")));
 
         NPC_HEALTH_SHOW_PERCENTAGE.put("vanilla", false);
+        NPC_HEALTH_SHOW_PERCENTAGE.put("vanilla_resizable", false);
         NPC_HEALTH_SHOW_PERCENTAGE.put("lite",    false);
         NPC_HEALTH_SHOW_PERCENTAGE.put("default", false);
         NPC_HEALTH_SHOW_PERCENTAGE.put("heavy",   false);
@@ -503,6 +547,7 @@ public class Settings {
             getPropBoolean(props, "use_percentage", NPC_HEALTH_SHOW_PERCENTAGE.get("default")));
 
         SHOW_NPC_HITBOX.put("vanilla", false);
+        SHOW_NPC_HITBOX.put("vanilla_resizable", false);
         SHOW_NPC_HITBOX.put("lite",    false);
         SHOW_NPC_HITBOX.put("default", false);
         SHOW_NPC_HITBOX.put("heavy",   false);
@@ -511,6 +556,7 @@ public class Settings {
             getPropBoolean(props, "show_hitbox", SHOW_NPC_HITBOX.get("default")));
 
         SHOW_FOOD_HEAL_OVERLAY.put("vanilla", false);
+        SHOW_FOOD_HEAL_OVERLAY.put("vanilla_resizable", false);
         SHOW_FOOD_HEAL_OVERLAY.put("lite",    false);
         SHOW_FOOD_HEAL_OVERLAY.put("default", false);
         SHOW_FOOD_HEAL_OVERLAY.put("heavy",   true);
@@ -519,6 +565,7 @@ public class Settings {
             getPropBoolean(props, "show_food_heal_overlay", SHOW_FOOD_HEAL_OVERLAY.get("default")));
 
         SHOW_TIME_UNTIL_HP_REGEN.put("vanilla", false);
+        SHOW_TIME_UNTIL_HP_REGEN.put("vanilla_resizable", false);
         SHOW_TIME_UNTIL_HP_REGEN.put("lite",    false);
         SHOW_TIME_UNTIL_HP_REGEN.put("default", false);
         SHOW_TIME_UNTIL_HP_REGEN.put("heavy",   true);
@@ -527,6 +574,7 @@ public class Settings {
             getPropBoolean(props, "show_time_until_hp_regen", SHOW_TIME_UNTIL_HP_REGEN.get("default")));
 
         DEBUG.put("vanilla", false);
+        DEBUG.put("vanilla_resizable", false);
         DEBUG.put("lite",    false);
         DEBUG.put("default", false);
         DEBUG.put("heavy",   false);
@@ -535,6 +583,7 @@ public class Settings {
             getPropBoolean(props, "debug", DEBUG.get("default")));
 
         HIGHLIGHTED_ITEMS.put("vanilla", new ArrayList<String>());
+        HIGHLIGHTED_ITEMS.put("vanilla_resizable", new ArrayList<String>());
         HIGHLIGHTED_ITEMS.put("lite",    new ArrayList<String>());
         HIGHLIGHTED_ITEMS.put("default", new ArrayList<String>());
         HIGHLIGHTED_ITEMS.put("heavy",   new ArrayList<String>());
@@ -543,6 +592,7 @@ public class Settings {
             getPropArrayListString(props, "highlighted_items", HIGHLIGHTED_ITEMS.get("default")));
 
         BLOCKED_ITEMS.put("vanilla", new ArrayList<String>());
+        BLOCKED_ITEMS.put("vanilla_resizable", new ArrayList<String>());
         BLOCKED_ITEMS.put("lite",    new ArrayList<String>());
         BLOCKED_ITEMS.put("default", new ArrayList<String>());
         BLOCKED_ITEMS.put("heavy",   new ArrayList<String>());
@@ -552,6 +602,7 @@ public class Settings {
 
         //// notifications
         TRAY_NOTIFS.put("vanilla", false);
+        TRAY_NOTIFS.put("vanilla_resizable", false);
         TRAY_NOTIFS.put("lite",    true);
         TRAY_NOTIFS.put("default", true);
         TRAY_NOTIFS.put("heavy",   true);
@@ -560,6 +611,7 @@ public class Settings {
             getPropBoolean(props, "tray_notifs", TRAY_NOTIFS.get("default")));
 
         TRAY_NOTIFS_ALWAYS.put("vanilla", false);
+        TRAY_NOTIFS_ALWAYS.put("vanilla_resizable", false);
         TRAY_NOTIFS_ALWAYS.put("lite",    false);
         TRAY_NOTIFS_ALWAYS.put("default", false);
         TRAY_NOTIFS_ALWAYS.put("heavy",   false);
@@ -568,6 +620,7 @@ public class Settings {
             getPropBoolean(props, "tray_notifs_always", TRAY_NOTIFS_ALWAYS.get("default")));
 
         NOTIFICATION_SOUNDS.put("vanilla", false);
+        NOTIFICATION_SOUNDS.put("vanilla_resizable", false);
         NOTIFICATION_SOUNDS.put("lite",    !Settings.isRecommendedToUseSystemNotifs());
         NOTIFICATION_SOUNDS.put("default", !Settings.isRecommendedToUseSystemNotifs());
         NOTIFICATION_SOUNDS.put("heavy",   !Settings.isRecommendedToUseSystemNotifs());
@@ -576,6 +629,7 @@ public class Settings {
             getPropBoolean(props, "notification_sounds", NOTIFICATION_SOUNDS.get("default")));
 
         SOUND_NOTIFS_ALWAYS.put("vanilla", false);
+        SOUND_NOTIFS_ALWAYS.put("vanilla_resizable", false);
         SOUND_NOTIFS_ALWAYS.put("lite",    false);
         SOUND_NOTIFS_ALWAYS.put("default", false);
         SOUND_NOTIFS_ALWAYS.put("heavy",   false);
@@ -584,6 +638,7 @@ public class Settings {
             getPropBoolean(props, "sound_notifs_always", SOUND_NOTIFS_ALWAYS.get("default")));
 
         USE_SYSTEM_NOTIFICATIONS.put("vanilla", false);
+        USE_SYSTEM_NOTIFICATIONS.put("vanilla_resizable", false);
         USE_SYSTEM_NOTIFICATIONS.put("lite",    Settings.isRecommendedToUseSystemNotifs());
         USE_SYSTEM_NOTIFICATIONS.put("default", Settings.isRecommendedToUseSystemNotifs());
         USE_SYSTEM_NOTIFICATIONS.put("heavy",   Settings.isRecommendedToUseSystemNotifs());
@@ -592,6 +647,7 @@ public class Settings {
             getPropBoolean(props, "use_system_notifications", USE_SYSTEM_NOTIFICATIONS.get("default")));
 
         PM_NOTIFICATIONS.put("vanilla", false);
+        PM_NOTIFICATIONS.put("vanilla_resizable", false);
         PM_NOTIFICATIONS.put("lite",    false);
         PM_NOTIFICATIONS.put("default", true);
         PM_NOTIFICATIONS.put("heavy",   true);
@@ -600,6 +656,7 @@ public class Settings {
             getPropBoolean(props, "pm_notifications", PM_NOTIFICATIONS.get("default")));
 
         TRADE_NOTIFICATIONS.put("vanilla", false);
+        TRADE_NOTIFICATIONS.put("vanilla_resizable", false);
         TRADE_NOTIFICATIONS.put("lite",    false);
         TRADE_NOTIFICATIONS.put("default", true);
         TRADE_NOTIFICATIONS.put("heavy",   true);
@@ -608,6 +665,7 @@ public class Settings {
             getPropBoolean(props, "trade_notifications", TRADE_NOTIFICATIONS.get("default")));
 
         DUEL_NOTIFICATIONS.put("vanilla", false);
+        DUEL_NOTIFICATIONS.put("vanilla_resizable", false);
         DUEL_NOTIFICATIONS.put("lite",    false);
         DUEL_NOTIFICATIONS.put("default", true);
         DUEL_NOTIFICATIONS.put("heavy",   true);
@@ -616,6 +674,7 @@ public class Settings {
             getPropBoolean(props, "duel_notifications", DUEL_NOTIFICATIONS.get("default")));
 
         LOGOUT_NOTIFICATIONS.put("vanilla", false);
+        LOGOUT_NOTIFICATIONS.put("vanilla_resizable", false);
         LOGOUT_NOTIFICATIONS.put("lite",    false);
         LOGOUT_NOTIFICATIONS.put("default", true);
         LOGOUT_NOTIFICATIONS.put("heavy",   true);
@@ -624,6 +683,7 @@ public class Settings {
             getPropBoolean(props, "logout_notifications", LOGOUT_NOTIFICATIONS.get("default")));
 
         LOW_HP_NOTIFICATIONS.put("vanilla", false);
+        LOW_HP_NOTIFICATIONS.put("vanilla_resizable", false);
         LOW_HP_NOTIFICATIONS.put("lite",    false);
         LOW_HP_NOTIFICATIONS.put("default", true);
         LOW_HP_NOTIFICATIONS.put("heavy",   true);
@@ -632,6 +692,7 @@ public class Settings {
             getPropBoolean(props, "low_hp_notifications", LOW_HP_NOTIFICATIONS.get("default")));
 
         LOW_HP_NOTIF_VALUE.put("vanilla", 0);
+        LOW_HP_NOTIF_VALUE.put("vanilla_resizable", 0);
         LOW_HP_NOTIF_VALUE.put("lite",    25);
         LOW_HP_NOTIF_VALUE.put("default", 25);
         LOW_HP_NOTIF_VALUE.put("heavy",   25);
@@ -640,6 +701,7 @@ public class Settings {
             getPropInt(props, "low_hp_notif_value", LOW_HP_NOTIF_VALUE.get("default")));
 
         FATIGUE_NOTIFICATIONS.put("vanilla", false);
+        FATIGUE_NOTIFICATIONS.put("vanilla_resizable", false);
         FATIGUE_NOTIFICATIONS.put("lite",    false);
         FATIGUE_NOTIFICATIONS.put("default", true);
         FATIGUE_NOTIFICATIONS.put("heavy",   true);
@@ -648,6 +710,7 @@ public class Settings {
             getPropBoolean(props, "fatigue_notifications", FATIGUE_NOTIFICATIONS.get("default")));
 
         FATIGUE_NOTIF_VALUE.put("vanilla", 101);
+        FATIGUE_NOTIF_VALUE.put("vanilla_resizable", 101);
         FATIGUE_NOTIF_VALUE.put("lite",    98);
         FATIGUE_NOTIF_VALUE.put("default", 98);
         FATIGUE_NOTIF_VALUE.put("heavy",   98);
@@ -656,7 +719,8 @@ public class Settings {
             getPropInt(props, "fatigue_notif_value", FATIGUE_NOTIF_VALUE.get("default")));
 
         //// streaming
-        TWITCH_HIDE_CHAT.put("vanilla", false);
+        TWITCH_HIDE_CHAT.put("vanilla", true);
+        TWITCH_HIDE_CHAT.put("vanilla_resizable", true);
         TWITCH_HIDE_CHAT.put("lite",    false);
         TWITCH_HIDE_CHAT.put("default", false);
         TWITCH_HIDE_CHAT.put("heavy",   false);
@@ -665,6 +729,7 @@ public class Settings {
             getPropBoolean(props, "twitch_hide", TWITCH_HIDE_CHAT.get("default")));
 
         TWITCH_CHANNEL.put("vanilla", "");
+        TWITCH_CHANNEL.put("vanilla_resizable", "");
         TWITCH_CHANNEL.put("lite",    "");
         TWITCH_CHANNEL.put("default", "");
         TWITCH_CHANNEL.put("heavy",   "");
@@ -673,6 +738,7 @@ public class Settings {
             getPropString(props, "twitch_channel", TWITCH_CHANNEL.get("default")));
 
         TWITCH_OAUTH.put("vanilla", "");
+        TWITCH_OAUTH.put("vanilla_resizable", "");
         TWITCH_OAUTH.put("lite",    "");
         TWITCH_OAUTH.put("default", "");
         TWITCH_OAUTH.put("heavy",   "");
@@ -681,6 +747,7 @@ public class Settings {
             getPropString(props, "twitch_oauth", TWITCH_OAUTH.get("default")));
 
         TWITCH_USERNAME.put("vanilla", "");
+        TWITCH_USERNAME.put("vanilla_resizable", "");
         TWITCH_USERNAME.put("lite",    "");
         TWITCH_USERNAME.put("default", "");
         TWITCH_USERNAME.put("heavy",   "");
@@ -689,6 +756,7 @@ public class Settings {
             getPropString(props, "twitch_username", TWITCH_USERNAME.get("default")));
 
         SHOW_LOGIN_IP_ADDRESS.put("vanilla", true);
+        SHOW_LOGIN_IP_ADDRESS.put("vanilla_resizable", true);
         SHOW_LOGIN_IP_ADDRESS.put("lite",    true);
         SHOW_LOGIN_IP_ADDRESS.put("default", true);
         SHOW_LOGIN_IP_ADDRESS.put("heavy",   true);
@@ -697,6 +765,7 @@ public class Settings {
             getPropBoolean(props, "show_logindetails", SHOW_LOGIN_IP_ADDRESS.get("default")));
 
         SAVE_LOGININFO.put("vanilla", false);
+        SAVE_LOGININFO.put("vanilla_resizable", false);
         SAVE_LOGININFO.put("lite",    true);
         SAVE_LOGININFO.put("default", true);
         SAVE_LOGININFO.put("heavy",   true);
@@ -706,6 +775,7 @@ public class Settings {
 
         //// replay
         RECORD_KB_MOUSE.put("vanilla", false);
+        RECORD_KB_MOUSE.put("vanilla_resizable", false);
         RECORD_KB_MOUSE.put("lite",    false);
         RECORD_KB_MOUSE.put("default", false);
         RECORD_KB_MOUSE.put("heavy",   true);
@@ -714,6 +784,7 @@ public class Settings {
             getPropBoolean(props, "record_kb_mouse", RECORD_KB_MOUSE.get("default")));
 
         RECORD_AUTOMATICALLY.put("vanilla", false);
+        RECORD_AUTOMATICALLY.put("vanilla_resizable", false);
         RECORD_AUTOMATICALLY.put("lite",    false);
         RECORD_AUTOMATICALLY.put("default", false);
         RECORD_AUTOMATICALLY.put("heavy",   true);
@@ -722,7 +793,8 @@ public class Settings {
             getPropBoolean(props, "record_automatically", RECORD_AUTOMATICALLY.get("default")));
 
         LAG_INDICATOR.put("vanilla", false);
-        LAG_INDICATOR.put("lite",    true);
+        LAG_INDICATOR.put("vanilla_resizable", false);
+        LAG_INDICATOR.put("lite",    false);
         LAG_INDICATOR.put("default", true);
         LAG_INDICATOR.put("heavy",   true);
         LAG_INDICATOR.put("all",     true);
@@ -731,6 +803,7 @@ public class Settings {
 
         //// nogui
         COMBAT_STYLE.put("vanilla", Client.COMBAT_AGGRESSIVE);
+        COMBAT_STYLE.put("vanilla_resizable", Client.COMBAT_AGGRESSIVE);
         COMBAT_STYLE.put("lite",    Client.COMBAT_AGGRESSIVE);
         COMBAT_STYLE.put("default", Client.COMBAT_AGGRESSIVE);
         COMBAT_STYLE.put("heavy",   Client.COMBAT_AGGRESSIVE);
@@ -739,6 +812,7 @@ public class Settings {
             getPropInt(props, "combat_style", COMBAT_STYLE.get("default")));
 
         WORLD.put("vanilla", 2);
+        WORLD.put("vanilla_resizable", 2);
         WORLD.put("lite",    2);
         WORLD.put("default", 2);
         WORLD.put("heavy",   2);
@@ -746,15 +820,17 @@ public class Settings {
         WORLD.put("custom",
             getPropInt(props, "world", WORLD.get("default")));
 
-        FIRST_TIME.put("vanilla", true);
-        FIRST_TIME.put("lite",    true);
-        FIRST_TIME.put("default", true);
-        FIRST_TIME.put("heavy",   true);
-        FIRST_TIME.put("all",     true);
+        FIRST_TIME.put("vanilla", false);
+        FIRST_TIME.put("vanilla_resizable", false);
+        FIRST_TIME.put("lite",    false);
+        FIRST_TIME.put("default", false);
+        FIRST_TIME.put("heavy",   false);
+        FIRST_TIME.put("all",     false);
         FIRST_TIME.put("custom",
             getPropBoolean(props, "first_time", FIRST_TIME.get("default")));
 
         UPDATE_CONFIRMATION.put("vanilla", false);
+        UPDATE_CONFIRMATION.put("vanilla_resizable", false);
         UPDATE_CONFIRMATION.put("lite",    false);
         UPDATE_CONFIRMATION.put("default", false);
         UPDATE_CONFIRMATION.put("heavy",   false);
@@ -762,15 +838,17 @@ public class Settings {
         UPDATE_CONFIRMATION.put("custom",
             getPropBoolean(props, "update_confirmation", UPDATE_CONFIRMATION.get("default")));
 
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("vanilla", true);
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("lite",    true);
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("default", true);
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("heavy",   true);
-        RECORD_AUTOMATICALLY_FIRST_TIME.put("all",     true);
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("vanilla", !RECORD_AUTOMATICALLY.get("vanilla")); 
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("vanilla_resizable", !RECORD_AUTOMATICALLY.get("vanilla_resizable")); 
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("lite",    !RECORD_AUTOMATICALLY.get("lite"));
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("default", !RECORD_AUTOMATICALLY.get("default"));
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("heavy",   !RECORD_AUTOMATICALLY.get("heavy"));
+        RECORD_AUTOMATICALLY_FIRST_TIME.put("all",     !RECORD_AUTOMATICALLY.get("all"));
         RECORD_AUTOMATICALLY_FIRST_TIME.put("custom",
             getPropBoolean(props, "record_automatically_first_time", RECORD_AUTOMATICALLY_FIRST_TIME.get("default")));
 
         DISASSEMBLE.put("vanilla", false);
+        DISASSEMBLE.put("vanilla_resizable", false);
         DISASSEMBLE.put("lite",    false);
         DISASSEMBLE.put("default", false);
         DISASSEMBLE.put("heavy",   false);
@@ -779,12 +857,71 @@ public class Settings {
             getPropBoolean(props, "disassemble", DISASSEMBLE.get("default")));
 
         DISASSEMBLE_DIRECTORY.put("vanilla", "dump");
+        DISASSEMBLE_DIRECTORY.put("vanilla_resizable", "dump");
         DISASSEMBLE_DIRECTORY.put("lite",    "dump");
         DISASSEMBLE_DIRECTORY.put("default", "dump");
         DISASSEMBLE_DIRECTORY.put("heavy",   "dump");
         DISASSEMBLE_DIRECTORY.put("all",     "dump");
         DISASSEMBLE_DIRECTORY.put("custom",
             getPropString(props, "disassemble_directory", DISASSEMBLE_DIRECTORY.get("default")));
+        
+		// Sanitize settings
+		if (CUSTOM_CLIENT_SIZE_X.get("custom") < 512) {
+			CUSTOM_CLIENT_SIZE_X.put("custom", 512);
+			save();
+		}
+		if (CUSTOM_CLIENT_SIZE_Y.get("custom") < 346) {
+			CUSTOM_CLIENT_SIZE_Y.put("custom", 346);
+			save();
+		}
+		
+		if (WORLD.get("custom") < 1) {
+			WORLD.put("custom", 1);
+			save();
+		} else if (WORLD.get("custom") > 5) {
+			WORLD.put("custom", 5);
+			save();
+		}
+		
+		if (VIEW_DISTANCE.get("custom") < 2300) {
+			VIEW_DISTANCE.put("custom", 2300);
+			save();
+		} else if (VIEW_DISTANCE.get("custom") > 10000) {
+			VIEW_DISTANCE.put("custom", 10000);
+			save();
+		}
+		
+		if (COMBAT_STYLE.get("custom") < Client.COMBAT_CONTROLLED) {
+			COMBAT_STYLE.put("custom", Client.COMBAT_CONTROLLED);
+			save();
+		} else if (COMBAT_STYLE.get("custom") > Client.COMBAT_DEFENSIVE) {
+			COMBAT_STYLE.put("custom", Client.COMBAT_DEFENSIVE);
+			save();
+		}
+		
+		if (NAME_PATCH_TYPE.get("custom") < 0) {
+			NAME_PATCH_TYPE.put("custom", 0);
+			save();
+		} else if (NAME_PATCH_TYPE.get("custom") > 3) {
+			NAME_PATCH_TYPE.put("custom", 3);
+			save();
+		}
+		
+		if (COMMAND_PATCH_TYPE.get("custom") < 0) {
+			COMMAND_PATCH_TYPE.put("custom", 0);
+			save();
+		} else if (COMMAND_PATCH_TYPE.get("custom") > 3) {
+			COMMAND_PATCH_TYPE.put("custom", 3);
+			save();
+		}
+		
+		if (FATIGUE_FIGURES.get("custom") < 1) {
+			FATIGUE_FIGURES.put("custom", 1);
+			save();
+		} else if (FATIGUE_FIGURES.get("custom") > 7) {
+			FATIGUE_FIGURES.put("custom", 7);
+			save();
+		}
     }
     
     
@@ -819,11 +956,10 @@ public class Settings {
 	}
 	
 	/**
-	 * Loads and sanitizes properties from config.ini into class variables
+	 * Loads properties from config.ini for use with definePresets
 	 */
 	public static void initSettings() {
 		// Load settings
-		Logger.Info("Initializing settings");
 		try {
 			Properties props = new Properties();
 			FileInputStream in = new FileInputStream(Dir.JAR + "/config.ini");
@@ -832,70 +968,13 @@ public class Settings {
 			in.close();
 
             definePresets(props);
+			updateInjectedVariables(); //TODO remove this function
 			
             // Keybinds
 			for (KeybindSet kbs : KeyboardHandler.keybindSetList) {
 				String keybindCombo = getPropString(props, "key_" + kbs.commandName, "" + kbs.modifier + "*" + kbs.key);
 				kbs.modifier = getKeyModifierFromString(keybindCombo);
 				kbs.key = Integer.parseInt(keybindCombo.substring(2));
-			}
-
-			// Sanitize settings
-			if (CUSTOM_CLIENT_SIZE_X.get("custom") < 512) {
-				CUSTOM_CLIENT_SIZE_X.put("custom", 512);
-				save();
-			}
-			if (CUSTOM_CLIENT_SIZE_Y.get("custom") < 346) {
-                CUSTOM_CLIENT_SIZE_Y.put("custom", 346);
-				save();
-			}
-			
-			if (WORLD.get("custom") < 1) {
-				WORLD.put("custom", 1);
-				save();
-			} else if (WORLD.get("custom") > 5) {
-                WORLD.put("custom", 5);
-				save();
-			}
-			
-			if (VIEW_DISTANCE.get("custom") < 2300) {
-                VIEW_DISTANCE.put("custom", 2300);
-				save();
-			} else if (VIEW_DISTANCE.get("custom") > 10000) {
-                VIEW_DISTANCE.put("custom", 10000);
-				save();
-			}
-			
-			if (COMBAT_STYLE.get("custom") < Client.COMBAT_CONTROLLED) {
-				COMBAT_STYLE.put("custom", Client.COMBAT_CONTROLLED);
-				save();
-			} else if (COMBAT_STYLE.get("custom") > Client.COMBAT_DEFENSIVE) {
-                COMBAT_STYLE.put("custom", Client.COMBAT_DEFENSIVE);
-				save();
-			}
-			
-			if (NAME_PATCH_TYPE.get("custom") < 0) {
-                NAME_PATCH_TYPE.put("custom", 0);
-				save();
-			} else if (NAME_PATCH_TYPE.get("custom") > 3) {
-                NAME_PATCH_TYPE.put("custom", 3);
-				save();
-			}
-			
-            if (COMMAND_PATCH_TYPE.get("custom") < 0) {
-                COMMAND_PATCH_TYPE.put("custom", 0);
-				save();
-			} else if (COMMAND_PATCH_TYPE.get("custom") > 3) {
-                COMMAND_PATCH_TYPE.put("custom", 3);
-				save();
-			}
-			
-            if (FATIGUE_FIGURES.get("custom") < 1) {
-                FATIGUE_FIGURES.put("custom", 1);
-				save();
-			} else if (FATIGUE_FIGURES.get("custom") > 7) {
-                FATIGUE_FIGURES.put("custom", 7);
-				save();
 			}
 		} catch (Exception e) {
 		}
@@ -1211,9 +1290,9 @@ public class Settings {
 		SHOW_FRIEND_NAME_OVERLAY.put(currentProfile, !SHOW_FRIEND_NAME_OVERLAY.get(currentProfile));
 		
 		if (SHOW_FRIEND_NAME_OVERLAY.get(currentProfile)) {
-			Client.displayMessage("@cya@Friend info is now shown", Client.CHAT_NONE);
+			Client.displayMessage("@cya@Friend Names overlay now shown", Client.CHAT_NONE);
 		} else {
-			Client.displayMessage("@cya@Friend info is now hidden", Client.CHAT_NONE);
+			Client.displayMessage("@cya@Friend Names overlay now hidden", Client.CHAT_NONE);
 		}
 			
         if (currentProfile == "custom") {
@@ -1264,9 +1343,9 @@ public class Settings {
 		SHOW_HP_PRAYER_FATIGUE_OVERLAY.put(currentProfile, !SHOW_HP_PRAYER_FATIGUE_OVERLAY.get(currentProfile));
 		
 		if (SHOW_HP_PRAYER_FATIGUE_OVERLAY.get(currentProfile)) {
-			Client.displayMessage("@cya@Status display is now shown", Client.CHAT_NONE);
+			Client.displayMessage("@cya@HP/Prayer/Fatigue are now shown", Client.CHAT_NONE);
 		} else {
-			Client.displayMessage("@cya@Status display is now hidden", Client.CHAT_NONE);
+			Client.displayMessage("@cya@HP/Prayer/Fatigue are now hidden", Client.CHAT_NONE);
 		}
 		
         if (currentProfile == "custom") {
@@ -1292,9 +1371,9 @@ public class Settings {
 		SHOW_ITEM_GROUND_OVERLAY.put(currentProfile, !SHOW_ITEM_GROUND_OVERLAY.get(currentProfile));
 		
 		if (SHOW_ITEM_GROUND_OVERLAY.get(currentProfile)) {
-			Client.displayMessage("@cya@Item info is now shown", Client.CHAT_NONE);
+			Client.displayMessage("@cya@Ground item names are now shown", Client.CHAT_NONE);
 		} else {
-			Client.displayMessage("@cya@Item info is now hidden", Client.CHAT_NONE);
+			Client.displayMessage("@cya@Ground item names are now hidden", Client.CHAT_NONE);
 		}
 			
         if (currentProfile == "custom") {
@@ -1305,9 +1384,9 @@ public class Settings {
 	public static void toggleShowNPCNameOverlay() {
 		SHOW_NPC_NAME_OVERLAY.put(currentProfile, !SHOW_NPC_NAME_OVERLAY.get(currentProfile));
 		if (SHOW_NPC_NAME_OVERLAY.get(currentProfile)) {
-			Client.displayMessage("@cya@NPC info is now shown", Client.CHAT_NONE);
+			Client.displayMessage("@cya@NPC names are now shown", Client.CHAT_NONE);
 		} else {
-			Client.displayMessage("@cya@NPC info is now hidden", Client.CHAT_NONE);
+			Client.displayMessage("@cya@NPC names are is now hidden", Client.CHAT_NONE);
 		}
 			
         if (currentProfile == "custom") {
@@ -1319,9 +1398,9 @@ public class Settings {
 		SHOW_PLAYER_NAME_OVERLAY.put(currentProfile, !SHOW_PLAYER_NAME_OVERLAY.get(currentProfile));
 		
 		if (SHOW_PLAYER_NAME_OVERLAY.get(currentProfile)) {
-			Client.displayMessage("@cya@Player info is now shown", Client.CHAT_NONE);
+			Client.displayMessage("@cya@Player names are now shown", Client.CHAT_NONE);
 		} else {
-			Client.displayMessage("@cya@Player info is now hidden", Client.CHAT_NONE);
+			Client.displayMessage("@cya@Player names are now hidden", Client.CHAT_NONE);
 		}
 		
         if (currentProfile == "custom") {
@@ -1334,9 +1413,9 @@ public class Settings {
 		SHOW_LOGIN_IP_ADDRESS.put(currentProfile, !SHOW_LOGIN_IP_ADDRESS.get(currentProfile));
 		
 		if (SHOW_LOGIN_IP_ADDRESS.get(currentProfile)) {
-			Client.displayMessage("@cya@Login details will appear next time", Client.CHAT_NONE);
+			Client.displayMessage("@cya@IP address will appear next login", Client.CHAT_NONE);
 		} else {
-			Client.displayMessage("@cya@Login details will not appear next time", Client.CHAT_NONE);
+			Client.displayMessage("@cya@IP address will not appear next login", Client.CHAT_NONE);
 		}
 		
         if (currentProfile == "custom") {

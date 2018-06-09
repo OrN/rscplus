@@ -146,7 +146,6 @@ public class ConfigWindow {
 	private JSlider generalPanelViewDistanceSlider;
 	private JCheckBox generalPanelStartSearchedBankCheckbox;
 	private JTextField generalPanelSearchBankWordTextfield;
-	private JCheckBox generalPanelIndicatorsCheckbox;
 	
 	// Overlays tab
 	private JCheckBox overlayPanelStatusDisplayCheckbox;
@@ -163,6 +162,7 @@ public class ConfigWindow {
 	private JCheckBox overlayPanelFoodHealingCheckbox;
 	private JCheckBox overlayPanelHPRegenTimerCheckbox;
 	private JCheckBox overlayPanelDebugModeCheckbox;
+    private JCheckBox overlayPanelLagIndicatorCheckbox;
 	private JTextField blockedItemsTextField;
 	private JTextField highlightedItemsTextField;
 	
@@ -194,6 +194,13 @@ public class ConfigWindow {
     //Replay tab
     private JCheckBox replayPanelRecordKBMouseCheckbox;
     private JCheckBox replayPanelRecordAutomaticallyCheckbox;
+    
+    //Presets tab
+    private JCheckBox presetsPanelCustomSettingsCheckbox;
+    private JSlider presetsPanelPresetSlider;
+    private JButton replaceConfigButton;
+    private JButton resetPresetsButton;
+    private int sliderValue = -1;
     
 	public ConfigWindow() {
 		try {
@@ -268,57 +275,58 @@ public class ConfigWindow {
 		/** The JPanel containing the OK, Cancel, Apply, and Restore Defaults buttons at the bottom of the window */
 		JPanel navigationPanel = new JPanel();
 		
+		JScrollPane presetsScrollPane = new JScrollPane();
 		JScrollPane generalScrollPane = new JScrollPane();
 		JScrollPane overlayScrollPane = new JScrollPane();
 		JScrollPane notificationScrollPane = new JScrollPane();
 		JScrollPane streamingScrollPane = new JScrollPane();
 		JScrollPane keybindScrollPane = new JScrollPane();
         JScrollPane replayScrollPane = new JScrollPane();
-        JScrollPane presetsScrollPane = new JScrollPane();
 		
+        JPanel presetsPanel = new JPanel();
 		JPanel generalPanel = new JPanel();
 		JPanel overlayPanel = new JPanel();
 		JPanel notificationPanel = new JPanel();
 		JPanel streamingPanel = new JPanel();
 		JPanel keybindPanel = new JPanel();
         JPanel replayPanel = new JPanel();
-        JPanel presetsPanel = new JPanel();
 		
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		frame.getContentPane().add(navigationPanel, BorderLayout.PAGE_END);
 		
+        tabbedPane.addTab("Presets", null, presetsScrollPane, null);
 		tabbedPane.addTab("General", null, generalScrollPane, null); 
 		tabbedPane.addTab("Overlays", null, overlayScrollPane, null); 
 		tabbedPane.addTab("Notifications", null, notificationScrollPane, null);	
 		tabbedPane.addTab("Streaming & Privacy", null, streamingScrollPane, null); 
 		tabbedPane.addTab("Keybinds", null, keybindScrollPane, null); 
 		tabbedPane.addTab("Replay", null, replayScrollPane, null); 
-        tabbedPane.addTab("Presets", null, presetsScrollPane, null); 
+
+        presetsScrollPane.setViewportView(presetsPanel);
         generalScrollPane.setViewportView(generalPanel);
         overlayScrollPane.setViewportView(overlayPanel);
         notificationScrollPane.setViewportView(notificationPanel);
         streamingScrollPane.setViewportView(streamingPanel);
         keybindScrollPane.setViewportView(keybindPanel);
         replayScrollPane.setViewportView(replayPanel);
-        presetsScrollPane.setViewportView(presetsPanel);
 		
 		// Adding padding for aesthetics
 		navigationPanel.setBorder(BorderFactory.createEmptyBorder(7, 10, 10, 10));
-		generalPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		presetsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        generalPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		overlayPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		notificationPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		streamingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		keybindPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         replayPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        presetsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
+        setScrollSpeed(presetsScrollPane, 20, 15);
 		setScrollSpeed(generalScrollPane, 20, 15);
 		setScrollSpeed(overlayScrollPane, 20, 15);
 		setScrollSpeed(notificationScrollPane, 20, 15);
 		setScrollSpeed(streamingScrollPane, 20, 15);
 		setScrollSpeed(keybindScrollPane, 20, 15);
         setScrollSpeed(replayScrollPane, 20, 15);
-        setScrollSpeed(presetsScrollPane, 20, 15);
 		
 		/*
 		 * Navigation buttons
@@ -461,9 +469,6 @@ public class ConfigWindow {
 		generalPanelXPCenterAlignFocusButton.setToolTipText("The XP bar and XP drops will be shown at the top-middle of the screen.");
 		XPAlignButtonGroup.add(generalPanelXPRightAlignFocusButton);
 		XPAlignButtonGroup.add(generalPanelXPCenterAlignFocusButton);
-		
-		generalPanelIndicatorsCheckbox = addCheckbox("Connection indicators", generalPanel);
-		generalPanelIndicatorsCheckbox.setToolTipText("When problems are wrong with your connection, rscplus will notify you");
 		
 		generalPanelFatigueDropsCheckbox = addCheckbox("Fatigue drops", generalPanel);
 		generalPanelFatigueDropsCheckbox.setToolTipText("Show the fatigue gained as an overlay each time fatigue is received");
@@ -722,6 +727,9 @@ public class ConfigWindow {
 		
 		overlayPanelNPCHitboxCheckbox = addCheckbox("Show character hitboxes", overlayPanel);
 		overlayPanelNPCHitboxCheckbox.setToolTipText("Shows the clickable areas on NPCs and players");
+        
+        overlayPanelLagIndicatorCheckbox = addCheckbox("Lag indicator", overlayPanel);
+		overlayPanelLagIndicatorCheckbox.setToolTipText("When there's a problem with your connection, rscplus will tell you in the bottom right");
 		
 		overlayPanelFoodHealingCheckbox = addCheckbox("Show food healing overlay (Not implemented yet)", overlayPanel);
 		overlayPanelFoodHealingCheckbox.setToolTipText("When hovering on food, shows the HP a consumable recovers");
@@ -778,7 +786,7 @@ public class ConfigWindow {
 		
 		notificationPanel.setLayout(new BoxLayout(notificationPanel, BoxLayout.Y_AXIS));
 		
-		addNotificationCategory(notificationPanel, "Notification Settings");
+		addSettingsHeader(notificationPanel, "Notification Settings");
 		
 		notificationPanelTrayPopupCheckbox = addCheckbox("Enable notification tray popups", notificationPanel);
 		notificationPanelTrayPopupCheckbox.setBorder(BorderFactory.createEmptyBorder(0, 0, 7, 0));
@@ -809,7 +817,7 @@ public class ConfigWindow {
 		notificationPanelUseSystemNotifsCheckbox
 				.setToolTipText("Uses built-in system notifications. Enable this to attempt to use your operating system's notification system instead of the built-in pop-up");
 		
-		addNotificationCategory(notificationPanel, "Notifications");
+		addSettingsHeader(notificationPanel, "Notifications");
 		
 		notificationPanelPMNotifsCheckbox = addCheckbox("Enable PM notifications", notificationPanel);
 		notificationPanelPMNotifsCheckbox.setToolTipText("Shows a system notification when a PM is received");
@@ -942,8 +950,8 @@ public class ConfigWindow {
 		streamingPanelTwitchOAuthTextField.setMaximumSize(new Dimension(Short.MAX_VALUE, 28));
 		streamingPanelTwitchOAuthTextField.setAlignmentY((float)0.75);
 		
-		streamingPanelIPAtLoginCheckbox = addCheckbox("Enable IP/DNS details at login welcome screen", streamingPanel);
-		streamingPanelIPAtLoginCheckbox.setToolTipText("Shows the last IP/DNS you last logged in from when you log in (Disable this if you're streaming)");
+		streamingPanelIPAtLoginCheckbox = addCheckbox("Show IP details at login welcome screen", streamingPanel);
+		streamingPanelIPAtLoginCheckbox.setToolTipText("Shows the last IP you last logged in from when you log in (Disable this if you're streaming)");
 		
 		streamingPanelSaveLoginCheckbox = addCheckbox("Save login information between logins (Requires restart)", streamingPanel);
 		streamingPanelSaveLoginCheckbox.setToolTipText("Preserves login details between logins (Disable this if you're streaming)");
@@ -973,7 +981,7 @@ public class ConfigWindow {
 		addKeybindSet(keybindPanel, "Toggle roof hiding", "toggle_roof_hiding", KeyModifier.CTRL, KeyEvent.VK_R);
 		addKeybindSet(keybindPanel, "Toggle color coded text", "toggle_colorize", KeyModifier.CTRL, KeyEvent.VK_Z);
 		addKeybindSet(keybindPanel, "Toggle start with searched bank", "toggle_start_searched_bank", KeyModifier.CTRL, KeyEvent.VK_Q);
-		addKeybindSet(keybindPanel, "Toggle connection indicators", "toggle_indicators", KeyModifier.CTRL, KeyEvent.VK_W);
+		addKeybindSet(keybindPanel, "Toggle lag indicator", "toggle_indicators", KeyModifier.CTRL, KeyEvent.VK_W);
 		
 		addKeybindCategory(keybindPanel, "Overlays");
 		addKeybindSet(keybindPanel, "Toggle HP/prayer/fatigue display", "toggle_hpprayerfatigue_display", KeyModifier.CTRL, KeyEvent.VK_U);
@@ -991,7 +999,7 @@ public class ConfigWindow {
 		
 		addKeybindCategory(keybindPanel, "Streaming & Privacy");
 		addKeybindSet(keybindPanel, "Toggle Twitch chat", "toggle_twitch_chat", KeyModifier.CTRL, KeyEvent.VK_T);
-		addKeybindSet(keybindPanel, "Toggle IP/DNS shown at login screen", "toggle_ipdns", KeyModifier.CTRL, KeyEvent.VK_J);
+		addKeybindSet(keybindPanel, "Toggle IP shown at login screen", "toggle_ipdns", KeyModifier.CTRL, KeyEvent.VK_J);
 		// TODO: Uncomment the following line if this feature no longer requires a restart
 		// addKeybindSet(keybindPanel, "Toggle save login information", "toggle_save_login_info", KeyModifier.NONE, -1);
 		
@@ -1022,6 +1030,78 @@ public class ConfigWindow {
         
         replayPanelRecordKBMouseCheckbox = addCheckbox("(EXPERIMENTAL) Record Keyboard and Mouse input for future replay recordings", replayPanel);
 		replayPanelRecordKBMouseCheckbox.setToolTipText("(EXPERIMENTAL) additionally record mouse and keyboard inputs when recording a session");
+        
+        /*
+         * Presets tab
+         */
+        presetsPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+		presetsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        presetsPanel.setLayout(new BoxLayout(presetsPanel, BoxLayout.Y_AXIS));
+        
+        addSettingsHeader(presetsPanel, "Presets");
+        presetsPanelCustomSettingsCheckbox = addCheckbox("Custom Settings", presetsPanel);
+		presetsPanelCustomSettingsCheckbox.setToolTipText("Load settings from config.ini instead of using a preset");
+        
+        JPanel presetsPanelPresetSliderPanel = new JPanel();
+		presetsPanelPresetSliderPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		presetsPanelPresetSliderPanel.setMaximumSize(new Dimension(400, 175));
+		presetsPanelPresetSliderPanel.setLayout(new BoxLayout(presetsPanelPresetSliderPanel, BoxLayout.X_AXIS));
+		presetsPanel.add(presetsPanelPresetSliderPanel);
+		
+        //these JLabels are purposely mispelled to give it that authentic RS1 feel
+        Hashtable<Integer, JLabel> presetsPanelPresetSliderLabelTable = new Hashtable<Integer, JLabel>();
+        presetsPanelPresetSliderLabelTable.put(new Integer(0), new JLabel("every posible setting?!"));
+        presetsPanelPresetSliderLabelTable.put(new Integer(1), new JLabel("Overlay lovers"));
+        presetsPanelPresetSliderLabelTable.put(new Integer(2), new JLabel("Recommended settings"));
+        presetsPanelPresetSliderLabelTable.put(new Integer(3), new JLabel("\"lite\" overlays"));
+        presetsPanelPresetSliderLabelTable.put(new Integer(4), new JLabel("Resizable only\""));
+        presetsPanelPresetSliderLabelTable.put(new Integer(5), new JLabel("no interface changes"));
+        
+        presetsPanelPresetSlider = new JSlider();
+        presetsPanelPresetSlider.setMajorTickSpacing(1);
+        presetsPanelPresetSlider.setLabelTable(presetsPanelPresetSliderLabelTable);
+        presetsPanelPresetSlider.setPaintLabels(true);
+        presetsPanelPresetSlider.setPaintTicks(true);
+        presetsPanelPresetSlider.setSnapToTicks(true);
+        presetsPanelPresetSlider.setMinimum(0);
+        presetsPanelPresetSlider.setMaximum(5);
+        presetsPanelPresetSlider.setPreferredSize(new Dimension(100, 0));
+        presetsPanelPresetSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
+        presetsPanelPresetSlider.setBorder(new EmptyBorder(0, 0, 5, 70));
+        presetsPanelPresetSlider.setOrientation(SwingConstants.VERTICAL);
+        presetsPanelPresetSliderPanel.add(presetsPanelPresetSlider);
+        
+        JPanel presetsButtonPanel = new JPanel();
+        presetsButtonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        presetsButtonPanel.setMaximumSize(new Dimension(300,50));
+        presetsButtonPanel.setBorder(BorderFactory.createEmptyBorder(7, 10, 10, 0));
+		presetsButtonPanel.setLayout(new BoxLayout(presetsButtonPanel, BoxLayout.X_AXIS));
+        
+        replaceConfigButton = addButton("Replace Config with Preset", presetsButtonPanel, Component.LEFT_ALIGNMENT);
+        replaceConfigButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO "Warning: this will delete your old settings! Are you sure you want to delete your old settings?"
+            }
+        });
+        resetPresetsButton = addButton("Reset Presets", presetsButtonPanel, Component.RIGHT_ALIGNMENT);
+        resetPresetsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Logger.Info("Try saying that 10 times fast...");
+                Settings.initSettings();
+            }
+        });
+        presetsButtonPanel.add(Box.createHorizontalGlue());
+        presetsPanel.add(presetsButtonPanel);
+        
+        presetsPanelCustomSettingsCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                synchronizePresetOptions();
+            }
+        });
+
 	}
 	
 	/**
@@ -1169,9 +1249,9 @@ public class ConfigWindow {
 	 * @param panel Panel to add the title to.
 	 * @param categoryName Name of the category to add.
 	 */
-	private void addNotificationCategory(JPanel panel, String categoryName) {
-		addNotificationCategoryLabel(panel, "<html><b>" + categoryName + "</b></html>");
-		addNotificationCategorySeparator(panel);
+	private void addSettingsHeader(JPanel panel, String categoryName) {
+		addSettingsHeaderLabel(panel, "<html><b>" + categoryName + "</b></html>");
+		addSettingsHeaderSeparator(panel);
 	}
 	
 	/**
@@ -1179,7 +1259,7 @@ public class ConfigWindow {
 	 * 
 	 * @param panel Panel to add the separator to.
 	 */
-	private void addNotificationCategorySeparator(JPanel panel) {
+	private void addSettingsHeaderSeparator(JPanel panel) {
 		JSeparator jsep = new JSeparator(SwingConstants.HORIZONTAL);
 		jsep.setMaximumSize(new Dimension(Short.MAX_VALUE, 7));
 		panel.add(jsep);
@@ -1192,7 +1272,7 @@ public class ConfigWindow {
 	 * @param categoryName Name of the category to add.
 	 * @return The label that was added.
 	 */
-	private JLabel addNotificationCategoryLabel(JPanel panel, String categoryName) {
+	private JLabel addSettingsHeaderLabel(JPanel panel, String categoryName) {
 		JLabel jlbl = new JLabel(categoryName);
 		panel.add(jlbl);
 		return jlbl;
@@ -1263,6 +1343,17 @@ public class ConfigWindow {
 	 * Synchronizes all relevant values in the gui's elements to match those in Settings.java
 	 */
 	public void synchronizeGuiValues() {
+        
+        //Presets tab (has to go first to properly synchronizeGui)
+        presetsPanelCustomSettingsCheckbox.setSelected(Settings.currentProfile == "custom");
+        synchronizePresetOptions();
+        
+        sliderValue = Settings.presetTable.indexOf(Settings.currentProfile);
+        if (sliderValue < 0 || sliderValue > Settings.presetTable.size()) {
+            sliderValue = Settings.presetTable.indexOf("default");
+        }
+        presetsPanelPresetSlider.setValue(sliderValue);
+        
 		// General tab
 		generalPanelClientSizeCheckbox.setSelected(Settings.CUSTOM_CLIENT_SIZE.get(Settings.currentProfile));
 		generalPanelClientSizeXSpinner.setValue(Settings.CUSTOM_CLIENT_SIZE_X.get(Settings.currentProfile));
@@ -1275,7 +1366,7 @@ public class ConfigWindow {
 		generalPanelXPRightAlignFocusButton.setSelected(!Settings.CENTER_XPDROPS.get(Settings.currentProfile));
 		notificationPanelTrayPopupClientFocusButton.setSelected(!Settings.TRAY_NOTIFS_ALWAYS.get(Settings.currentProfile));
 		notificationPanelTrayPopupAnyFocusButton.setSelected(Settings.TRAY_NOTIFS_ALWAYS.get(Settings.currentProfile));
-		generalPanelIndicatorsCheckbox.setSelected(Settings.LAG_INDICATOR.get(Settings.currentProfile));
+		overlayPanelLagIndicatorCheckbox.setSelected(Settings.LAG_INDICATOR.get(Settings.currentProfile));
 		generalPanelFatigueDropsCheckbox.setSelected(Settings.SHOW_FATIGUEDROPS.get(Settings.currentProfile));
 		generalPanelFatigueFigSpinner.setValue(new Integer(Settings.FATIGUE_FIGURES.get(Settings.currentProfile)));
 		generalPanelFatigueAlertCheckbox.setSelected(Settings.FATIGUE_ALERT.get(Settings.currentProfile));
@@ -1375,7 +1466,6 @@ public class ConfigWindow {
 		Settings.COMBAT_MENU_SHOWN.put(Settings.currentProfile, generalPanelCombatXPMenuCheckbox.isSelected());
 		Settings.SHOW_XPDROPS.put(Settings.currentProfile, generalPanelXPDropsCheckbox.isSelected());
 		Settings.CENTER_XPDROPS.put(Settings.currentProfile, generalPanelXPCenterAlignFocusButton.isSelected());
-		Settings.LAG_INDICATOR.put(Settings.currentProfile, generalPanelIndicatorsCheckbox.isSelected());
 		Settings.SHOW_FATIGUEDROPS.put(Settings.currentProfile, generalPanelFatigueDropsCheckbox.isSelected());
 		Settings.FATIGUE_FIGURES.put(Settings.currentProfile, ((SpinnerNumberModel)(generalPanelFatigueFigSpinner.getModel())).getNumber().intValue());
 		Settings.FATIGUE_ALERT.put(Settings.currentProfile, generalPanelFatigueAlertCheckbox.isSelected());
@@ -1405,6 +1495,7 @@ public class ConfigWindow {
 		Settings.NPC_HEALTH_SHOW_PERCENTAGE.put(Settings.currentProfile, overlayPanelUsePercentageCheckbox.isSelected());
 		Settings.SHOW_FOOD_HEAL_OVERLAY.put(Settings.currentProfile, overlayPanelFoodHealingCheckbox.isSelected());
 		Settings.SHOW_TIME_UNTIL_HP_REGEN.put(Settings.currentProfile, overlayPanelHPRegenTimerCheckbox.isSelected());
+        Settings.LAG_INDICATOR.put(Settings.currentProfile, overlayPanelLagIndicatorCheckbox.isSelected());
 		Settings.DEBUG.put(Settings.currentProfile, overlayPanelDebugModeCheckbox.isSelected());
 		Settings.HIGHLIGHTED_ITEMS.put("custom", new ArrayList<>(Arrays.asList(highlightedItemsTextField.getText().split(","))));
 		Settings.BLOCKED_ITEMS.put("custom", new ArrayList<>(Arrays.asList(blockedItemsTextField.getText().split(","))));
@@ -1435,6 +1526,29 @@ public class ConfigWindow {
         // Replay
         Settings.RECORD_AUTOMATICALLY.put(Settings.currentProfile, replayPanelRecordAutomaticallyCheckbox.isSelected());
         Settings.RECORD_KB_MOUSE.put(Settings.currentProfile, replayPanelRecordKBMouseCheckbox.isSelected());
+        
+        // Presets
+        if (presetsPanelCustomSettingsCheckbox.isSelected()) {
+            if (Settings.currentProfile != "custom") {
+                Settings.currentProfile = "custom";
+                Logger.Info("Changed to custom profile");
+            }
+        } else {
+            String lastPresetValue = Settings.currentProfile;
+
+            int presetValue = presetsPanelPresetSlider.getValue();
+            if(presetValue >= 0 && presetValue <= Settings.presetTable.size()) {
+                Settings.currentProfile = Settings.presetTable.get(presetValue);
+            } else { //not custom, and also out of range for presetTable
+                Logger.Error("presetsPanelPresetSlider out of range of Settings.presetTable");
+            }
+
+            if (lastPresetValue != Settings.currentProfile) {
+                Settings.initSettings(); //reset preset values to their defaults
+                Logger.Info("Changed to " + Settings.currentProfile + " preset");
+            }
+        }
+        
 		
 		Settings.save();
 	}
@@ -1468,8 +1582,25 @@ public class ConfigWindow {
 		Settings.fovUpdateRequired = true;
 		Settings.checkSoftwareCursor();
 		Camera.setDistance(Settings.VIEW_DISTANCE.get(Settings.currentProfile));
-		
+		synchronizeGuiValues();
 	}
+    
+    public void synchronizePresetOptions() {
+        if (presetsPanelCustomSettingsCheckbox.isSelected()) {
+            if (sliderValue == -1) {
+                presetsPanelPresetSlider.setValue(Settings.presetTable.indexOf("default"));
+            } else {
+                presetsPanelPresetSlider.setValue(sliderValue);
+            }
+            presetsPanelPresetSlider.setEnabled(false);
+            replaceConfigButton.setEnabled(false);
+            resetPresetsButton.setEnabled(false);
+        } else {
+            presetsPanelPresetSlider.setEnabled(true);
+            replaceConfigButton.setEnabled(true);
+            resetPresetsButton.setEnabled(true);
+        }
+    }
 }
 
 /**
