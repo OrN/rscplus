@@ -406,7 +406,6 @@ public class Client {
 			final float actualFatigue = getActualFatigue();
 			final float fatigueGain = actualFatigue - currentFatigue;
 			if (fatigueGain > 0.0f && !isWelcomeScreen()) {
-				Logger.Info(Float.toString(fatigueGain));
 				xpdrop_handler.add("+" + trimNumber(fatigueGain, Settings.FATIGUE_FIGURES.get(Settings.currentProfile)) + "% (Fatigue)", Renderer.color_fatigue);
 				currentFatigue = actualFatigue;
 			}
@@ -1189,6 +1188,12 @@ public class Client {
 		// Everything below here won't effect game while seeking
 		if (Replay.isSeeking)
 			return;
+
+		//Don't output private messages if option is turned on and replaying
+		if (Settings.HIDE_PRIVATE_MSGS_REPLAY.get(Settings.currentProfile) && Replay.isPlaying) {
+			if (type == CHAT_PRIVATE_LOG_IN_OUT || type == CHAT_PRIVATE || type == CHAT_PRIVATE_OUTGOING)
+				return;
+		}
 		
 		if (Settings.COLORIZE_CONSOLE_TEXT.get(Settings.currentProfile)) {
 			AnsiConsole.systemInstall();
@@ -1292,8 +1297,12 @@ public class Client {
 		boolean whiteMessage = colorMessage.contains("Welcome to RuneScape!"); // want this to be bold
 		boolean blueMessage = (type == CHAT_NONE) && (colorMessage.contains("You have been standing here for 5 mins! Please move to a new area"));
 		boolean yellowMessage = (type == CHAT_NONE) && (colorMessage.contains("Well Done")); //tourist trap completion
-		boolean greenMessage = (type == CHAT_NONE) && (colorMessage.contains("You just advanced ") || colorMessage.contains("quest point") || colorMessage.contains("***") || colorMessage.contains("ou have completed")); //"***" is for Tourist Trap completion
-		greenMessage = greenMessage || (type == CHAT_NONE && colorMessage.contains("poisioned!"));
+		boolean screenshotMessage = (type == CHAT_NONE) && (colorMessage.contains("You just advanced ") || colorMessage.contains("quest point") || colorMessage.contains("ou have completed"));
+		boolean greenMessage = screenshotMessage || (type == CHAT_NONE && colorMessage.contains("poisioned!")) || colorMessage.contains("***"); //"***" is for Tourist Trap completion
+		
+		if (screenshotMessage && Settings.AUTO_SCREENSHOT.get(Settings.currentProfile) && !Replay.isPlaying) {
+			Renderer.takeScreenshot();
+		}		
 		
 		if (blueMessage) { // this is one of the messages which we must overwrite expected color for
 			return "@|cyan,intensity_faint " + colorMessage + "|@";

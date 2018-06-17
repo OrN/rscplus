@@ -256,7 +256,7 @@ public class Renderer {
 						show = true;
 					}
 					
-					if (Settings.SHOW_NPC_HITBOX.get(Settings.currentProfile)) {
+					if (Settings.SHOW_HITBOX.get(Settings.currentProfile)) {
 						List<Rectangle> hitbox = player_hitbox;
 						boolean showHitbox = true;
 						
@@ -317,7 +317,7 @@ public class Renderer {
 				for (Iterator<Item> iterator = Client.item_list.iterator(); iterator.hasNext();) {
 					Item item = iterator.next(); // TODO: Remove unnecessary allocations
 					
-					if (Settings.SHOW_NPC_HITBOX.get(Settings.currentProfile)) {
+					if (Settings.SHOW_HITBOX.get(Settings.currentProfile)) {
 						boolean show = true;
 						for (Iterator<Rectangle> boxIterator = item_hitbox.iterator(); boxIterator.hasNext();) {
 							Rectangle rect = boxIterator.next(); // TODO: Remove unnecessary allocations
