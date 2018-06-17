@@ -347,52 +347,6 @@ public class Client {
 		if (state == STATE_GAME) {
 			Client.getPlayerName();
 			Client.adaptLoginInfo();
-			
-			// Process XP drops
-			boolean dropXP = xpdrop_state[SKILL_HP] > 0.0f; // TODO: Declare dropXP outside of the update method
-			for (int i = 0; i < xpdrop_state.length; i++) {
-				float xpGain = getXP(i) - xpdrop_state[i]; // TODO: Declare xpGain outside of the update method
-				xpdrop_state[i] += xpGain;
-				
-				if (xpGain > 0.0f && dropXP) {
-					if (Settings.SHOW_XPDROPS.get(Settings.currentProfile))
-						xpdrop_handler.add("+" + xpGain + " (" + skill_name[i] + ")", Renderer.color_text);
-					
-					// XP/hr calculations
-					// TODO: After 5-10 minutes of tracking XP, make it display a rolling average instead of a session
-					// average
-					if ((System.currentTimeMillis() - lastXpGain[i][1]) <= 180000) {
-						// < 3 minutes since last XP drop
-						lastXpGain[i][0] = xpGain + lastXpGain[i][0];
-						xpPerHour[i] = 3600 * (lastXpGain[i][0]) / ((System.currentTimeMillis() - lastXpGain[i][2]) / 1000);
-						lastXpGain[i][3]++;
-						showXpPerHour[i] = true;
-						lastXpGain[i][1] = System.currentTimeMillis();
-					} else {
-						lastXpGain[i][0] = xpGain;
-						lastXpGain[i][1] = lastXpGain[i][2] = System.currentTimeMillis();
-						lastXpGain[i][3] = 0;
-						showXpPerHour[i] = false;
-					}
-					
-					if (i == SKILL_HP && xpbar.current_skill != -1)
-						continue;
-					
-					xpbar.setSkill(i);
-				}
-			}
-			// Process fatigue drops
-			if (Settings.SHOW_FATIGUEDROPS.get(Settings.currentProfile)) {
-				final float actualFatigue = getActualFatigue();
-				final float fatigueGain = actualFatigue - currentFatigue;
-				if (fatigueGain > 0.0f && !isWelcomeScreen()) {
-					xpdrop_handler.add("+" + trimNumber(fatigueGain, Settings.FATIGUE_FIGURES.get(Settings.currentProfile)) + "% (Fatigue)", Renderer.color_fatigue);
-					currentFatigue = actualFatigue;
-				}
-			}
-			// Prevents a fatigue drop upon first login during a session
-			if (isWelcomeScreen() && currentFatigue != getActualFatigue())
-				currentFatigue = getActualFatigue();
 		}
 		
 		Game.getInstance().updateTitle();
@@ -411,6 +365,55 @@ public class Client {
 			update_timer = time + 1000;
 			updates = 0;
 		}
+	}
+	
+	public static void processFatigueXPDrops() {
+		// Process XP drops
+		boolean dropXP = xpdrop_state[SKILL_HP] > 0.0f; // TODO: Declare dropXP outside of this method
+		for (int i = 0; i < xpdrop_state.length; i++) {
+			float xpGain = getXP(i) - xpdrop_state[i]; // TODO: Declare xpGain outside of this method
+			xpdrop_state[i] += xpGain;
+			
+			if (xpGain > 0.0f && dropXP) {
+				if (Settings.SHOW_XPDROPS.get(Settings.currentProfile))
+					xpdrop_handler.add("+" + xpGain + " (" + skill_name[i] + ")", Renderer.color_text);
+				
+				// XP/hr calculations
+				// TODO: After 5-10 minutes of tracking XP, make it display a rolling average instead of a session
+				// average
+				if ((System.currentTimeMillis() - lastXpGain[i][1]) <= 180000) {
+					// < 3 minutes since last XP drop
+					lastXpGain[i][0] = xpGain + lastXpGain[i][0];
+					xpPerHour[i] = 3600 * (lastXpGain[i][0]) / ((System.currentTimeMillis() - lastXpGain[i][2]) / 1000);
+					lastXpGain[i][3]++;
+					showXpPerHour[i] = true;
+					lastXpGain[i][1] = System.currentTimeMillis();
+				} else {
+					lastXpGain[i][0] = xpGain;
+					lastXpGain[i][1] = lastXpGain[i][2] = System.currentTimeMillis();
+					lastXpGain[i][3] = 0;
+					showXpPerHour[i] = false;
+				}
+				
+				if (i == SKILL_HP && xpbar.current_skill != -1)
+					continue;
+				
+				xpbar.setSkill(i);
+			}
+		}
+		// Process fatigue drops
+		if (Settings.SHOW_FATIGUEDROPS.get(Settings.currentProfile)) {
+			final float actualFatigue = getActualFatigue();
+			final float fatigueGain = actualFatigue - currentFatigue;
+			if (fatigueGain > 0.0f && !isWelcomeScreen()) {
+				Logger.Info(Float.toString(fatigueGain));
+				xpdrop_handler.add("+" + trimNumber(fatigueGain, Settings.FATIGUE_FIGURES.get(Settings.currentProfile)) + "% (Fatigue)", Renderer.color_fatigue);
+				currentFatigue = actualFatigue;
+			}
+		}
+		// Prevents a fatigue drop upon first login during a session
+		if (isWelcomeScreen() && currentFatigue != getActualFatigue())
+			currentFatigue = getActualFatigue();	
 	}
 	
 	public static void init_login() {

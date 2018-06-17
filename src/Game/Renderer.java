@@ -376,6 +376,9 @@ public class Renderer {
 						last_item = item; // Done with item this loop, can save it as last_item
 					}
 				}
+				
+				Client.processFatigueXPDrops();
+				
 			}
 			
 			if (!Client.isSleeping()) {
