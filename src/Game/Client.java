@@ -1298,7 +1298,7 @@ public class Client {
 		boolean blueMessage = (type == CHAT_NONE) && (colorMessage.contains("You have been standing here for 5 mins! Please move to a new area"));
 		boolean yellowMessage = (type == CHAT_NONE) && (colorMessage.contains("Well Done")); //tourist trap completion
 		boolean screenshotMessage = (type == CHAT_NONE) && (colorMessage.contains("You just advanced ") || colorMessage.contains("quest point") || colorMessage.contains("ou have completed"));
-		boolean greenMessage = screenshotMessage || (type == CHAT_NONE && (colorMessage.contains("poisioned!") || colorMessage.contains("***")); //"***" is for Tourist Trap completion
+		boolean greenMessage = screenshotMessage || (type == CHAT_NONE && (colorMessage.contains("poisioned!") || colorMessage.contains("***"))); //"***" is for Tourist Trap completion
 		
 		if (screenshotMessage && Settings.AUTO_SCREENSHOT.get(Settings.currentProfile) && !Replay.isPlaying) {
 			Renderer.takeScreenshot();
