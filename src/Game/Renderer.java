@@ -115,6 +115,8 @@ public class Renderer {
 	
 	private static boolean macOS_resize_workaround = Util.isMacOS();
     private static boolean showRecordAlwaysDialogueThisFrame = false;
+    
+    public static boolean quietScreenshot = false;
 	
 	public static void init() {
 		// patch copyright to match current year
@@ -900,7 +902,8 @@ public class Renderer {
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
 				String fname = Settings.Dir.SCREENSHOT + "/" + "Screenshot from " + format.format(new Date()) + ".png";
 				ImageIO.write(game_image, "png", new File(fname));
-				Client.displayMessage("@cya@Screenshot saved to '" + fname + "'", Client.CHAT_NONE);
+				if (!quietScreenshot)
+					Client.displayMessage("@cya@Screenshot saved to '" + fname + "'", Client.CHAT_NONE);
 			} catch (Exception e) {
 			}
 			screenshot = false;
@@ -1022,7 +1025,8 @@ public class Renderer {
 		g.drawString(text, textX, textY);
 	}
 	
-	public static void takeScreenshot() {
+	public static void takeScreenshot(boolean quiet) {
+		quietScreenshot = quiet;
 		screenshot = true;
 	}
 	

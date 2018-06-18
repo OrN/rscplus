@@ -636,7 +636,7 @@ public class Client {
 				Client.sleep();
 				break;
 			case "screenshot":
-				Renderer.takeScreenshot();
+				Renderer.takeScreenshot(false);
 				break;
 			case "debug":
 				Settings.toggleDebug();
@@ -1301,7 +1301,7 @@ public class Client {
 		boolean greenMessage = screenshotMessage || (type == CHAT_NONE && (colorMessage.contains("poisioned!") || colorMessage.contains("***"))); //"***" is for Tourist Trap completion
 		
 		if (screenshotMessage && Settings.AUTO_SCREENSHOT.get(Settings.currentProfile) && !Replay.isPlaying) {
-			Renderer.takeScreenshot();
+			Renderer.takeScreenshot(true);
 		}		
 		
 		if (blueMessage) { // this is one of the messages which we must overwrite expected color for
