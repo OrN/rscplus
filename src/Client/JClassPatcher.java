@@ -106,21 +106,19 @@ public class JClassPatcher {
 		while (methodNodeList.hasNext()) {
 			MethodNode methodNode = methodNodeList.next();
 			
-            if (Settings.APPEND_LOGGER_CONSOLE_TEXT.get(Settings.currentProfile)) {
-                // General byte patch
-                Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
-                while (insnNodeList.hasNext()) {
-                    AbstractInsnNode insnNode = insnNodeList.next();
+            // General byte patch
+            Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
+            while (insnNodeList.hasNext()) {
+                AbstractInsnNode insnNode = insnNodeList.next();
+                
+                if (insnNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+                    MethodInsnNode call = (MethodInsnNode)insnNode;
                     
-                    if (insnNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
-                        MethodInsnNode call = (MethodInsnNode)insnNode;
-                        
-                        // Patch calls to System.out.println and route them to Logger.Game
-                        if (call.owner.equals("java/io/PrintStream") && call.name.equals("println")) {
-                            methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Client/Logger", "Game", "(Ljava/lang/String;)V"));
-                            methodNode.instructions.insertBefore(insnNode, new InsnNode(Opcodes.POP));
-                            methodNode.instructions.remove(insnNode);
-                        }
+                    // Patch calls to System.out.println and route them to Logger.Game
+                    if (call.owner.equals("java/io/PrintStream") && call.name.equals("println")) {
+                        methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Client/Logger", "Game", "(Ljava/lang/String;)V"));
+                        methodNode.instructions.insertBefore(insnNode, new InsnNode(Opcodes.POP));
+                        methodNode.instructions.remove(insnNode);
                     }
                 }
             }

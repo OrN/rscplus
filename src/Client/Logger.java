@@ -62,7 +62,7 @@ public class Logger {
 		}
 	}
 	
-	public static void Log(Type type, String message) {
+	public static void Log(Type type, String message, boolean appends_console) {
 		if (type.id > Settings.LOG_VERBOSITY.get(Settings.currentProfile))
 			return;
 		
@@ -71,11 +71,20 @@ public class Logger {
 					 "[" + dateFormat.format(new Date()) + "]" +
 					 " " + message;
 		
-		if (type != Type.ERROR)
-			System.out.println(msg);
-		else
+		if (type != Type.ERROR) {
+            if (!appends_console) {
+                if (Settings.APPEND_LOGGER_CONSOLE_TEXT.get(Settings.currentProfile)) {
+                    System.out.println(msg);
+                } else {
+                    System.out.println(message);
+                }
+            } else {
+                System.out.println(msg);
+            }
+        } else {
 			System.err.println(msg);
-		
+		}
+        
 		try {
 			m_logWriter.write(msg + "\r\n");
 			m_logWriter.flush();
@@ -84,43 +93,46 @@ public class Logger {
 	}
 	
 	public static void Error(String message) {
-		Log(Type.ERROR, message);
+		Log(Type.ERROR, message, true);
 	}
 	
 	public static void Warn(String message) {
-		Log(Type.WARN, message);
+		Log(Type.WARN, message, true);
 	}
 	
 	public static void Game(String message) {
-		Log(Type.GAME, message);
+		Log(Type.GAME, message, true);
 	}
 	
 	public static void Info(String message) {
-		Log(Type.INFO, message);
+		Log(Type.INFO, message, true);
 	}
 	
 	public static void Debug(String message) {
-		Log(Type.DEBUG, message);
+		Log(Type.DEBUG, message, true);
 	}
 	
 	public static void Warn(Ansi message) {
-		Log(Type.WARN, message.toString());
+		Log(Type.WARN, message.toString(), true);
 	}
 	
 	public static void Error(Ansi message) {
-		Log(Type.ERROR, message.toString());
+		Log(Type.ERROR, message.toString(), true);
 	}
 	
 	public static void Game(Ansi message) {
-		Log(Type.GAME, message.toString());
+		Log(Type.GAME, message.toString(), false);
 	}
 	
 	public static void Info(Ansi message) {
-		Log(Type.INFO, message.toString());
+		Log(Type.INFO, message.toString(), true);
 	}
 	
 	public static void Debug(Ansi message) {
-		Log(Type.DEBUG, message.toString());
+		Log(Type.DEBUG, message.toString(), true);
 	}
 	
+    public static void Chat(String message) {
+        Log(Type.INFO, message, false);
+    }
 }

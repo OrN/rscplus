@@ -1089,20 +1089,11 @@ public class Client {
 			option = menuOptions[i];
 			if (Settings.COLORIZE_CONSOLE_TEXT.get(Settings.currentProfile)) {
 				AnsiConsole.systemInstall();
-                if (Settings.APPEND_LOGGER_CONSOLE_TEXT.get(Settings.currentProfile)) {
-                    Logger.Info(ansi()
-                            .render("@|white (" + type + ")|@ " + colorizeMessage(option, type)));
-                } else {
-                    System.out.println(ansi()
-                            .render("@|white (" + type + ")|@ " + colorizeMessage(option, type)));
-                }
+                Logger.Chat(ansi()
+                        .render("@|white (" + type + ")|@ " + colorizeMessage(option, type)).toString());
 				AnsiConsole.systemUninstall();
 			} else {
-                if (Settings.APPEND_LOGGER_CONSOLE_TEXT.get(Settings.currentProfile)) {
-                    Logger.Info("(" + type + ") " + option);
-                } else {
-                    System.out.println("(" + type + ") " + option);
-                }
+                Logger.Chat("(" + type + ") " + option);
 			}
 		}
 	}
@@ -1209,20 +1200,11 @@ public class Client {
 		
 		if (Settings.COLORIZE_CONSOLE_TEXT.get(Settings.currentProfile)) {
 			AnsiConsole.systemInstall();
-            if (Settings.APPEND_LOGGER_CONSOLE_TEXT.get(Settings.currentProfile)) {
-                Logger.Info(ansi()
-                        .render("@|white (" + type + ")|@ " + colorizeUsername(formatUsername(username, type), type) + colorizeMessage(message, type)));
-            } else {
-                System.out.println(ansi()
-                        .render("@|white (" + type + ")|@ " + colorizeUsername(formatUsername(username, type), type) + colorizeMessage(message, type)));
-            }
+            Logger.Chat(ansi()
+                    .render("@|white (" + type + ")|@ " + colorizeUsername(formatUsername(username, type), type) + colorizeMessage(message, type)).toString());
 			AnsiConsole.systemUninstall();
 		} else {
-            if (Settings.APPEND_LOGGER_CONSOLE_TEXT.get(Settings.currentProfile)) {
-                Logger.Info("(" + type + ") " + formatUsername(username, type) + message);
-            } else {
-                System.out.println("(" + type + ") " + formatUsername(username, type) + message);
-            }
+            Logger.Chat("(" + type + ") " + formatUsername(username, type) + message);
 		}
 	}
 	
