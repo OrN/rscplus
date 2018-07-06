@@ -103,6 +103,8 @@ public class Settings {
             = new HashMap<String, Boolean>();
     public static HashMap<String, Boolean>    COLORIZE_CONSOLE_TEXT
             = new HashMap<String, Boolean>();
+    public static HashMap<String, Boolean>    APPEND_LOGGER_CONSOLE_TEXT
+            = new HashMap<String, Boolean>();
     public static HashMap<String, Integer>    FOV
             = new HashMap<String, Integer>();
     public static HashMap<String, Boolean>    SOFTWARE_CURSOR
@@ -428,6 +430,15 @@ public class Settings {
         COLORIZE_CONSOLE_TEXT.put("custom",
             getPropBoolean(props, "colorize", COLORIZE_CONSOLE_TEXT.get("default")));
 
+        APPEND_LOGGER_CONSOLE_TEXT.put("vanilla", false);
+        APPEND_LOGGER_CONSOLE_TEXT.put("vanilla_resizable", false);
+        APPEND_LOGGER_CONSOLE_TEXT.put("lite",    true);
+        APPEND_LOGGER_CONSOLE_TEXT.put("default", true);
+        APPEND_LOGGER_CONSOLE_TEXT.put("heavy",   true);
+        APPEND_LOGGER_CONSOLE_TEXT.put("all",     false);
+        APPEND_LOGGER_CONSOLE_TEXT.put("custom",
+            getPropBoolean(props, "append_logger_game", APPEND_LOGGER_CONSOLE_TEXT.get("default")));
+
         FOV.put("vanilla", 9);
         FOV.put("vanilla_resizable", 9);
         FOV.put("lite",    9);
@@ -513,7 +524,7 @@ public class Settings {
 		SHOW_MOUSE_TOOLTIP.put("vanilla", false);
 		SHOW_MOUSE_TOOLTIP.put("vanilla_resizable", false);
 		SHOW_MOUSE_TOOLTIP.put("lite", false);
-		SHOW_MOUSE_TOOLTIP.put("default", true);
+		SHOW_MOUSE_TOOLTIP.put("default", false);
 		SHOW_MOUSE_TOOLTIP.put("heavy", true);
 		SHOW_MOUSE_TOOLTIP.put("all", true);
 		SHOW_MOUSE_TOOLTIP.put("custom",
@@ -1153,6 +1164,8 @@ public class Settings {
                 HIDE_ROOFS.get(preset)));
             props.setProperty("colorize",Boolean.toString(
                 COLORIZE_CONSOLE_TEXT.get(preset)));
+            props.setProperty("append_logger_game",Boolean.toString(
+                APPEND_LOGGER_CONSOLE_TEXT.get(preset)));
             props.setProperty("fov",Integer.toString(
                 FOV.get(preset)));
             props.setProperty("software_cursor",Boolean.toString(

@@ -137,6 +137,7 @@ public class ConfigWindow {
 	private JCheckBox generalPanelBypassAttackCheckbox;
 	private JCheckBox generalPanelRoofHidingCheckbox;
 	private JCheckBox generalPanelColoredTextCheckbox;
+    private JCheckBox generalPanelLoggerAppendedConsoleTextCheckbox;
 	private JSlider generalPanelFoVSlider;
 	private JCheckBox generalPanelCustomCursorCheckbox;
 	private JSlider generalPanelViewDistanceSlider;
@@ -475,6 +476,9 @@ public class ConfigWindow {
 		generalPanelColoredTextCheckbox = addCheckbox("Colored console text", generalPanel);
 		generalPanelColoredTextCheckbox.setToolTipText("When running the client from a console, chat messages in the console will reflect the colors they are in game");
 		
+        generalPanelLoggerAppendedConsoleTextCheckbox = addCheckbox("Append logging information in front of in-game generated text (may require restart)", generalPanel);
+        generalPanelLoggerAppendedConsoleTextCheckbox.setToolTipText("Appends logging severity and datestamp in front of chat and Jagex's original console output (requires restart)");
+
 		generalPanelCustomCursorCheckbox = addCheckbox("Use custom mouse cursor", generalPanel);
 		generalPanelCustomCursorCheckbox.setToolTipText("Switch to using a custom mouse cursor instead of the system default");
 		
@@ -1486,6 +1490,7 @@ public class ConfigWindow {
 		generalPanelBypassAttackCheckbox.setSelected(Settings.ATTACK_ALWAYS_LEFT_CLICK.get(Settings.currentProfile));
 		generalPanelRoofHidingCheckbox.setSelected(Settings.HIDE_ROOFS.get(Settings.currentProfile));
 		generalPanelColoredTextCheckbox.setSelected(Settings.COLORIZE_CONSOLE_TEXT.get(Settings.currentProfile));
+        generalPanelLoggerAppendedConsoleTextCheckbox.setSelected(Settings.APPEND_LOGGER_CONSOLE_TEXT.get(Settings.currentProfile));
 		generalPanelFoVSlider.setValue(Settings.FOV.get(Settings.currentProfile));
 		generalPanelAutoScreenshotCheckbox.setSelected(Settings.AUTO_SCREENSHOT.get(Settings.currentProfile));
 		generalPanelCustomCursorCheckbox.setSelected(Settings.SOFTWARE_CURSOR.get(Settings.currentProfile));
@@ -1600,6 +1605,7 @@ public class ConfigWindow {
 		Settings.ATTACK_ALWAYS_LEFT_CLICK.put(Settings.currentProfile, generalPanelBypassAttackCheckbox.isSelected());
 		Settings.HIDE_ROOFS.put(Settings.currentProfile, generalPanelRoofHidingCheckbox.isSelected());
 		Settings.COLORIZE_CONSOLE_TEXT.put(Settings.currentProfile, generalPanelColoredTextCheckbox.isSelected());
+        Settings.APPEND_LOGGER_CONSOLE_TEXT.put(Settings.currentProfile, generalPanelLoggerAppendedConsoleTextCheckbox.isSelected());
 		Settings.FOV.put(Settings.currentProfile, generalPanelFoVSlider.getValue());
 		Settings.SOFTWARE_CURSOR.put(Settings.currentProfile, generalPanelCustomCursorCheckbox.isSelected());
 		Settings.AUTO_SCREENSHOT.put(Settings.currentProfile, generalPanelAutoScreenshotCheckbox.isSelected());
