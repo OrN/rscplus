@@ -1098,11 +1098,11 @@ public class Client {
 			option = menuOptions[i];
 			if (Settings.COLORIZE_CONSOLE_TEXT.get(Settings.currentProfile)) {
 				AnsiConsole.systemInstall();
-				Logger.Info(ansi()
-						.render("@|white (" + type + ")|@ " + colorizeMessage(option, type)));
+                Logger.Chat(ansi()
+                        .render("@|white (" + type + ")|@ " + colorizeMessage(option, type)).toString());
 				AnsiConsole.systemUninstall();
 			} else {
-				Logger.Info("(" + type + ") " + option);
+                Logger.Chat("(" + type + ") " + option);
 			}
 		}
 	}
@@ -1235,11 +1235,11 @@ public class Client {
 		
 		if (Settings.COLORIZE_CONSOLE_TEXT.get(Settings.currentProfile)) {
 			AnsiConsole.systemInstall();
-			Logger.Info(ansi()
-					.render("@|white (" + type + ")|@ " + ((username == null) ? "" : colorizeUsername(formatUsername(username, type), type)) + colorizeMessage(message, type)));
+            Logger.Chat(ansi()
+                    .render("@|white (" + type + ")|@ " + colorizeUsername(formatUsername(username, type), type) + colorizeMessage(message, type)).toString());
 			AnsiConsole.systemUninstall();
 		} else {
-			Logger.Info("(" + type + ") " + ((username == null) ? "" : formatUsername(username, type)) + message);
+            Logger.Chat("(" + type + ") " + formatUsername(username, type) + message);
 		}
 	}
 	
@@ -1251,33 +1251,38 @@ public class Client {
 	 * @return the formatted username clause
 	 */
 	private static String formatUsername(String username, int type) {
+        if (username == "" || username == null)
+            return "";
+        
 		switch (type) {
-		case CHAT_PRIVATE:
-			// Username tells you:
-			username = username + " tells you: ";
-			break;
-		case CHAT_PRIVATE_OUTGOING:
-			// You tell Username:
-			username = "You tell " + username + ": ";
-			break;
-		case CHAT_QUEST:
-			// If username != null during CHAT_QUEST, then this is your player name
-			username = username + ": ";
-			break;
-		case CHAT_CHAT:
-			username = username + ": ";
-			break;
-		case CHAT_TRADE_REQUEST_RECEIVED: // happens when player trades you
-			username = username + " wishes to trade with you.";
-			break;
-		/* username will not appear in these chat types, but just to cover it I'm leaving code commented out here
-		case CHAT_NONE:
-		case CHAT_PRIVATE_LOG_IN_OUT:
-		case CHAT_PLAYER_INTERRACT_OUT:
-		*/
-		default:
-			Logger.Info("Username specified for unhandled chat type, please report this: " + type);
-			username = username + ": ";
+            case CHAT_PRIVATE:
+                // Username tells you:
+                username = username + " tells you: ";
+                break;
+            case CHAT_PRIVATE_OUTGOING:
+                // You tell Username:
+                username = "You tell " + username + ": ";
+                break;
+            case CHAT_QUEST:
+                // If username != "" during CHAT_QUEST, then this is your player name
+                username = username + ": ";
+                break;
+            case CHAT_CHAT:
+                username = username + ": ";
+                break;
+            case CHAT_TRADE_REQUEST_RECEIVED: // happens when player trades you
+                username = username + " wishes to trade with you.";
+                break;
+
+            /* username will not appear in these chat types, but just to cover it I'm leaving code commented out here
+            case CHAT_NONE:
+            case CHAT_PRIVATE_LOG_IN_OUT:
+            case CHAT_PLAYER_INTERRACT_OUT:
+            */
+            
+            default:
+                Logger.Info("Username specified for unhandled chat type, please report this: " + type + " - " + username);
+                username = username + ": ";
 		}
 		
 		return username;
@@ -1291,35 +1296,39 @@ public class Client {
 	 * @return the colorized username clause
 	 */
 	public static String colorizeUsername(String colorMessage, int type) {
-		switch (type) {
-		case CHAT_PRIVATE:
-			// Username tells you:
-			colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@";
-			break;
-		case CHAT_PRIVATE_OUTGOING:
-			// You tell Username:
-			colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@";
-			break;
-		case CHAT_QUEST:
-			// If username != null during CHAT_QUEST, then this is your player name, which is usually white
-			colorMessage = "@|white,intensity_faint " + colorMessage + "|@";
-			break;
-		case CHAT_CHAT:
-			// just bold username for chat
-			colorMessage = "@|yellow,intensity_bold " + colorMessage + "|@";
-			break;
-		case CHAT_TRADE_REQUEST_RECEIVED: // happens when player trades you
-			colorMessage = "@|white " + colorMessage + "|@";
-			break;
-		/* username will not appear in these chat types, but just to cover it I'm leaving code commented out here
-		case CHAT_NONE:
-		case CHAT_PRIVATE_LOG_IN_OUT:
-		case CHAT_PLAYER_INTERRACT_OUT:
-		*/
+        if (colorMessage == "" || colorMessage == null)
+            return "";
 		
-		default:
-			Logger.Info("Username specified for unhandled chat type, please report this: " + type);
-			colorMessage = "@|white,intensity_bold " + colorMessage + "|@";
+        switch (type) {
+            case CHAT_PRIVATE:
+                // Username tells you:
+                colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@";
+                break;
+            case CHAT_PRIVATE_OUTGOING:
+                // You tell Username:
+                colorMessage = "@|cyan,intensity_bold " + colorMessage + "|@";
+                break;
+            case CHAT_QUEST:
+                // If username != null during CHAT_QUEST, then this is your player name, which is usually white
+                colorMessage = "@|white,intensity_faint " + colorMessage + "|@";
+                break;
+            case CHAT_CHAT:
+                // just bold username for chat
+                colorMessage = "@|yellow,intensity_bold " + colorMessage + "|@";
+                break;
+            case CHAT_TRADE_REQUEST_RECEIVED: // happens when player trades you
+                colorMessage = "@|white " + colorMessage + "|@";
+                break;
+
+            /* username will not appear in these chat types, but just to cover it I'm leaving code commented out here
+            case CHAT_NONE:
+            case CHAT_PRIVATE_LOG_IN_OUT:
+            case CHAT_PLAYER_INTERRACT_OUT:
+            */
+            
+            default:
+                Logger.Info("Username specified for unhandled chat type, please report this: " + type + " - " + colorMessage);
+                colorMessage = "@|white,intensity_bold " + colorMessage + "|@";
 		}
 		return colorMessage;
 	}
