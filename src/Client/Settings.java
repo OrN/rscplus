@@ -1997,6 +1997,9 @@ public class Settings {
       case "show_config_window":
         Launcher.getConfigWindow().showConfigWindow();
         return true;
+      case "show_queue_window":
+        Launcher.getQueueWindow().showQueueWindow();
+        return true;
       case "world_1":
         if (Client.state == Client.STATE_LOGIN) Game.getInstance().getJConfig().changeWorld(1);
         return true;

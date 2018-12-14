@@ -1236,6 +1236,12 @@ public class ConfigWindow {
         KeyEvent.VK_O);
     addKeybindSet(
         keybindPanel,
+        "Show queue window",
+        "show_queue_window",
+        KeyModifier.ALT,
+        KeyEvent.VK_O);
+    addKeybindSet(
+        keybindPanel,
         "Toggle combat XP menu persistence",
         "toggle_combat_xp_menu",
         KeyModifier.CTRL,
