@@ -33,6 +33,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
@@ -718,6 +719,40 @@ public class Replay {
       return keys.length() <= 0;
     }
     return false;
+  }
+
+  public static void checkAndGenerateMetadata(String replayFolder) {
+    if (new File(replayFolder + "/metadata.bin").exists()) {
+      return;
+    }
+
+    //generate new metadata
+    int replayLength = Util.getReplayEnding(new File(replayFolder + "/in.bin.gz"));
+    long dateModified = new File(replayFolder + "/keys.bin").lastModified();
+
+    try {
+      DataOutputStream metadata = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File(replayFolder + "/metadata.bin"))));
+      metadata.writeInt(replayLength);
+      metadata.writeLong(dateModified);
+      metadata.flush();
+      metadata.close();
+    } catch (IOException e) {
+      Logger.Error("Couldn't write metadata.bin!");
+    }
+  }
+
+  public static Object[] readMetadata(String replayFolder) {
+    int replayLength = -1;
+    long dateModified = -1;
+    try {
+      DataInputStream metadata = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(replayFolder + "/metadata.bin"))));
+      replayLength = metadata.readInt();
+      dateModified = metadata.readLong();
+      metadata.close();
+    } catch (IOException e) {
+      Logger.Error("Couldn't read metadata.bin!");
+    }
+    return new Object[] {replayLength,dateModified};
   }
 
   public static void resetFrameTimeSlice() {
