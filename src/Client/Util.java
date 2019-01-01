@@ -266,6 +266,7 @@ public class Util {
         }
         for (File file : potentialReplayFolders) {
           if (Replay.isValid(file.getAbsolutePath())) {
+            Replay.checkAndGenerateMetadata(file.getAbsolutePath());
             replayFolders.add(file);
           } else {
             if (Replay.isBroken(file.getAbsolutePath())) {

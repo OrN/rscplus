@@ -23,6 +23,7 @@ import Client.Launcher;
 import Client.Logger;
 import Client.Settings;
 import Client.Util;
+import Client.QueueWindow;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -81,7 +82,7 @@ public class Replay {
   public static boolean isSeeking = false;
   public static boolean isPlaying = false;
   public static boolean isRecording = false;
-  public static boolean isRestarting = true;
+  public static boolean isRestarting = false;
   public static boolean paused = false;
   public static boolean closeDialogue = false;
 
@@ -257,6 +258,8 @@ public class Replay {
     // Client.strings[662] = "@bla@from:";
     // }
     isPlaying = true;
+
+    QueueWindow.updatePlaying();
 
     // Wait
     try {
@@ -725,7 +728,7 @@ public class Replay {
     if (new File(replayFolder + "/metadata.bin").exists()) {
       return;
     }
-
+    Logger.Info("Generating metadata for " + replayFolder);
     //generate new metadata
     int replayLength = Util.getReplayEnding(new File(replayFolder + "/in.bin.gz"));
     long dateModified = new File(replayFolder + "/keys.bin").lastModified();

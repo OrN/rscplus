@@ -22,6 +22,7 @@ import Client.Launcher;
 import Client.Logger;
 import Client.Settings;
 import Client.Util;
+import Client.QueueWindow;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -35,6 +36,7 @@ import javax.swing.JOptionPane;
 
 public class ReplayQueue {
   public static int currentIndex = 0;
+  public static int lastIndex = 1;
   public static String currentReplayName = "";
   public static boolean skipped = false;
   public static ArrayList<File> queue = new ArrayList<File>();
@@ -57,6 +59,7 @@ public class ReplayQueue {
         List<File> replays = Util.getAllReplays(selectionArr);
         if (replays.size() > 0) {
           ReplayQueue.queue.addAll(replays);
+          QueueWindow.copyQueueToTable();
           Logger.Info(
               String.format(
                   "Added %d replays to the queue. New size: %d",
@@ -78,7 +81,7 @@ public class ReplayQueue {
     return false;
   }
 
-  static DropTarget dropReplays =
+  static DropTarget dropReplays = //FIXME this gets called too many times if you drag and drop multiple folders at once
       new DropTarget() {
         public synchronized void drop(DropTargetDropEvent evt) {
           try {
@@ -114,6 +117,7 @@ public class ReplayQueue {
             } else {
               // at least 1 replay found
               ReplayQueue.queue.addAll(replays);
+              QueueWindow.copyQueueToTable();
               Logger.Info(
                   String.format(
                       "Added %d replay%s to the queue. New size: %d",
@@ -131,6 +135,7 @@ public class ReplayQueue {
 
   public static void nextReplay() {
     if (currentIndex < queue.size()) {
+      lastIndex = currentIndex;
       playFromQueue(currentIndex);
       currentIndex++;
     } else {
@@ -139,7 +144,8 @@ public class ReplayQueue {
   }
 
   public static void previousReplay() {
-    if (currentIndex > 1) {
+    if (currentIndex > 1) { //TODO verify as working
+      lastIndex = currentIndex;
       currentIndex--;
       playFromQueue(currentIndex - 1);
     } else {
@@ -147,29 +153,44 @@ public class ReplayQueue {
     }
   }
 
-  public static void playFromQueue(int index) {
+  public static void skipToReplay(int index) {
+    skipped = true;
+    lastIndex = currentIndex;
+    currentIndex = index + 1;
+    playFromQueue(index);
+  }
+  public static void removeReplay(int index) {
+    Logger.Debug(String.format("removing %d aka %s",index,queue.get(index)));
+    queue.remove(index);
+  }
+
+  private static void playFromQueue(int index) {
     if (index < 0) {
       index = 0;
     }
     if (index > queue.size() - 1) {
       index = queue.size() - 1;
     }
+
     if (Replay.isPlaying) {
       Replay.controlPlayback("stop");
       try {
         Thread.sleep(800); // without this at all, client says user is still logged in lol
       } catch (Exception e) { // through experimentation, I found that 700 is not long enough.
+        Logger.Debug(e.toString());
         // this value might work. shorter, and the replay server has trouble keeping its
       } // timestamps straight... TODO: eliminate need for this delay.
     }
+
     currentReplayName = queue.get(index).getAbsolutePath();
     Logger.Info("Selected (" + index + "): " + currentReplayName);
     Client.runReplayHook = true;
-    // Client.login_hook();
+    QueueWindow.updatePlaying();
   }
 
   public static void clearQueue() {
     queue = new ArrayList<File>();
+    lastIndex = -1;
     currentIndex = 0;
   }
 }
