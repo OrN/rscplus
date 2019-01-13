@@ -285,7 +285,7 @@ public class ConfigWindow {
   private void runInit() {
     frame = new JFrame();
     frame.setTitle("Settings");
-    frame.setBounds(100, 100, 444, 650);
+    frame.setBounds(100, 100, 800, 650);
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.getContentPane().setLayout(new BorderLayout(0, 0));
     URL iconURL = Settings.getResource("/assets/icon.png");
