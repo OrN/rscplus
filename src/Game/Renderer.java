@@ -1052,8 +1052,7 @@ public class Renderer {
         } else {
           if (ReplayQueue.replayFileSelectAdd()) {
             Renderer.replayOption = 2;
-            Logger.Info("Replay selected: " + ReplayQueue.currentReplayName);
-            Client.login_hook();
+            ReplayQueue.nextReplay();
           } else {
             Renderer.replayOption = 0;
           }
