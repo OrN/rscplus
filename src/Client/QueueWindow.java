@@ -123,7 +123,7 @@ public class QueueWindow {
     //ToolTipManager.sharedInstance().setDismissDelay(500);
     frame = new JFrame();
     frame.setTitle("ıllıllı [ Replay Queue ] ıllıllı");
-    frame.setBounds(100, 100, 444, 650);
+    frame.setBounds(100, 100, 800, 580);
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.getContentPane().setLayout(new BorderLayout(0, 0));
     URL iconURL = Settings.getResource("/assets/icon.png");
@@ -740,9 +740,17 @@ public class QueueWindow {
       String cellTextReplaced = cellText.replace(Settings.REPLAY_BASE_PATH.get("custom"), "");
 
       if (cellText.equals(cellTextReplaced)) {
-        cellText += "/";
+        if (System.getProperty("os.name").contains("Windows")) {
+          cellText += "\\";
+        } else {
+          cellText += "/";
+        }
       } else {
-        cellText = String.format("./%s/", cellTextReplaced);
+        if (System.getProperty("os.name").contains("Windows")) {
+          cellText = String.format(".\\%s\\", cellTextReplaced);
+        } else {
+          cellText = String.format("./%s/", cellTextReplaced);
+        }
       }
 
       if (fm.stringWidth(cellText) > availableWidth)
