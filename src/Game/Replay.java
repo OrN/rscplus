@@ -315,6 +315,7 @@ public class Replay {
     replayServer.isDone = true;
     resetPatchClient();
     isPlaying = false;
+    QueueWindow.updatePlaying();
   }
 
   public static void initializeReplayRecording() {

@@ -81,53 +81,61 @@ public class ReplayQueue {
     return false;
   }
 
-  static DropTarget dropReplays = //FIXME this gets called too many times if you drag and drop multiple folders at once
+  static DropTarget dropReplays =
       new DropTarget() {
         public synchronized void drop(DropTargetDropEvent evt) {
           try {
-            evt.acceptDrop(DnDConstants.ACTION_LINK);
-            List<File> droppedFiles =
-                (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-            List<File> replays = Util.getAllReplays(droppedFiles);
+            if (evt.getTransferable().isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+              evt.acceptDrop(DnDConstants.ACTION_LINK);
+              List<File> droppedFiles =
+                      (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+              List<File> replays = Util.getAllReplays(droppedFiles);
+              Logger.Debug("Got some files");
 
-            if (replays.size() == 0) {
-              // no valid replays
-              if (foundBrokenReplay) {
-                JOptionPane.showMessageDialog(
-                    Game.getInstance().getApplet(),
-                    "The replay you dragged onto the client has a keys.bin file which is empty.\n"
-                        + "The data inside is encrypted without a key to decrypt it. :(\n\n"
-                        + "Some information might be able to be retrieved from this replay\n"
-                        + "through reverse engineering, but basically it's broken.",
-                    "rscplus",
-                    JOptionPane.ERROR_MESSAGE,
-                    Launcher.icon_warn);
+              if (replays.size() == 0) {
+                // no valid replays
+                if (foundBrokenReplay) {
+                  JOptionPane.showMessageDialog(
+                          Game.getInstance().getApplet(),
+                          "The replay you dragged onto the client has a keys.bin file which is empty.\n"
+                                  + "The data inside is encrypted without a key to decrypt it. :(\n\n"
+                                  + "Some information might be able to be retrieved from this replay\n"
+                                  + "through reverse engineering, but basically it's broken.",
+                          "rscplus",
+                          JOptionPane.ERROR_MESSAGE,
+                          Launcher.icon_warn);
+                } else {
+                  // nothing that even looks like a replay was found
+                  JOptionPane.showMessageDialog(
+                          Game.getInstance().getApplet(),
+                          "The folder you dropped onto the client is not a replay, nor does it contain replay folders.\n"
+                                  + "\n"
+                                  + "You need to drop a folder that contains a 'version.bin', 'in.bin.gz', and 'keys.bin' for the replay.",
+                          "rscplus",
+                          JOptionPane.ERROR_MESSAGE,
+                          Launcher.icon_warn);
+                }
+                return;
               } else {
-                // nothing that even looks like a replay was found
-                JOptionPane.showMessageDialog(
-                    Game.getInstance().getApplet(),
-                    "The folder you dropped onto the client is not a replay, nor does it contain replay folders.\n"
-                        + "\n"
-                        + "You need to drop a folder that contains a 'version.bin', 'in.bin.gz', and 'keys.bin' for the replay.",
-                    "rscplus",
-                    JOptionPane.ERROR_MESSAGE,
-                    Launcher.icon_warn);
-              }
-              return;
-            } else {
-              // at least 1 replay found
-              ReplayQueue.queue.addAll(replays);
-              QueueWindow.copyQueueToTable();
-              Logger.Info(
-                  String.format(
-                      "Added %d replay%s to the queue. New size: %d",
-                      replays.size(), replays.size() != 1 ? "s" : "", ReplayQueue.queue.size()));
+                // at least 1 replay found
+                ReplayQueue.queue.addAll(replays);
+                QueueWindow.copyQueueToTable();
+                Logger.Info(
+                        String.format(
+                                "Added %d replay%s to the queue. New size: %d",
+                                replays.size(), replays.size() != 1 ? "s" : "", ReplayQueue.queue.size()));
 
-              if (Client.state == Client.STATE_LOGIN) {
-                ReplayQueue.nextReplay();
+                if (Client.state == Client.STATE_LOGIN) {
+                  ReplayQueue.nextReplay();
+                }
               }
+            } else {
+              //This can happen for example if a person drags rows from the replay queue window into the main window
+              Logger.Info("Whatever you just dragged into the main window, RSC+ doesn't know what to do with it.");
+              Logger.Info("Please report this as a bug on GitHub if you believe it should work.");
             }
           } catch (Exception ex) {
+            Logger.Error("Error in drop handler!");
             ex.printStackTrace();
           }
         }
@@ -144,7 +152,7 @@ public class ReplayQueue {
   }
 
   public static void previousReplay() {
-    if (currentIndex > 1) { //TODO verify as working
+    if (currentIndex > 1) {
       lastIndex = currentIndex;
       currentIndex--;
       playFromQueue(currentIndex - 1);

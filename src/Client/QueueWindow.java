@@ -47,10 +47,8 @@ import javax.swing.table.*;
 import javax.swing.SwingUtilities;
 //import javax.swing.ToolTipManager;
 
-import Game.Renderer;
 import Game.Replay;
 import Game.ReplayQueue;
-import Game.ReplayServer;
 
 import static javax.swing.JComponent.WHEN_FOCUSED;
 
@@ -521,7 +519,11 @@ public class QueueWindow {
     }
     if (model.getRowCount() >= ReplayQueue.currentIndex &&
             ReplayQueue.currentIndex >= 1) {
-      model.setValueAt("▶", ReplayQueue.currentIndex - 1, 0);
+      if (Replay.isPlaying) {
+        model.setValueAt("▶", ReplayQueue.currentIndex - 1, 0);
+      } else {
+        model.setValueAt("", ReplayQueue.currentIndex - 1, 0);
+      }
     }
   }
 

@@ -264,15 +264,15 @@ public class Util {
             ReplayQueue.foundBrokenReplay = true;
           }
         }
-        for (File file : potentialReplayFolders) {
-          if (Replay.isValid(file.getAbsolutePath())) {
-            Replay.checkAndGenerateMetadata(file.getAbsolutePath());
-            replayFolders.add(file);
-          } else {
-            if (Replay.isBroken(file.getAbsolutePath())) {
-              ReplayQueue.foundBrokenReplay = true;
-            }
-          }
+      }
+    }
+    for (File file : potentialReplayFolders) {
+      if (Replay.isValid(file.getAbsolutePath())) {
+        Replay.checkAndGenerateMetadata(file.getAbsolutePath());
+        replayFolders.add(file);
+      } else {
+        if (Replay.isBroken(file.getAbsolutePath())) {
+          ReplayQueue.foundBrokenReplay = true;
         }
       }
     }
