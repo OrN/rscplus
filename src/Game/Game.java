@@ -202,6 +202,7 @@ public class Game extends JFrame
   public final void windowClosing(WindowEvent e) {
     dispose();
     Launcher.getConfigWindow().disposeJFrame();
+    Launcher.getQueueWindow().disposeJFrame();
     TrayHandler.removeTrayIcon();
     NotificationsHandler.closeNotificationSoundClip();
     NotificationsHandler.disposeNotificationHandler();
