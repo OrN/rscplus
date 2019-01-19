@@ -18,12 +18,31 @@
  */
 package Client;
 
-import java.awt.*;
+import static javax.swing.JComponent.WHEN_FOCUSED;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.FontMetrics;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSource;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -31,26 +50,43 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 import java.util.Vector;
-
 import javax.activation.ActivationDataFlavor;
 import javax.activation.DataHandler;
-
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DropMode;
+import javax.swing.ImageIcon;
+import javax.swing.InputMap;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+//import javax.swing.ToolTipManager;
+import javax.swing.TransferHandler;
+import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-import javax.swing.table.*;
-import javax.swing.SwingUtilities;
-//import javax.swing.ToolTipManager;
-
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import Game.Replay;
 import Game.ReplayQueue;
-
-import static javax.swing.JComponent.WHEN_FOCUSED;
 
 /**
  * GUI designed for the RSCPlus client that manages the replay playlist queue
@@ -61,6 +97,7 @@ public class QueueWindow {
   static JLabel replayCountLabel = new JLabel("0 replays");
   static private JFrame frame;
   static private JButton button;
+	static private Font controlsFont;
   static private boolean reorderIsPointless = true; //helper bool to stop copyTableToQueue if nothing in table has changed
 
   public QueueWindow() {
@@ -117,8 +154,65 @@ public class QueueWindow {
       e.printStackTrace();
     }
   }
+	
+	private static void controlsFontInit() {
+		String uppermostChar = "\uD83D\uDD00";
+		String currentFontName = "";
+		
+		Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
+		if (font.canDisplayUpTo(uppermostChar) < 0) {
+			controlsFont = font;
+			return;
+		}
+		// search another font
+		Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+		for (Font afont : fonts) {
+			if (afont.canDisplayUpTo(uppermostChar) < 0) {
+				if (currentFontName.equals("")) {
+					currentFontName = afont.getName();
+				}
+				// heuristic-based probably not best font
+				else if (currentFontName.toLowerCase().contains("emoji")) {
+					currentFontName = afont.getName();
+				}
+				
+				// heuristic-based possibly best font
+				if (currentFontName.toLowerCase().contains("symbol")) {
+					currentFontName = afont.getName();
+					controlsFont = new Font(currentFontName, Font.PLAIN, 18);
+					return;
+				}
+				
+			}
+		}
+		// some font was found to display
+		if (!currentFontName.equals("")) {
+			controlsFont = new Font(currentFontName, Font.PLAIN, 18);
+			return;
+		}
+		// no font found for controls charset display message + fallback
+		Logger.Warn("No extended unicode fonts installed on platform, making fallback");
+		
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		InputStream is = Settings.getResourceAsStream("/assets/Symbola_Hinted.ttf");
+		try {
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, is));
+			font = new Font("Symbola", Font.PLAIN, 18);
+			controlsFont = font;
+			if (font.canDisplayUpTo(uppermostChar) < 0) {
+				controlsFont = font;
+				return;
+			} else {
+				controlsFont = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
+			}
+		} catch (FontFormatException | IOException e) {
+			controlsFont = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
+		}
+	}
 
   private static void runInit() {
+		controlsFontInit();
+		
     //ToolTipManager.sharedInstance().setInitialDelay(0);
     //ToolTipManager.sharedInstance().setDismissDelay(500);
     frame = new JFrame();
@@ -787,7 +881,7 @@ public class QueueWindow {
 
   private static void formatButton(String text) {
     button = new JButton(text);
-    button.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
+		button.setFont(controlsFont);
     button.setMargin(new Insets(-5,-7,-2,-7));
   }
 
