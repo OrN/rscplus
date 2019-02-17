@@ -50,32 +50,27 @@ public class ReplayQueue {
 
     File selection = j.getSelectedFile();
     if (selection != null && response != JFileChooser.CANCEL_OPTION) {
-      ReplayQueue.currentReplayName = selection.getPath();
-      if (Replay.isValid(ReplayQueue.currentReplayName)) {
+      List<File> selectionArr = new ArrayList<File>();
+      selectionArr.add(selection);
+      List<File> replays = Util.getAllReplays(selectionArr);
+      if (replays.size() > 0) {
+        ReplayQueue.queue.addAll(replays);
+        QueueWindow.copyQueueToTable();
+        Logger.Info(
+            String.format(
+                "Added %d replays to the queue. New size: %d",
+                replays.size(), ReplayQueue.queue.size()));
         return true;
       } else {
-        List<File> selectionArr = new ArrayList<File>();
-        selectionArr.add(selection);
-        List<File> replays = Util.getAllReplays(selectionArr);
-        if (replays.size() > 0) {
-          ReplayQueue.queue.addAll(replays);
-          QueueWindow.copyQueueToTable();
-          Logger.Info(
-              String.format(
-                  "Added %d replays to the queue. New size: %d",
-                  replays.size(), ReplayQueue.queue.size()));
-          return true;
-        } else {
-          JOptionPane.showMessageDialog(
-              Game.getInstance().getApplet(),
-              "The replay folder you selected is not valid.\n"
-                  + "\n"
-                  + "You need to select a folder that contains the 'version.bin', 'in.bin.gz', and 'keys.bin' for your replay.\n"
-                  + "They're usually in a folder with your login username.",
-              "rscplus",
-              JOptionPane.ERROR_MESSAGE,
-              Launcher.icon_warn);
-        }
+        JOptionPane.showMessageDialog(
+            Game.getInstance().getApplet(),
+            "The replay folder you selected is not valid.\n"
+                + "\n"
+                + "You need to select a folder that contains the 'version.bin', 'in.bin.gz', and 'keys.bin' for your replay.\n"
+                + "They're usually in a folder with your login username.",
+            "rscplus",
+            JOptionPane.ERROR_MESSAGE,
+            Launcher.icon_warn);
       }
     }
     return false;
