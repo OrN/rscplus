@@ -164,35 +164,8 @@ public class QueueWindow {
 			controlsFont = font;
 			return;
 		}
-		// search another font
-		Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-		for (Font afont : fonts) {
-			if (afont.canDisplayUpTo(uppermostChar) < 0) {
-				if (currentFontName.equals("")) {
-					currentFontName = afont.getName();
-				}
-				// heuristic-based probably not best font
-				else if (currentFontName.toLowerCase().contains("emoji")) {
-					currentFontName = afont.getName();
-				}
-				
-				// heuristic-based possibly best font
-				if (currentFontName.toLowerCase().contains("symbol")) {
-					currentFontName = afont.getName();
-					controlsFont = new Font(currentFontName, Font.PLAIN, 18);
-					return;
-				}
-				
-			}
-		}
-		// some font was found to display
-		if (!currentFontName.equals("")) {
-			controlsFont = new Font(currentFontName, Font.PLAIN, 18);
-			return;
-		}
-		// no font found for controls charset display message + fallback
-		Logger.Warn("No extended unicode fonts installed on platform, making fallback");
-		
+
+		// current font is not suitable, using our fallback
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		InputStream is = Settings.getResourceAsStream("/assets/Symbola_Hinted.ttf");
 		try {
