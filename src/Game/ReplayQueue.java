@@ -194,7 +194,12 @@ public class ReplayQueue {
     }
 
     currentReplayName = queue.get(index).getAbsolutePath();
-    Logger.Info("@|cyan Selected (" + index + "): |@@|cyan,intensity_bold " + currentReplayName.replace(Settings.REPLAY_BASE_PATH.get("custom"), "") + "|@");
+    Logger.Info(
+        "@|cyan Selected ("
+            + index
+            + "): |@@|cyan,intensity_bold "
+            + currentReplayName.replace(Settings.REPLAY_BASE_PATH.get("custom"), "")
+            + "|@");
     Client.runReplayHook = true;
     QueueWindow.updatePlaying();
   }
