@@ -35,11 +35,7 @@ import java.awt.Insets;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSource;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -48,47 +44,19 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Random;
-import java.util.Vector;
+import java.util.*;
 import javax.activation.ActivationDataFlavor;
 import javax.activation.DataHandler;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DropMode;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 //import javax.swing.ToolTipManager;
-import javax.swing.TransferHandler;
-import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.table.*;
 import javax.swing.text.TableView;
 import Game.Replay;
 import Game.ReplayQueue;
@@ -104,6 +72,7 @@ public class QueueWindow {
   static private JButton button;
   static private Font controlsFont;
   static private String editValue = "@:/@";
+  static private boolean editingEnabled = false;
   static private boolean reorderIsPointless = true; //helper bool to stop copyTableToQueue if nothing in table has changed
 
   public QueueWindow() {
@@ -284,10 +253,6 @@ public class QueueWindow {
     };
     DefaultTableCellRenderer cutoffLeftRenderer = new CutoffLeftRenderer();
 
-    //make it so that you have to triple click to edit replay name, not just double click, which is already "switch to replay"
-    //TableCellEditor tom = playlistTable.getDefaultEditor(playlistTable.getColumnClass(3));
-
-
     //get "previous" value of cell being edited
     playlistTable.addPropertyChangeListener(new PropertyChangeListener() {
         @Override
@@ -367,13 +332,17 @@ public class QueueWindow {
 
     navigationPanel.add(Box.createHorizontalGlue());
 
-    addButton("Clear Sort", navigationPanel, Component.LEFT_ALIGNMENT)
+    addButton("Rename", navigationPanel, Component.LEFT_ALIGNMENT)
             .addActionListener(
                     new ActionListener() {
                       @Override
                       public void actionPerformed(ActionEvent e) {
-                        reorderIsPointless = true;
-                        clearSort();
+                        editingEnabled = !editingEnabled;
+                        if (editingEnabled) {
+                          Logger.Info("@|green Toggled On:|@ Replays can now be renamed by double clicking the \"Replay Name\" column or by single clicking that column and pressing F2.");
+                        } else {
+                          Logger.Info("@|green Toggled Off:|@ You can now double click anywhere in each row to switch to that replay");
+                        }
                       }
                     });
 
@@ -495,7 +464,8 @@ public class QueueWindow {
     playlistTable.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent mouseEvent) {
         int row = playlistTable.rowAtPoint(mouseEvent.getPoint());
-        if (mouseEvent.getClickCount() == 2 && playlistTable.getSelectedRow() != -1) {
+        int column = playlistTable.columnAtPoint(mouseEvent.getPoint());
+        if (mouseEvent.getClickCount() == 2 && playlistTable.getSelectedRow() != -1 && !playlistTable.isCellEditable(row, column)) {
           ReplayQueue.skipToReplay(playlistTable.getRowSorter().convertRowIndexToModel(row));
         }
       }
@@ -540,8 +510,52 @@ public class QueueWindow {
       }
     });
 
-    // detect when rows are sorted
-    addTheRowSorterListener();
+    // add functionality to go back to unsorted mode by clicking three times on the header
+    TableRowSorter sorter = new TableRowSorter(model);
+    playlistTable.setRowSorter(sorter);
+    // Remove default sort MouseListener
+    for (MouseListener mouseListener : playlistTable.getTableHeader().getMouseListeners()) {
+      if (mouseListener instanceof javax.swing.plaf.basic.BasicTableHeaderUI.MouseInputHandler) {
+        playlistTable.getTableHeader().removeMouseListener(mouseListener);
+      }
+    }
+    // Add MouseListener for onClick event
+    playlistTable.getTableHeader().addMouseListener(new MouseAdapter() {
+      private SortOrder currentOrder = SortOrder.UNSORTED;
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        int column = playlistTable.getTableHeader().columnAtPoint(e.getPoint());
+        RowSorter sorter = playlistTable.getRowSorter();
+
+        for (RowSorter.SortKey sortKey : playlistTable.getRowSorter().getSortKeys()) {
+          if (sortKey.getColumn() != column) {
+            currentOrder = SortOrder.UNSORTED;
+          }
+          break;
+        }
+        if (reorderIsPointless) {
+          currentOrder = SortOrder.UNSORTED;
+        }
+
+        List sortKeys = new ArrayList();
+        switch (currentOrder) {
+          case UNSORTED:
+            reorderIsPointless = false;
+            sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.ASCENDING));
+            break;
+          case ASCENDING:
+            reorderIsPointless = false;
+            sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.DESCENDING));
+            break;
+          case DESCENDING:
+            reorderIsPointless = true;
+            sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.UNSORTED));
+            break;
+        }
+        sorter.setSortKeys(sortKeys);
+      }
+    });
 
     /*
     presetsScrollPane.setViewportView(presetsPanel);
@@ -645,7 +659,7 @@ public class QueueWindow {
 
     @Override
     public boolean isCellEditable(int row, int col) {
-      if (col == 3) { //Replay Name Column
+      if (col == 3 && editingEnabled) { //Replay Name Column
         return true;
       }
       return false;
@@ -932,15 +946,6 @@ public class QueueWindow {
     playlistTable.setAutoCreateRowSorter(false);
     playlistTable.setAutoCreateRowSorter(true);
     playlistTable.getTableHeader().repaint();
-    addTheRowSorterListener();
   }
 
-  private static void addTheRowSorterListener() {
-    playlistTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
-      @Override
-      public void sorterChanged(RowSorterEvent rowSorterEvent) {
-        reorderIsPointless = false;
-      }
-    });
-  }
 }
