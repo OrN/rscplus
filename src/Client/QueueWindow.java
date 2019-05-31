@@ -89,6 +89,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.text.TableView;
 import Game.Replay;
 import Game.ReplayQueue;
 
@@ -282,6 +283,10 @@ public class QueueWindow {
       }
     };
     DefaultTableCellRenderer cutoffLeftRenderer = new CutoffLeftRenderer();
+
+    //make it so that you have to triple click to edit replay name, not just double click, which is already "switch to replay"
+    //TableCellEditor tom = playlistTable.getDefaultEditor(playlistTable.getColumnClass(3));
+
 
     //get "previous" value of cell being edited
     playlistTable.addPropertyChangeListener(new PropertyChangeListener() {
@@ -592,8 +597,6 @@ public class QueueWindow {
       ReplayQueue.queue.add(new File((String)model.getRow(row)[2],(String)model.getRow(row)[3]));
     }
 
-    playlistTable.setEditingColumn(3);
-
     // display newly reordered data in table
     clearSort();
     copyQueueToTable();
@@ -654,27 +657,39 @@ public class QueueWindow {
       Object[] rowContents = getRow(row);
       String afterEditValue = (String) rowContents[3];
 
-      if (!editValue.equals(afterEditValue) && editValue != "@:/@") {
-        String folderPath = (String) rowContents[2];
-
-        String renameToPathFull = folderPath + "/" + afterEditValue;
-
-        //rename folder
-        if (!ReplayQueue.queue.get(row).renameTo(new File(renameToPathFull))) {
-          Logger.Debug("Failed to rename row: " + ReplayQueue.queue.get(row).getAbsolutePath());
-          copyQueueToTable();
-        } else {
-          //Instances of the File class are immutable, so after calling renameTo, we must update the pathname to the new one
-          ReplayQueue.queue.set(row, new File(renameToPathFull));
+      //rename folder
+      if (afterEditValue.indexOf('/') == -1) {
+        if (!editValue.equals(afterEditValue) && !editValue.equals("@:/@")) {
+          File renamedFile = new File(ReplayQueue.queue.get(row).getParent(), afterEditValue);
+          Logger.Debug("We'd like to rename to: " + renamedFile.getAbsolutePath());
+          if (!ReplayQueue.queue.get(row).renameTo(renamedFile)) {
+            Logger.Warn("@|red Failed to rename row: |@" + ReplayQueue.queue.get(row).getAbsolutePath());
+            if (System.getProperty("os.name").contains("Windows")) {
+              if (afterEditValue.matches(".*[?%*:|\"<>]")) {
+                Logger.Warn(String.format("@|yellow You're on Windows and you tried to use a restricted character in your desired filename: |@@|red %s|@", afterEditValue));
+              } else {
+                Logger.Warn("@|yellow Probably this is because you're |@@|red using Windows |@@|yellow and Windows locks the replay files while they are in use. There are workarounds, but my advice is to |@@|green use Debian!|@");
+                Logger.Warn("@|yellow You can also try just advancing to the next replay, in order to name the replay you're currently watching, if you would like to stop watching this replay at this time.|@");
+              }
+            }
+            copyQueueToTable();
+          } else {
+            //Instances of the File class are immutable, so after calling renameTo, we must update the pathname to the new one
+            ReplayQueue.queue.set(row, renamedFile);
+            Logger.Info(String.format("Renamed @|green %s|@ to @|cyan %s|@", editValue, afterEditValue));
+          }
         }
-
-        Logger.Info(String.format("Renamed @|green %s|@ to @|cyan %s|@", editValue, afterEditValue));
-        editValue = "@:/@";
+      } else {
+        Logger.Warn(String.format("@|yellow RSC+ is not programmed to rename folders into subdirectories. Your offending filename: |@@|red %s|@",afterEditValue));
+        copyQueueToTable();
       }
+      editValue = "@:/@";
+
       //}
 
       super.fireTableCellUpdated(row, col);
     }
+
     /*
     public String getToolTipText(MouseEvent e) { //TODO generate tooltips somehow
       String tip = "";
