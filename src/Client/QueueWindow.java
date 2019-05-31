@@ -40,6 +40,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +59,7 @@ import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
@@ -67,6 +70,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 //import javax.swing.ToolTipManager;
@@ -97,7 +101,8 @@ public class QueueWindow {
   static JLabel replayCountLabel = new JLabel("0 replays");
   static private JFrame frame;
   static private JButton button;
-	static private Font controlsFont;
+  static private Font controlsFont;
+  static private String editValue = "@:/@";
   static private boolean reorderIsPointless = true; //helper bool to stop copyTableToQueue if nothing in table has changed
 
   public QueueWindow() {
@@ -184,8 +189,8 @@ public class QueueWindow {
 	}
 
   private static void runInit() {
-		controlsFontInit();
-		
+    controlsFontInit();
+
     //ToolTipManager.sharedInstance().setInitialDelay(0);
     //ToolTipManager.sharedInstance().setDismissDelay(500);
     frame = new JFrame();
@@ -277,6 +282,20 @@ public class QueueWindow {
       }
     };
     DefaultTableCellRenderer cutoffLeftRenderer = new CutoffLeftRenderer();
+
+    //get "previous" value of cell being edited
+    playlistTable.addPropertyChangeListener(new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          Object ob = evt.getNewValue();
+          if (evt.getPropertyName().equals("tableCellEditor") && ob != null)  {
+            if (ob instanceof DefaultCellEditor) {
+              editValue = ((JTextField)((DefaultCellEditor)ob).getComponent()).getText();
+            }
+          }
+        }
+      }
+    );
 
     // center table headers
     JTableHeader header = playlistTable.getTableHeader();
@@ -573,6 +592,8 @@ public class QueueWindow {
       ReplayQueue.queue.add(new File((String)model.getRow(row)[2],(String)model.getRow(row)[3]));
     }
 
+    playlistTable.setEditingColumn(3);
+
     // display newly reordered data in table
     clearSort();
     copyQueueToTable();
@@ -620,10 +641,40 @@ public class QueueWindow {
     }
 
     @Override
-    public boolean isCellEditable(int i, int i1) {
+    public boolean isCellEditable(int row, int col) {
+      if (col == 3) { //Replay Name Column
+        return true;
+      }
       return false;
     }
 
+    @Override
+    public void fireTableCellUpdated(int row, int col) {
+      //if (col == 3) { //need to uncomment this if isCellEditable is made true for any other column
+      Object[] rowContents = getRow(row);
+      String afterEditValue = (String) rowContents[3];
+
+      if (!editValue.equals(afterEditValue) && editValue != "@:/@") {
+        String folderPath = (String) rowContents[2];
+
+        String renameToPathFull = folderPath + "/" + afterEditValue;
+
+        //rename folder
+        if (!ReplayQueue.queue.get(row).renameTo(new File(renameToPathFull))) {
+          Logger.Debug("Failed to rename row: " + ReplayQueue.queue.get(row).getAbsolutePath());
+          copyQueueToTable();
+        } else {
+          //Instances of the File class are immutable, so after calling renameTo, we must update the pathname to the new one
+          ReplayQueue.queue.set(row, new File(renameToPathFull));
+        }
+
+        Logger.Info(String.format("Renamed @|green %s|@ to @|cyan %s|@", editValue, afterEditValue));
+        editValue = "@:/@";
+      }
+      //}
+
+      super.fireTableCellUpdated(row, col);
+    }
     /*
     public String getToolTipText(MouseEvent e) { //TODO generate tooltips somehow
       String tip = "";
