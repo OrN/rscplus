@@ -53,11 +53,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.*;
-import javax.swing.text.TableView;
 import Game.Replay;
 import Game.ReplayQueue;
 
@@ -280,6 +277,10 @@ public class QueueWindow {
     numberInQueueCol.setPreferredWidth(50);
     numberInQueueCol.setCellRenderer(centerRenderer);
     folderPathCol.setCellRenderer(cutoffLeftRenderer);
+    folderPathCol.setMinWidth(85);
+    folderPathCol.setPreferredWidth(250);
+    replayNameCol.setMinWidth(100);
+    replayNameCol.setPreferredWidth(250);
     replayLengthCol.setMinWidth(60);
     replayLengthCol.setMaxWidth(150);
     replayLengthCol.setPreferredWidth(60);
@@ -511,22 +512,22 @@ public class QueueWindow {
     });
 
     // add functionality to go back to unsorted mode by clicking three times on the header
-    TableRowSorter sorter = new TableRowSorter(model);
-    playlistTable.setRowSorter(sorter);
-    // Remove default sort MouseListener
-    for (MouseListener mouseListener : playlistTable.getTableHeader().getMouseListeners()) {
-      if (mouseListener instanceof javax.swing.plaf.basic.BasicTableHeaderUI.MouseInputHandler) {
-        playlistTable.getTableHeader().removeMouseListener(mouseListener);
-      }
-    }
+    playlistTable.setRowSorter(new TableRowSorter(model));
+
     // Add MouseListener for onClick event
     playlistTable.getTableHeader().addMouseListener(new MouseAdapter() {
       private SortOrder currentOrder = SortOrder.UNSORTED;
+      private int lastCol = -1;
 
       @Override
       public void mouseClicked(MouseEvent e) {
         int column = playlistTable.getTableHeader().columnAtPoint(e.getPoint());
         RowSorter sorter = playlistTable.getRowSorter();
+
+        if (column != lastCol) {
+          currentOrder = SortOrder.UNSORTED;
+          lastCol = column;
+        }
 
         for (RowSorter.SortKey sortKey : playlistTable.getRowSorter().getSortKeys()) {
           if (sortKey.getColumn() != column) {
@@ -539,21 +540,23 @@ public class QueueWindow {
         }
 
         List sortKeys = new ArrayList();
-        switch (currentOrder) {
-          case UNSORTED:
-            reorderIsPointless = false;
-            sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.ASCENDING));
-            break;
-          case ASCENDING:
-            reorderIsPointless = false;
-            sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.DESCENDING));
-            break;
-          case DESCENDING:
-            reorderIsPointless = true;
-            sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.UNSORTED));
-            break;
+        if (e.getButton() == MouseEvent.BUTTON1) {
+          switch (currentOrder) {
+            case UNSORTED:
+              reorderIsPointless = false;
+              sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.ASCENDING));
+              break;
+            case ASCENDING:
+              reorderIsPointless = false;
+              sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.DESCENDING));
+              break;
+            case DESCENDING:
+              reorderIsPointless = true;
+              sortKeys.add(new RowSorter.SortKey(column, currentOrder = SortOrder.UNSORTED));
+              break;
+          }
+          sorter.setSortKeys(sortKeys);
         }
-        sorter.setSortKeys(sortKeys);
       }
     });
 
