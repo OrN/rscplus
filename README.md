@@ -3,6 +3,9 @@
 
 *The code is licensed under GPLv3 in hopes of protecting people from malicious modifications.*
 
+# We have moved Repos!
+# Update your bookmarks to https://github.com/RSCPlus/rscplus/
+
 ## Download
 The latest release can be found [here](https://github.com/RSCPlus/rscplus/releases/latest).
 
