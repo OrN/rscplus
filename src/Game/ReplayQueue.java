@@ -14,7 +14,7 @@
  * <p>You should have received a copy of the GNU General Public License along with rscplus. If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * <p>Authors: see <https://github.com/OrN/rscplus>
+ * <p>Authors: see <https://github.com/RSCPlus/rscplus>
  */
 package Game;
 
@@ -186,17 +186,20 @@ public class ReplayQueue {
     if (Replay.isPlaying) {
       Replay.controlPlayback("stop");
       try {
-        Thread.sleep(800); // without this at all, client says user is still logged in lol
-      } catch (Exception e) { // through experimentation, I found that 700 is not long enough.
+        // without this at all, client says user is still logged in lol
+        // through experimentation, I found that 700 is not long enough.
+        // this value works. shorter, and the replay server has trouble keeping its
+        // timestamps straight... TODO: eliminate need for this delay.
+        Thread.sleep(800);
+      } catch (Exception e) {
         Logger.Debug(e.toString());
-        // this value might work. shorter, and the replay server has trouble keeping its
-      } // timestamps straight... TODO: eliminate need for this delay.
+      }
     }
 
     currentReplayName = queue.get(index).getAbsolutePath();
     Logger.Info(
         "@|cyan Selected ("
-            + index
+            + (index + 1)
             + "): |@@|cyan,intensity_bold "
             + currentReplayName.replace(Settings.REPLAY_BASE_PATH.get("custom"), "")
             + "|@");

@@ -14,7 +14,7 @@
  * <p>You should have received a copy of the GNU General Public License along with rscplus. If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * <p>Authors: see <https://github.com/OrN/rscplus>
+ * <p>Authors: see <https://github.com/RSCPlus/rscplus>
  */
 package Client;
 
@@ -194,7 +194,7 @@ public class Launcher extends JFrame implements Runnable {
     config.create(Settings.WORLD.get(Settings.currentProfile));
 
     m_classLoader = new JClassLoader();
-    if (!m_classLoader.fetch("/assets/rsc.jar")) {
+    if (!m_classLoader.fetch("/assets/rsclassic-1091943135.jar")) {
       error("Unable to fetch Jar");
     }
 
@@ -249,7 +249,7 @@ public class Launcher extends JFrame implements Runnable {
     setProgress(0, 1);
 
     try {
-      URL url = new URL("https://github.com/OrN/rscplus/releases/download/Latest/rscplus.jar");
+      URL url = new URL("https://github.com/RSCPlus/rscplus/releases/download/Latest/rscplus.jar");
 
       // Open connection
       URLConnection connection = url.openConnection();

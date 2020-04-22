@@ -14,13 +14,15 @@
  * <p>You should have received a copy of the GNU General Public License along with rscplus. If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * <p>Authors: see <https://github.com/OrN/rscplus>
+ * <p>Authors: see <https://github.com/RSCPlus/rscplus>
  */
 package Game;
 
 import Client.Logger;
 import Client.Settings;
 import Client.Util;
+import Replay.scraper.ReplayEditor;
+import Replay.scraper.ReplayPacket;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -31,6 +33,7 @@ import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
 
 public class ReplayServer implements Runnable {
@@ -54,6 +57,15 @@ public class ReplayServer implements Runnable {
   public int client_read = 0;
   public int client_write = 0;
   public int client_writePrev = 0;
+
+  public LinkedList<ReplayPacket> incomingPackets;
+  public LinkedList<ReplayPacket> outgoingPackets;
+  public int incomingPacketsSizeCache = 0;
+  public int outgoingPacketsSizeCache = 0;
+  public int outgoingPacketsIndex = 0;
+  public int incomingPacketsIndex = 0;
+  public ReplayPacket nextOutgoingPacket;
+  public ReplayPacket nextIncomingPacket;
 
   ReplayServer(String directory) {
     playbackDirectory = directory;
@@ -107,13 +119,21 @@ public class ReplayServer implements Runnable {
     }
 
     try {
+      // Load replay
       File file = new File(playbackDirectory + "/in.bin.gz");
       size = file.length();
       file_input = new FileInputStream(file);
       input = new DataInputStream(new BufferedInputStream(new GZIPInputStream(file_input)));
       timestamp_end = Util.getReplayEnding(file);
-
       Logger.Debug("ReplayServer: Replay loaded, waiting for client; length=" + timestamp_end);
+
+      // Load replay a second time but using the RSCMinus method
+      if (Settings.LOG_VERBOSITY.get(Settings.currentProfile) >= 5) {
+        initializeIncomingOutgoingPackets();
+        initializeNextIncomingOutgoingPackets();
+      }
+
+      // Start the server
       sock = ServerSocketChannel.open();
       // last attempt 10 + default port
       usePort = port == -1 ? Replay.DEFAULT_PORT + 10 : port;
@@ -154,6 +174,16 @@ public class ReplayServer implements Runnable {
           client_read = 0;
           client_write = 0;
           frame_timer = System.currentTimeMillis() + Replay.getFrameTimeSlice();
+          incomingPacketsIndex = 0;
+          outgoingPacketsIndex = 0;
+
+          if (Settings.LOG_VERBOSITY.get(Settings.currentProfile) >= 5) {
+            if (incomingPackets == null) {
+              initializeIncomingOutgoingPackets();
+            }
+            initializeNextIncomingOutgoingPackets();
+          }
+
           restart = false;
           Replay.isRestarting = false;
         }
@@ -199,6 +229,41 @@ public class ReplayServer implements Runnable {
   public boolean doTick() {
     try {
       int timestamp_input = input.readInt();
+
+      if (outgoingPacketsSizeCache > 0) {
+        while (nextOutgoingPacket.timestamp <= timestamp_input) {
+          if (outgoingPacketsIndex < outgoingPacketsSizeCache - 1) {
+            Logger.Opcode(
+                nextOutgoingPacket.timestamp,
+                "OUT",
+                nextOutgoingPacket.opcode,
+                nextOutgoingPacket.data);
+            nextOutgoingPacket = outgoingPackets.get(++outgoingPacketsIndex);
+          } else {
+            break;
+          }
+        }
+      }
+      if (incomingPacketsSizeCache > 0) {
+        while (nextIncomingPacket.timestamp <= timestamp_input) {
+          if (incomingPacketsIndex < incomingPacketsSizeCache - 1) {
+            Logger.Opcode(
+                nextIncomingPacket.timestamp,
+                " IN",
+                nextIncomingPacket.opcode,
+                nextIncomingPacket.data);
+            nextIncomingPacket = incomingPackets.get(++incomingPacketsIndex);
+          } else {
+            break;
+          }
+        }
+      } else {
+        if (Settings.LOG_VERBOSITY.get(Settings.currentProfile) >= 5) {
+          // restart playback of current replay in order to import the incoming/outgoing packets
+          ReplayQueue.skipToReplay(ReplayQueue.currentIndex - 1);
+          return false;
+        }
+      }
 
       // We've reached the end of the replay
       if (timestamp_input == Replay.TIMESTAMP_EOF) return false;
@@ -304,5 +369,39 @@ public class ReplayServer implements Runnable {
     }
 
     return false;
+  }
+
+  public void initializeIncomingOutgoingPackets() {
+    ReplayEditor editor = new ReplayEditor();
+    boolean success = editor.importData(playbackDirectory);
+
+    if (!success) {
+      Logger.Warn("@|red Can't parse this as complete replay!|@");
+    }
+
+    Logger.Debug("client version: " + editor.getReplayVersion().clientVersion);
+    Logger.Debug("replay version: " + editor.getReplayVersion().version);
+
+    incomingPackets = editor.getIncomingPackets();
+    outgoingPackets = editor.getOutgoingPackets();
+
+    Logger.Info(String.format("Incoming packet length: %d", incomingPackets.size()));
+    Logger.Info(String.format("Outgoing packet length: %d", outgoingPackets.size()));
+
+    incomingPacketsIndex = 0;
+    outgoingPacketsIndex = 0;
+    incomingPacketsSizeCache = incomingPackets.size();
+    outgoingPacketsSizeCache = outgoingPackets.size();
+  }
+
+  public void initializeNextIncomingOutgoingPackets() {
+    if (incomingPacketsSizeCache > 0) {
+      nextIncomingPacket = incomingPackets.getFirst();
+    } else {
+      // RSC+ won't be able to play this replay, so let's skip it.
+      Logger.Warn("@|red No incoming packets in that Replay, moving on...|@");
+      ReplayQueue.nextReplay();
+    }
+    if (outgoingPacketsSizeCache > 0) nextOutgoingPacket = outgoingPackets.getFirst();
   }
 }

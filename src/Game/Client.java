@@ -14,7 +14,7 @@
  * <p>You should have received a copy of the GNU General Public License along with rscplus. If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * <p>Authors: see <https://github.com/OrN/rscplus>
+ * <p>Authors: see <https://github.com/RSCPlus/rscplus>
  */
 package Game;
 
@@ -96,6 +96,7 @@ public class Client {
       6; // only used when another player sends you a trade request. (hopefully!)
   public static final int CHAT_OTHER =
       7; // used for when you send a player a duel/trade request, follow someone, or drop an item
+
   public static final int CHAT_INCOMING_OPTION = 8;
   public static final int CHAT_CHOSEN_OPTION = 9;
   public static final int CHAT_WINDOWED_MSG = 10;
@@ -241,6 +242,12 @@ public class Client {
   public static byte[] fontData;
   public static String lastServerMessage = "";
   public static int[] inputFilterCharFontAddr;
+
+  public static Thread loginMessageHandlerThread;
+  public static String loginMessageTop =
+      "To connect to a server, please configure your World URLs.";
+  public static String loginMessageBottom =
+      "Hit @gre@Ctrl-O@whi@ to access Settings and select the \"World List\" tab.";
 
   /**
    * A boolean array that stores if the XP per hour should be shown for a given skill when hovering
@@ -508,6 +515,14 @@ public class Client {
     } else if (Renderer.replayOption == 1
         || Settings.RECORD_AUTOMATICALLY.get(Settings.currentProfile)) {
       Replay.initializeReplayRecording();
+    }
+
+    if (Settings.noWorldsConfigured
+        && Settings.WORLD.get(Settings.currentProfile) != 0
+        && !Replay.isPlaying) {
+      closeConnection(false);
+      loginMessageHandlerThread = new Thread(new LoginMessageHandler());
+      loginMessageHandlerThread.start();
     }
   }
 
@@ -946,11 +961,11 @@ public class Client {
     }
   }
 
-  public static void closeConnection(boolean close) {
+  public static void closeConnection(boolean sendPacket31) {
     if (Reflection.closeConnection == null) return;
 
     try {
-      Reflection.closeConnection.invoke(Client.instance, close, 31);
+      Reflection.closeConnection.invoke(Client.instance, sendPacket31, 31);
     } catch (Exception e) {
     }
   }
@@ -1034,7 +1049,8 @@ public class Client {
     try {
       Double currentVersion = 0.0;
       URL updateURL =
-          new URL("https://raw.githubusercontent.com/OrN/rscplus/master/src/Client/Settings.java");
+          new URL(
+              "https://raw.githubusercontent.com/RSCPlus/rscplus/master/src/Client/Settings.java");
 
       // Open connection
       URLConnection connection = updateURL.openConnection();
@@ -1049,6 +1065,7 @@ public class Client {
         if (line.contains("VERSION_NUMBER")) {
           currentVersion =
               Double.parseDouble(line.substring(line.indexOf('=') + 1, line.indexOf(';')));
+          Logger.Info(String.format("@|green Current Version: %f|@", currentVersion));
           break;
         }
       }
@@ -1976,5 +1993,20 @@ public class Client {
 
   public static double[][] getLastXpGain() {
     return lastXpGain;
+  }
+}
+
+// set Client.loginMessageBottom/Top before calling if you want something else to show up
+class LoginMessageHandler implements Runnable {
+  @Override
+  public void run() {
+    try {
+      Thread.sleep(5);
+      Client.setLoginMessage(Client.loginMessageBottom, Client.loginMessageTop);
+    } catch (InterruptedException e) {
+      Logger.Error(
+          "The login message thread was interrupted unexpectedly! Perhaps the game crashed or was killed?");
+      // End the thread
+    }
   }
 }

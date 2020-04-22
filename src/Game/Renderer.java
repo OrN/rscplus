@@ -14,11 +14,10 @@
  * <p>You should have received a copy of the GNU General Public License along with rscplus. If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * <p>Authors: see <https://github.com/OrN/rscplus>
+ * <p>Authors: see <https://github.com/RSCPlus/rscplus>
  */
 package Game;
 
-import Client.JConfig;
 import Client.Launcher;
 import Client.Logger;
 import Client.NotificationsHandler;
@@ -974,8 +973,8 @@ public class Renderer {
 
       // Draw world list
       drawShadowText(g2, "World (Click to change): ", 80, height - 8, color_text, true);
-      for (int i = 0; i <= JConfig.SERVER_WORLD_COUNT; i++) {
-        Rectangle bounds = new Rectangle(152 + (i * 18), height - 12, 16, 12);
+      for (int i = 1; i <= Settings.WORLDS_TO_DISPLAY; i++) {
+        Rectangle bounds = new Rectangle(134 + (i * 18), height - 12, 16, 12);
         Color color = color_text;
 
         if (i == Settings.WORLD.get(Settings.currentProfile)) color = color_low;
@@ -984,7 +983,7 @@ public class Renderer {
         g2.setColor(color);
         g2.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
         setAlpha(g2, 1.0f);
-        String worldString = (i == 0) ? "D" : Integer.toString(i);
+        String worldString = Integer.toString(i);
         drawShadowText(
             g2, worldString, bounds.x + (bounds.width / 2), bounds.y + 4, color_text, true);
 

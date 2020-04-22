@@ -14,7 +14,7 @@
  * <p>You should have received a copy of the GNU General Public License along with rscplus. If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * <p>Authors: see <https://github.com/OrN/rscplus>
+ * <p>Authors: see <https://github.com/RSCPlus/rscplus>
  */
 package Game;
 
@@ -113,9 +113,7 @@ public class Game extends JFrame
     String title = "rscplus (";
 
     if (!Replay.isPlaying) {
-      int world = Settings.WORLD.get(Settings.currentProfile);
-      String worldString = (world == 0) ? "Developer World" : "World " + Integer.toString(world);
-      title += worldString;
+      title += Settings.WORLD_NAMES.get(Settings.WORLD.get(Settings.currentProfile));
 
       if (Client.player_name.length() != 0) {
         title += "; " + Client.player_name;

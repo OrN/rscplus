@@ -14,7 +14,7 @@
  * <p>You should have received a copy of the GNU General Public License along with rscplus. If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * <p>Authors: see <https://github.com/OrN/rscplus>
+ * <p>Authors: see <https://github.com/RSCPlus/rscplus>
  */
 package Client;
 
@@ -33,10 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.*;
 
 /** Manages storing, loading, and changing settings. */
 public class Settings {
@@ -45,7 +42,7 @@ public class Settings {
   public static boolean fovUpdateRequired;
   public static boolean versionCheckRequired = true;
   public static int javaVersion = 0;
-  public static final double VERSION_NUMBER = 20190531.055055;
+  public static final double VERSION_NUMBER = 20200422.162232;
   /**
    * A time stamp corresponding to the current version of this source code. Used as a sophisticated
    * versioning system.
@@ -167,8 +164,21 @@ public class Settings {
   public static HashMap<String, Boolean> TRIGGER_ALERTS_REPLAY = new HashMap<String, Boolean>();
   public static HashMap<String, String> REPLAY_BASE_PATH = new HashMap<String, String>();
   public static HashMap<String, String> PREFERRED_DATE_FORMAT = new HashMap<String, String>();
+  public static HashMap<String, Boolean> SHOW_WORLD_COLUMN = new HashMap<String, Boolean>();
+  public static HashMap<String, Boolean> SHOW_CONVERSION_COLUMN = new HashMap<String, Boolean>();
+  public static HashMap<String, Boolean> SHOW_USERFIELD_COLUMN = new HashMap<String, Boolean>();
 
-  //// nogui
+  //// world list
+  public static HashMap<Integer, String> WORLD_URLS = new HashMap<Integer, String>();
+  public static HashMap<Integer, String> WORLD_NAMES = new HashMap<Integer, String>();
+  public static HashMap<Integer, Integer> WORLD_PORTS = new HashMap<Integer, Integer>();
+  public static HashMap<Integer, String> WORLD_RSA_PUB_KEYS = new HashMap<Integer, String>();
+  public static HashMap<Integer, String> WORLD_RSA_EXPONENTS = new HashMap<Integer, String>();
+  public static HashMap<Integer, String> WORLD_FILE_PATHS = new HashMap<Integer, String>();
+  public static int WORLDS_TO_DISPLAY = 5;
+  public static boolean noWorldsConfigured = true;
+
+  //// no gui
   public static HashMap<String, Integer> COMBAT_STYLE = new HashMap<String, Integer>();
   public static HashMap<String, Integer> WORLD = new HashMap<String, Integer>();
   public static HashMap<String, Boolean> FIRST_TIME = new HashMap<String, Boolean>();
@@ -1014,7 +1024,39 @@ public class Settings {
         "custom",
         getPropString(props, "preferred_date_format", PREFERRED_DATE_FORMAT.get("default")));
 
-    //// nogui
+    SHOW_WORLD_COLUMN.put("vanilla", false);
+    SHOW_WORLD_COLUMN.put("vanilla_resizable", false);
+    SHOW_WORLD_COLUMN.put("lite", false);
+    SHOW_WORLD_COLUMN.put("default", true);
+    SHOW_WORLD_COLUMN.put("heavy", true);
+    SHOW_WORLD_COLUMN.put("all", true);
+    SHOW_WORLD_COLUMN.put(
+        "custom", getPropBoolean(props, "show_world_column", SHOW_WORLD_COLUMN.get("default")));
+
+    SHOW_CONVERSION_COLUMN.put("vanilla", false);
+    SHOW_CONVERSION_COLUMN.put("vanilla_resizable", false);
+    SHOW_CONVERSION_COLUMN.put("lite", false);
+    SHOW_CONVERSION_COLUMN.put("default", false);
+    SHOW_CONVERSION_COLUMN.put("heavy", true);
+    SHOW_CONVERSION_COLUMN.put("all", true);
+    SHOW_CONVERSION_COLUMN.put(
+        "custom",
+        getPropBoolean(props, "show_conversion_column", SHOW_CONVERSION_COLUMN.get("default")));
+
+    SHOW_USERFIELD_COLUMN.put("vanilla", false);
+    SHOW_USERFIELD_COLUMN.put("vanilla_resizable", false);
+    SHOW_USERFIELD_COLUMN.put("lite", false);
+    SHOW_USERFIELD_COLUMN.put("default", false);
+    SHOW_USERFIELD_COLUMN.put("heavy", false);
+    SHOW_USERFIELD_COLUMN.put("all", true);
+    SHOW_USERFIELD_COLUMN.put(
+        "custom",
+        getPropBoolean(props, "show_userfield_column", SHOW_USERFIELD_COLUMN.get("default")));
+
+    //// world list
+    initWorlds();
+
+    //// no gui
     COMBAT_STYLE.put("vanilla", Client.COMBAT_AGGRESSIVE);
     COMBAT_STYLE.put("vanilla_resizable", Client.COMBAT_AGGRESSIVE);
     COMBAT_STYLE.put("lite", Client.COMBAT_AGGRESSIVE);
@@ -1087,8 +1129,8 @@ public class Settings {
     if (WORLD.get("custom") < 0) {
       WORLD.put("custom", 0);
       save("custom");
-    } else if (WORLD.get("custom") > JConfig.SERVER_WORLD_COUNT) {
-      WORLD.put("custom", JConfig.SERVER_WORLD_COUNT);
+    } else if (WORLD.get("custom") > Settings.WORLDS_TO_DISPLAY) {
+      WORLD.put("custom", Settings.WORLDS_TO_DISPLAY);
       save("custom");
     }
 
@@ -1158,6 +1200,8 @@ public class Settings {
     Util.makeDirectory(Dir.SCREENSHOT);
     Dir.REPLAY = Dir.JAR + "/replay";
     Util.makeDirectory(Dir.REPLAY);
+    Dir.WORLDS = Dir.JAR + "/worlds";
+    Util.makeDirectory(Dir.WORLDS);
   }
 
   /** Loads properties from config.ini for use with definePresets */
@@ -1198,6 +1242,146 @@ public class Settings {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public static void initWorlds() {
+    File[] fList = new File(Dir.WORLDS).listFiles();
+
+    // Sorts alphabetically
+    Arrays.sort(
+        fList,
+        new Comparator<File>() {
+          @Override
+          public int compare(File o1, File o2) {
+            return o1.getName().compareTo(o2.getName());
+          }
+        });
+
+    int i = 1;
+    if (fList != null) {
+      for (File worldFile : fList) {
+        if (!worldFile.isDirectory()) {
+          Properties worldProps = new Properties();
+          try {
+            FileInputStream in = new FileInputStream(worldFile);
+            worldProps.load(in);
+            in.close();
+
+            WORLD_FILE_PATHS.put(i, worldFile.getAbsolutePath());
+            WORLD_NAMES.put(i, worldProps.getProperty("name"));
+            WORLD_URLS.put(i, worldProps.getProperty("url"));
+            WORLD_PORTS.put(i, Integer.parseInt(worldProps.getProperty("port")));
+            WORLD_RSA_PUB_KEYS.put(i, worldProps.getProperty("rsa_pub_key"));
+            WORLD_RSA_EXPONENTS.put(i, worldProps.getProperty("rsa_exponent"));
+
+            i++;
+          } catch (Exception e) {
+            Logger.Warn("Error loading World config for " + worldFile.getAbsolutePath());
+          }
+        }
+      }
+    }
+
+    if (i > 1) {
+      noWorldsConfigured = false;
+      WORLDS_TO_DISPLAY = i - 1;
+    } else {
+      createNewWorld(1);
+      WORLDS_TO_DISPLAY = 1;
+    }
+  }
+
+  public static void saveWorlds() {
+    // TODO: it would be nice if we only saved a new file if information is different
+    for (int i = 1; i <= WORLD_NAMES.size(); i++) {
+      String worldFileName =
+          String.format("%s%d_%s%s", i < 10 ? "0" : "", i, WORLD_NAMES.get(i), ".ini");
+      Properties worldProps = new Properties();
+
+      worldProps.setProperty("name", WORLD_NAMES.get(i));
+      worldProps.setProperty("url", WORLD_URLS.get(i));
+      worldProps.setProperty("port", WORLD_PORTS.get(i).toString());
+      worldProps.setProperty("rsa_pub_key", WORLD_RSA_PUB_KEYS.get(i));
+      worldProps.setProperty("rsa_exponent", WORLD_RSA_EXPONENTS.get(i));
+
+      try {
+        FileOutputStream out = new FileOutputStream(new File(Dir.WORLDS, worldFileName));
+        worldProps.store(out, "---rscplus world config---");
+        out.close();
+      } catch (Exception e) {
+        Logger.Warn("Error saving World config for " + worldFileName);
+      }
+      try {
+        File oldFile = new File(WORLD_FILE_PATHS.get(i));
+        if (!worldFileName.equals(oldFile.getName())) {
+          if (!oldFile.delete()) {
+            Logger.Warn(
+                String.format("Error deleting old file %d: %s", i, oldFile.getAbsolutePath()));
+          }
+          WORLD_FILE_PATHS.put(i, new File(Dir.WORLDS, worldFileName).getAbsolutePath());
+        }
+      } catch (Exception e) {
+        Logger.Warn(String.format("Error deleting old file %d: %s", i, WORLD_FILE_PATHS.get(i)));
+      }
+    }
+  }
+
+  public static void createNewWorld(int worldNum) {
+    WORLD_NAMES.put(worldNum, String.format("World %d", worldNum));
+    WORLD_URLS.put(worldNum, "");
+    WORLD_PORTS.put(worldNum, Replay.DEFAULT_PORT);
+    WORLD_RSA_PUB_KEYS.put(worldNum, "");
+    WORLD_RSA_EXPONENTS.put(worldNum, "");
+
+    String worldFileName =
+        String.format(
+            "%s%d_%s%s", worldNum < 10 ? "0" : "", worldNum, WORLD_NAMES.get(worldNum), ".ini");
+    Properties worldProps = new Properties();
+
+    worldProps.setProperty("name", WORLD_NAMES.get(worldNum));
+    worldProps.setProperty("url", WORLD_URLS.get(worldNum));
+    worldProps.setProperty("port", WORLD_PORTS.get(worldNum).toString());
+    worldProps.setProperty("rsa_pub_key", WORLD_RSA_PUB_KEYS.get(worldNum));
+    worldProps.setProperty("rsa_exponent", WORLD_RSA_EXPONENTS.get(worldNum));
+
+    try {
+      FileOutputStream out = new FileOutputStream(new File(Dir.WORLDS, worldFileName));
+      worldProps.store(out, "---rscplus world config---");
+      out.close();
+    } catch (Exception e) {
+      Logger.Warn("Error saving World config for " + worldFileName);
+    }
+
+    WORLD_FILE_PATHS.put(worldNum, new File(Dir.WORLDS, worldFileName).getAbsolutePath());
+  }
+
+  public static void removeWorld(int worldNum) {
+    try {
+      File oldFile = new File(WORLD_FILE_PATHS.get(worldNum));
+      Logger.Info("Removed old file: " + oldFile.getName());
+      oldFile.delete();
+    } catch (Exception e) {
+      Logger.Warn("Error deleting old file: " + WORLD_FILE_PATHS.get(worldNum));
+    }
+
+    int initialSize = WORLD_NAMES.size();
+    for (int i = worldNum + 1; i <= initialSize; i++) {
+      WORLD_NAMES.put(i - 1, WORLD_NAMES.remove(i));
+      WORLD_URLS.put(i - 1, WORLD_URLS.remove(i));
+      WORLD_PORTS.put(i - 1, WORLD_PORTS.remove(i));
+      WORLD_RSA_PUB_KEYS.put(i - 1, WORLD_RSA_PUB_KEYS.remove(i));
+      WORLD_RSA_EXPONENTS.put(i - 1, WORLD_RSA_EXPONENTS.remove(i));
+      WORLD_FILE_PATHS.put(i - 1, WORLD_FILE_PATHS.remove(i));
+    }
+    WORLD_NAMES.remove(initialSize);
+    WORLD_URLS.remove(initialSize);
+    WORLD_PORTS.remove(initialSize);
+    WORLD_RSA_PUB_KEYS.remove(initialSize);
+    WORLD_RSA_EXPONENTS.remove(initialSize);
+    WORLD_FILE_PATHS.remove(initialSize);
+    Settings.WORLDS_TO_DISPLAY--;
+    Launcher.getConfigWindow().synchronizeWorldTab();
+    saveWorlds();
   }
 
   private static KeyModifier getKeyModifierFromString(String savedKeybindSet) {
@@ -1334,11 +1518,19 @@ public class Settings {
           "trigger_alerts_replay", Boolean.toString(TRIGGER_ALERTS_REPLAY.get(preset)));
       props.setProperty("replay_base_path", REPLAY_BASE_PATH.get(preset));
       props.setProperty("preferred_date_format", PREFERRED_DATE_FORMAT.get(preset));
+      props.setProperty("show_world_column", Boolean.toString(SHOW_WORLD_COLUMN.get(preset)));
+      props.setProperty(
+          "show_conversion_column", Boolean.toString(SHOW_CONVERSION_COLUMN.get(preset)));
+      props.setProperty(
+          "show_userfield_column", Boolean.toString(SHOW_USERFIELD_COLUMN.get(preset)));
+
+      //// world urls
+      saveWorlds();
 
       //// presets
       props.setProperty("current_profile", currentProfile);
 
-      //// nogui
+      //// no gui
       props.setProperty("combat_style", Integer.toString(COMBAT_STYLE.get(preset)));
       props.setProperty("world", Integer.toString(WORLD.get(preset)));
       // This is set to false, as logically, saving the config would imply this is not a first-run.
@@ -1929,6 +2121,7 @@ public class Settings {
     public static String DUMP;
     public static String SCREENSHOT;
     public static String REPLAY;
+    public static String WORLDS;
   }
 
   /**

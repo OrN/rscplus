@@ -14,12 +14,11 @@
  * <p>You should have received a copy of the GNU General Public License along with rscplus. If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * <p>Authors: see <https://github.com/OrN/rscplus>
+ * <p>Authors: see <https://github.com/RSCPlus/rscplus>
  */
 package Game;
 
 import Client.FlushableGZIPOutputStream;
-import Client.JConfig;
 import Client.Launcher;
 import Client.Logger;
 import Client.QueueWindow;
@@ -55,6 +54,7 @@ public class Replay {
   static DataOutputStream keys = null;
   static DataOutputStream keyboard = null;
   static DataOutputStream mouse = null;
+  static DataOutputStream metadata = null;
 
   static DataInputStream play_keys = null;
   static DataInputStream play_keyboard = null;
@@ -118,6 +118,8 @@ public class Replay {
   public static byte[] retained_bytes = null;
   public static int retained_off;
   public static int retained_bread;
+
+  public static byte[] ipAddressMetadata;
 
   public static int timestamp_lag = 0;
 
@@ -250,7 +252,7 @@ public class Replay {
           Launcher.icon_warn);
       return false;
     }
-    Game.getInstance().getJConfig().changeWorld(JConfig.SERVER_WORLD_COUNT + 1);
+    Game.getInstance().getJConfig().changeWorld(Settings.WORLDS_TO_DISPLAY + 1);
     replayServer = new ReplayServer(replayDirectory);
     replayThread = new Thread(replayServer);
     replayThread.start();
@@ -371,6 +373,10 @@ public class Replay {
       } else {
         started_record_kb_mouse = false;
       }
+      metadata =
+          new DataOutputStream(
+              new BufferedOutputStream(
+                  new FileOutputStream(new File(recordingDirectory + "/metadata.bin"))));
 
       output_checksum = MessageDigest.getInstance("SHA-256");
       input_checksum = MessageDigest.getInstance("SHA-256");
@@ -423,6 +429,27 @@ public class Replay {
       // Write Checksum
       input.write(input_checksum.digest());
       output.write(output_checksum.digest());
+
+      Logger.Debug("Generating metadata");
+      // generate new metadata
+      try {
+        metadata.writeInt(retained_timestamp);
+        metadata.writeLong(System.currentTimeMillis());
+        if (ipAddressMetadata.length == 4) { // ipv4, need padding in the ipv6 fields
+          metadata.writeInt(0);
+          metadata.writeInt(0);
+          metadata.writeInt(0xFFFF);
+        }
+        for (int i = 0; i < ipAddressMetadata.length; i++) {
+          metadata.writeByte(ipAddressMetadata[i]);
+        }
+        metadata.writeByte(0); // conversion settings, none used in this case
+        metadata.writeInt(0); // User settings, not implemented for any purpose at this time
+        metadata.flush();
+        metadata.close();
+      } catch (IOException e) {
+        Logger.Error("Couldn't write metadata.bin!");
+      }
 
       output.close();
       input.close();
@@ -742,6 +769,17 @@ public class Replay {
                   new FileOutputStream(new File(replayFolder + "/metadata.bin"))));
       metadata.writeInt(replayLength);
       metadata.writeLong(dateModified);
+      // TODO: implement attempting to find the IP address here, from rscminus
+      if (ipAddressMetadata.length == 4) { // ipv4, need padding
+        metadata.writeInt(0);
+        metadata.writeInt(0);
+        metadata.writeInt(0xFFFF);
+      }
+      for (int i = 0; i < ipAddressMetadata.length; i++) {
+        metadata.writeByte(ipAddressMetadata[i]);
+      }
+      metadata.writeByte(0); // conversion settings, none used in this case
+      metadata.writeInt(0); // User settings, not implemented for any purpose at this time
       metadata.flush();
       metadata.close();
     } catch (IOException e) {
@@ -752,18 +790,66 @@ public class Replay {
   public static Object[] readMetadata(String replayFolder) {
     int replayLength = -1;
     long dateModified = -1;
+    String world = "Unknown";
+    byte conversionSettings = (byte) 128;
+    int userField = 0;
+
+    File metadataFile = new File(replayFolder + "/metadata.bin");
     try {
       DataInputStream metadata =
-          new DataInputStream(
-              new BufferedInputStream(
-                  new FileInputStream(new File(replayFolder + "/metadata.bin"))));
+          new DataInputStream(new BufferedInputStream(new FileInputStream(metadataFile)));
       replayLength = metadata.readInt();
       dateModified = metadata.readLong();
+      if (metadataFile.length() > 12) {
+        int ipAddress1 = metadata.readInt();
+        int ipAddress2 = metadata.readInt();
+        int ipAddress3 = metadata.readInt();
+        int ipAddress4 = metadata.readInt();
+
+        if (ipAddress1 == 0 && ipAddress2 == 0 && ipAddress3 == 0xFFFF) { // true if ipv4
+          switch (ipAddress4) {
+            case -643615488: // Unknown Jagex World IP: 217.163.53.0
+              world = "Jagex";
+              break;
+            case -643615310: // World 1: IP address 217.163.53.178
+              world = "Jagex 1";
+              break;
+            case -643615309: // World 2: IP address 217.163.53.179
+              world = "Jagex 2";
+              break;
+            case -643615308: // World 3: IP address 217.163.53.180
+              world = "Jagex 3";
+              break;
+            case -643615307: // World 4: IP address 217.163.53.181
+              world = "Jagex 4";
+              break;
+            case -643615306: // World 5: IP address 217.163.53.182
+              world = "Jagex 5";
+              break;
+            default:
+              world =
+                  String.format(
+                      "%d.%d.%d.%d",
+                      (ipAddress4 >> 24) & 0xFF,
+                      (ipAddress4 >> 16) & 0xFF,
+                      (ipAddress4 >> 8) & 0xFF,
+                      (ipAddress4) & 0xFF);
+              break;
+          }
+        } else { // ipv6
+          // TODO: this is not a properly formatted ipv6 address
+          world =
+              String.format("ipv6: %d:%d:%d:%d", ipAddress1, ipAddress2, ipAddress3, ipAddress4);
+        }
+
+        conversionSettings = metadata.readByte();
+        userField = metadata.readInt();
+      }
       metadata.close();
     } catch (IOException e) {
       Logger.Error("Couldn't read metadata.bin!");
     }
-    return new Object[] {replayLength, dateModified};
+    return new Object[] {replayLength, dateModified, world, conversionSettings, userField};
   }
 
   public static void resetFrameTimeSlice() {
